@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Fashi Template">
+    <meta name="keywords" content="Fashi, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Jhaanjhariya</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Muli:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/themify-icons.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/style.css" type="text/css">
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Header Section Begin -->
+    <header class="header-section">
+    <div class="header-top">
+        <div class="container">
+            <div class="header-icons-container">
+                <div class="ht-left">
+                    <div class="mail-service">
+                        <i class="fa fa-envelope"></i>
+                        jhaanjhariya@gmail.com
+                    </div>
+                    <div class="phone-service">
+                        <i class="fa fa-phone"></i>
+                        +91 8882640648
+                    </div>
+                </div>
+
+                <div class="ht-right">
+                    <% if (!user) { %>
+                    <!-- User is not logged in -->
+                    <a href="/login" class="login-panel">
+                        <i class="fa fa-user"></i> Login
+                    </a>
+                    <% } else { %>
+                    <!-- User is logged in -->
+                    <div class="user-panel">
+                        <span class="user-name">Hello, <%= user.fname %></span>
+                        <a href="/logout" class="logout-panel"  onclick="confirmLogout()">
+                            <i class="fa fa-sign-out"></i> Logout
+                        </a>
+                    </div>
+                    <% } %> 
+
+                    <div class="lan-selector">
+                        <select class="language_drop" name="countries" id="countries" style="width:300px;">
+                            <option value='yt' data-image="/assets/img/flag-1.jpg" data-imagecss="flag yt"
+                                data-title="English">English</option>
+                            <option value='yu' data-image="/assets/img/flag-2.jpg" data-imagecss="flag yu"
+                                data-title="Bangladesh">German </option>
+                        </select>
+                    </div>
+
+                    <div class="top-social">
+                        <a href="#"><i class="ti-facebook"></i></a>
+                        <a href="#"><i class="ti-twitter-alt"></i></a>
+                        <a href="#"><i class="ti-linkedin"></i></a>
+                        <a href="#"><i class="ti-pinterest"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<style>
+    .header-icons-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .ht-left,
+    .ht-right {
+        display: flex;
+        align-items: center;
+    }
+
+    .user-panel {
+        display: flex;
+        align-items: center;
+        margin-right: 20px; /* Adjust margin as needed */
+    }
+
+    .user-name {
+        margin-right: 10px;
+    }
+
+    .logout-panel {
+        font-size: 14px;
+        text-decoration: none;
+        color: #333; /* Adjust color as needed */
+    }
+
+    .lan-selector,
+    .top-social {
+        margin-left: auto; /* Push these elements to the right */
+    }
+</style>
+
+
+        <div class="container">
+            <div class="inner-header">
+                <div class="row">
+                    <div class="col-lg-2 col-md-2">
+                        <div class="logo">
+                            <a href="./index.html">
+                                <img src="/assets/img/jhaanjhariya logo-color.png" alt="">
+                            </a>
+                        </div>    
+                    </div>
+                    <div class="col-lg-7 col-md-7">
+                        <div class="advanced-search">
+                            <button type="button" class="category-btn">All Categories</button>
+                            <form action="#" class="input-group">
+                                <input type="text" placeholder="What do you need?">
+                                <button type="button"><i class="ti-search"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 text-right col-md-3">
+                        <ul class="nav-right">
+                            <li class="heart-icon"><a href="#">
+                                <i class="icon_heart_alt"></i>
+                                <span></span>
+                            </a>
+                            </li>
+                            <li class="cart-icon"><a href="#">
+                                <i class="icon_bag_alt"></i>
+                                <span></span>
+                            </a>
+                            <div class="cart-hover">
+                                <div class="select-items">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td class="si-pic"><img src="/assets/img/select-product-1.jpg" alt=""></td>
+                                                <td class="si-text">
+                                                    <div class="product-selected">
+                                                        <p>$60.00 x 1</p>
+                                                        <h6>Kabino Bedside Table</h6>
+                                                    </div>
+                                                </td>
+                                                <td class="si-close">
+                                                    <i class="ti-close"></i>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="si-pic"><img src="/assets/img/select-product-2.jpg" alt=""></td>
+                                                <td class="si-text">
+                                                    <div class="product-selected">
+                                                        <p>$60.00 x 1</p>
+                                                        <h6>Kabino Bedside Table</h6>
+                                                    </div>
+                                                </td>
+                                                <td class="si-close">
+                                                    <i class="ti-close"></i>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="select-total">
+                                    <span>total:</span>
+                                    <h5>$120.00</h5>
+                                </div>
+                                <div class="select-button">
+                                    <a href="#" class="primary-btn view-card">VIEW CARD</a>
+                                    <a href="#" class="primary-btn checkout-btn">CHECK OUT</a>
+                                </div>
+                            </div>
+                        </li>
+                            <li class="cart-price">0.00</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-item">
+            <div class="container">
+                <div class="nav-depart">
+                    <div class="depart-btn">
+                        <i class="ti-menu"></i>
+                        <span>All CATEGORIES</span>
+                        <ul class="depart-hover">
+                            <li class="active"><a href="#"></a></li>
+                            <li><a href="/shop?category=Bracelets">Bracelets</a></li>
+                            <li><a href="/shop?category=Earrings">Earrings</a></li>
+                            <li><a href="/shop?category=Necklaces">Necklaces</a></li>
+                            <li><a href="/shop?category=Rings">Rings</a></li>
+                            <li><a href="/shop?category=Hand Accessories">Hand Accessories</a></li>
+                            <li><a href="/shop?category=Hair Accessories">Hair Accessories</a></li>
+                            <li><a href="/shop?category=Foot Accessories">Foot Accessories</a></li>
+                            <li><a href="/shop?category=Bags">Bags</a></li>
+                            <!-- <li><a href="/shop?category=Others">Others</a></li> -->
+                        </ul>
+                    </div>
+                </div>
+                <nav class="nav-menu mobile-menu">
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/shop">Shop</a></li>
+                        <li><a href="#">Collection</a>
+                            <ul class="dropdown">
+                                <li><a href="/shop?collection=Aafreen">Aafreen</a></li>
+                                <li><a href="/shop?collection=Riwaayat">Riwaayat</a></li>
+                                <li><a href="/shop?collection=Riwaz">Riwaz</a></li>
+                                <li><a href="/shop?collection=Padmawat">Padmawat</a></li>
+                                <li><a href="/shop?collection=Saanjh">Saanjh</a></li>
+                                <li><a href="/shop?collection=Banjara">Banjara</a></li>
+                                <li><a href="/shop?collection=Zaira">Zaira</a></li>
+
+                            </ul>
+                        </li>
+                        <li><a href="./blog.html">Blog</a></li>
+                        <li><a href="./contact.html">Contact</a></li>
+                        <li><a href="#">Pages</a>
+                            <ul class="dropdown">                                
+                                <li><a href="/shopping-cart">Shopping Cart</a></li>
+                                <li><a href="./check-out">Checkout</a></li>
+                                <li><a href="./faq.html">Faq</a></li>
+                                <li><a href="/user-signup">Register</a></li>
+                                <li><a href="/login">Login</a></li>
+                                <li><a href="/userProfile">Profile</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+                <div id="mobile-menu-wrap"></div>
+            </div>
+        </div>
+        <style>
+    /* .header-icons-container {
+    display: flex;
+    align-items: center;
+} */
+
+.lan-selector {
+    margin-right: 20px; /* Add margin between language selector and user panel */
+}
+            /* Add these styles to align user name and logout in the same row */
+.user-panel {
+    display: flex;
+    align-items:center; /* Align items vertically in the center */
+}
+
+.user-name {
+    
+    margin-top: 30px; /* Add margin between user name and logout */
+}
+
+.logout-panel {
+    
+    margin-top: 30px;  /* Add margin to separate user name and logout */
+}
+.user-name {
+        margin-right: 10px;
+        margin-bottom: 30px; /* Add margin between user name and logout */
+        font-family: 'Muli', sans-serif; /* Use the same font as the email ID */
+        font-size: 14px; /* Set the desired font size */
+    }
+
+    .logout-panel {
+        margin-left: 20px;
+        margin-bottom: 30px;  /* Add margin to separate user name and logout */
+        font-family: 'Muli', sans-serif; /* Use the same font as the email ID */
+        font-size: 14px; /* Set the desired font size */
+    }
+
+        </style>
+
+    </header>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        function confirmLogout() {
+            Swal.fire({
+                title: 'You have successfully logged out! ',
+                // icon: 'question',
+                // showCancelButton: true,
+                // confirmButtonColor: '#3085d6',
+                // cancelButtonColor: '#d33',
+                // confirmButtonText: 'Yes, logout!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Add a delay of 1 second (1000 milliseconds) before redirecting
+                    setTimeout(() => {
+                        // Redirect to the logout page after the delay
+                        window.location.href = '/logout';
+                    }, 0); // Adjust the delay as needed
+                }
+            });
+        }
+    </script>
+    
+    
+
+    <!-- Header End -->

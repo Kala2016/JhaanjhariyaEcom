@@ -1,0 +1,305 @@
+
+
+<%- include('../partials/header.ejs' )%>
+
+    <!-- Hero Section Begin -->
+    <section class="hero-section">
+        <div class="hero-items owl-carousel">
+            <div class="single-hero-items set-bg" data-setbg="assets/img/Home-Pics/Pic-2.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <span style="color: #ffffff;">Jewelry</span>
+                            <h1 style="color: #e7ab3c;">Jhaanjhariya Specials</h1>
+                            <p style="color: #060202;">Jhaanjhariya’s collection is a reflection of the richness and variety of Indian culture, with pieces handpicked from all over the country. Our personally handpicked selections are sure to make you feel truly special.</p>
+                            <a href="./shop" class="primary-btn">Shop Now</a>
+                        </div>
+                    </div>
+                    <div class="off-card">
+                        <h2>Sale <span>50%</span></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="single-hero-items set-bg" data-setbg="assets/img/Home-Pics/Pic-3.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <span style="color: #ffffff;">Jewelry</span>
+                            <h1 style="color: #e7ab3c;">Handcrafted Jewelry</h1>
+                            <p style="color: #e3d5d5;">Discover the ideal jewelry for every occasion at Jhaanjhariya, making each event truly memorable.</p>
+                            <a href="./shop" class="primary-btn">Shop Now</a>
+                        </div>
+                    </div>
+                    <div class="off-card">
+                        <h2>Sale <span>50%</span></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hero Section End -->
+
+    <!-- Banner Section Begin -->
+    <div class="banner-section spad">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="single-banner">
+                        <img src="assets\img\Home-Pics\Banner1.jpg" alt="">
+                        <div class="inner-text">
+                            <h4>Ethnic</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="single-banner">
+                        <img src="assets/img/Home-Pics\Banner2.jpg" alt="">
+                        <div class="inner-text">
+                            <h4>HandCrafted</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="single-banner">
+                        <img src="assets/img/Home-Pics\Banner3.jpg" alt="">
+                        <div class="inner-text">
+                            <h4>Unique</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Banner Section End -->
+
+    <!-- Women Banner Section Begin -->
+    <section class="women-banner spad">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="product-large set-bg" data-setbg="/assets/img/Home-Pics/wome-large-left.jpg">
+                        <h2>Women’s</h2>
+                        <a href="#">Discover More</a>
+                    </div>
+                </div>
+                <div class="col-lg-8 offset-lg-1">
+                    <div class="filter-control">
+                        <ul>
+                            <li class="category-item active" data-category="Earrings">Earrings</li>
+                            <li class="category-item" data-category="Necklaces">Necklaces</li>
+                            <li class="category-item" data-category="Bracelets">Bracelets</li>
+                        </ul>
+                    </div>
+                    <div class="product-slider owl-carousel">
+                        <% products.forEach(product => { %>
+                        
+                        <div class="product-item">
+                            
+                           
+                            <div class="pi-pic">
+                                
+                                <% if (product.images && product.images.length > 0 && product.images[0] && product.images[0].imageUrl) { %>
+                                    <img src="<%= product.images[0].imageUrl.replace(/\\/g, '/') %>" alt="<%= product.productName %>">
+                                  <% } else { %>
+                                    <img src="#" alt="Default Image">
+                                  <% } %>
+                                  
+                                
+                                 
+                                <div class="icon">
+                                    <i class="icon_heart_alt"></i>
+                                </div>
+                                <ul>
+                                    <li class="w-icon active"><a href="#"><i class="icon_bag_alt"></i></a></li>
+                                    <li class="quick-view"><a href="#">View Product</a></li>
+                                    
+                                </ul>
+                            </div>
+
+                        </div>
+                        <% }); %>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Women Banner Section End -->
+
+    <!-- Deal Of The Week Section Begin-->
+    <section class="deal-of-week set-bg spad" data-setbg="assets/img/Home-Pics/time-bg.jpg">
+        <div class="container">
+            <div class="col-lg-6 text-center">
+                <div class="section-title">
+                    <h2>Deal Of The Week</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed<br /> do ipsum dolor sit amet,
+                        consectetur adipisicing elit </p>
+                    <div class="product-price">
+                        $35.00
+                        <span>/ HanBag</span>
+                    </div>
+                </div>
+                <div class="countdown-timer" id="countdown">
+                    <div class="cd-item">
+                        <span>56</span>
+                        <p>Days</p>
+                    </div>
+                    <div class="cd-item">
+                        <span>12</span>
+                        <p>Hrs</p>
+                    </div>
+                    <div class="cd-item">
+                        <span>40</span>
+                        <p>Mins</p>
+                    </div>
+                    <div class="cd-item">
+                        <span>52</span>
+                        <p>Secs</p>
+                    </div>
+                </div>
+                <a href="#" class="primary-btn">Shop Now</a>
+            </div>
+        </div>
+    </section>
+    <!-- Deal Of The Week Section End -->
+
+    <!-- Man Banner Section Begin -->
+    <section class="man-banner spad">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="filter-control">
+                        <ul>
+                            <li class="category-item active" data-category="Earrings">Hand Bags
+                            <li class="category-item" data-category="Necklaces">Hair Accessories</li>
+                            <li class="category-item" data-category="Bracelets">Hand Accessories</li>
+                            <li class="category-item" data-category="Bracelets">Foot Accessories</li>
+                            
+                        </ul>
+                    </div>
+                    <div class="product-slider owl-carousel">
+                        <% products.forEach(product => { %>
+                        
+                        <div class="product-item">
+                            
+                           
+                            <div class="pi-pic">
+                                
+                                <% if (product.images && product.images.length > 0 && product.images[0] && product.images[0].imageUrl) { %>
+                                    <img src="<%= product.images[0].imageUrl.replace(/\\/g, '/') %>" alt="<%= product.productName %>">
+                                  <% } else { %>
+                                    <img src="#" alt="Default Image">
+                                  <% } %>
+                                  
+                                
+                                 
+                                <div class="icon">
+                                    <i class="icon_heart_alt"></i>
+                                </div>
+                                <ul>
+                                    <li class="w-icon active"><a href="#"><i class="icon_bag_alt"></i></a></li>
+                                    <li class="quick-view"><a href="#">View Product</a></li>
+                                    
+                                </ul>
+                            </div>
+
+                        </div>
+                        <% }); %>
+                </div>
+                </div>
+                <div class="col-lg-3 offset-lg-1">
+                    <div class="product-large set-bg m-large" data-setbg="/assets/img/Home-Pics/wome-large-right.jpg">
+                        <h2>Jewellery</h2>
+                        <a href="#">Discover More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Man Banner Section End -->
+
+    <!-- Instagram Section Begin -->
+    <div class="instagram-photo">
+        <div class="insta-item set-bg" data-setbg="img/insta-1.jpg">
+            <div class="inside-text">
+                <i class="ti-instagram"></i>
+                <h5><a href="#">colorlib_Collection</a></h5>
+            </div>
+        </div>
+        <div class="insta-item set-bg" data-setbg="img/insta-2.jpg">
+            <div class="inside-text">
+                <i class="ti-instagram"></i>
+                <h5><a href="#">colorlib_Collection</a></h5>
+            </div>
+        </div>
+        <div class="insta-item set-bg" data-setbg="img/insta-3.jpg">
+            <div class="inside-text">
+                <i class="ti-instagram"></i>
+                <h5><a href="#">colorlib_Collection</a></h5>
+            </div>
+        </div>
+        <div class="insta-item set-bg" data-setbg="img/insta-4.jpg">
+            <div class="inside-text">
+                <i class="ti-instagram"></i>
+                <h5><a href="#">colorlib_Collection</a></h5>
+            </div>
+        </div>
+        <div class="insta-item set-bg" data-setbg="img/insta-5.jpg">
+            <div class="inside-text">
+                <i class="ti-instagram"></i>
+                <h5><a href="#">colorlib_Collection</a></h5>
+            </div>
+        </div>
+        <div class="insta-item set-bg" data-setbg="img/insta-6.jpg">
+            <div class="inside-text">
+                <i class="ti-instagram"></i>
+                <h5><a href="#">colorlib_Collection</a></h5>
+            </div>
+        </div>
+    </div>
+    <!-- Instagram Section End -->
+    
+    <!-- Include jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Initial category
+        var currentCategory = "Earring";
+
+        // Function to filter products based on category
+        function filterProducts(category) {
+            // Your logic to filter products based on the selected category
+            // For example, you might make an AJAX request to the server to get category-specific products
+            // Update the content of the product section accordingly
+            console.log("Filtering products for category:", category);
+        }
+
+        // Handle mouseover event on category items
+        $(".category-item").mouseover(function () {
+            // Remove "active" class from all category items
+            $(".category-item").removeClass("active");
+
+            // Add "active" class to the current category item
+            $(this).addClass("active");
+
+            // Get the category value from the data attribute
+            var selectedCategory = $(this).data("category");
+
+            // Check if the selected category is different from the current one
+            if (selectedCategory !== currentCategory) {
+                // Update the current category
+                currentCategory = selectedCategory;
+
+                // Call the function to filter products based on the selected category
+                filterProducts(currentCategory);
+            }
+        });
+    });
+</script>
+
+
+    <%- include('../partials/footer.ejs')%>
+   
+
+   
+
+    

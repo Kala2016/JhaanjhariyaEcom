@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <link rel="shortcut icon" type="image/png" href="../adminassets/images/logos/jhaanjhariya fevicon.png" />
+  <link rel="stylesheet" href="../adminassets/css/styles.min.css" />
+</head>
+
+<body>
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <!-- Sidebar Start -->
+    <aside class="left-sidebar">
+      <!-- Sidebar scroll-->
+      <div>
+        <div class="brand-logo d-flex align-items-center justify-content-between">
+          <a href="./admin/dashboard" class="text-nowrap logo-img">
+            <img src="../adminassets\images\logos\jhaanjhariya logo-color.png" width="180" alt="" />
+          </a>
+          <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+            <i class="ti ti-x fs-8"></i>
+          </div>
+        </div>
+        <!-- Sidebar navigation-->
+        <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+            <ul id="sidebarnav">
+              <li class="nav-small-cap">
+                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                <span class="hide-menu">Jhaanjhariya Admin</span>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="/admin/dashboard" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-layout-dashboard"></i>
+                  </span>
+                  <span class="hide-menu">Dashboard</span>
+                </a>
+              </li>
+              <li class="nav-small-cap">
+                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                <span class="hide-menu">Admin Management</span>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href='/admin/Products' aria-expanded="false">
+                  <span>
+                    <i class="ti ti-article"></i>
+                  </span>
+                  <span class="hide-menu">Products</span>
+                </a>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="./addCategory" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-alert-circle"></i>
+                  </span>
+                  <span class="hide-menu">Category</span>
+                </a>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="./addCollections" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-cards"></i>
+                  </span>
+                  <span class="hide-menu">Collections</span>
+                </a>
+                <a class="sidebar-link" href="./addVarient" aria-expanded="false">
+                    <span>
+                      <i class="ti ti-cards"></i>
+                    </span>
+                    <span class="hide-menu">Varient</span>
+                  </a>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="./ui-forms.html" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-file-description"></i>
+                  </span>
+                  <span class="hide-menu">Orders</span>
+                </a>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="./userList" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-file-description"></i>
+                  </span>
+                  <span class="hide-menu">Customers</span>
+                </a>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="./ui-typography.html" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-typography"></i>
+                  </span>
+                  <span class="hide-menu">Coupons</span>
+                </a>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="./ui-typography.html" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-typography"></i>
+                  </span>
+                  <span class="hide-menu">Banners</span>
+                </a>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="./adminProfile" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-typography"></i>
+                  </span>
+                  <span class="hide-menu">Profile</span>
+                </a>
+              </li>
+              <li class="nav-small-cap">
+                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                <span class="hide-menu">AUTH</span>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="/login" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-login"></i>
+                  </span>
+                  <span class="hide-menu">Login</span>
+                </a>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="/register" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-user-plus"></i>
+                  </span>
+                  <span class="hide-menu">Register</span>
+                </a>
+              </li>
+              <li class="nav-small-cap">
+                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                <span class="hide-menu">EXTRA</span>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="./icon-tabler.html" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-mood-happy"></i>
+                  </span>
+                  <span class="hide-menu">Settings</span>
+                </a>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="./sample-page.html" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-aperture"></i>
+                  </span>
+                  <span class="hide-menu"></span>
+                </a>
+              </li>
+            </ul>
+          
+          </nav>
+        <!-- End Sidebar navigation -->
+      </div>
+      <!-- End Sidebar scroll-->
+    </aside>
+    <!--  Sidebar End -->
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+      <!--  Header Start -->
+      <header class="app-header">
+        <nav class="navbar navbar-expand-lg navbar-light">
+          <ul class="navbar-nav">
+            <li class="nav-item d-block d-xl-none">
+              <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+                <i class="ti ti-menu-2"></i>
+              </a>
+            </li>
+            <!-- <li class="nav-item">
+              <a class="nav-link nav-icon-hover" href="javascript:void(0)">
+                <i class="ti ti-bell-ringing"></i> -->
+                <div class="notification bg-primary rounded-circle"></div>
+              </a>
+            </li>
+          </ul>
+          <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+            <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+              <!-- <a href="https://adminmart.com/product/modernize-free-bootstrap-admin-dashboard/" target="_blank" class="btn btn-primary"></a> -->
+              <h6>Kala Shashi</h6>
+              <li class="nav-item dropdown">
+                <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <img src="../adminassets/images/profile/user-1.jpeg" alt="" width="35" height="35" class="rounded-circle">
+                </a>
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                  <div class="message-body">
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                      <i class="ti ti-user fs-6"></i>
+                      <p class="mb-0 fs-3">My Profile</p>
+                    </a>
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                      <i class="ti ti-mail fs-6"></i>
+                      <p class="mb-0 fs-3">My Account</p>
+                    </a>
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                      <i class="ti ti-list-check fs-6"></i>
+                      <p class="mb-0 fs-3">My Task</p>
+                    </a>
+                    <a href="./admin" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+      <!--  Header End -->
+      <section class="content-main">
+        <div class="row">
+            <div class="col-9">
+                <div class="content-header">
+                    <h4 class="content-title"></h4>
+                    <div>
+                        <button class="btn btn-light rounded font-sm mr-5 text-body hover-up"></button>
+                        <button class="btn btn-md rounded font-sm hover-up"></button>
+                    </div>
+                </div>
+            </div>
+            <form action="" method="post" >
+              <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label for="product_title" class="form-label" style="font-size:25px;">Add New Variant </label>
+                           
+                        </div>                        
+                        <div class="mb-4">
+                            <label for="product_title" class="form-label">Variant title</label>
+                            <input type="text" placeholder="Type here" class="form-control" id="variantName" name="variantName">
+                        </div>
+                        <div class="mb-4">
+                          <label for="product_color" class="form-label">Color</label>
+                          <input type="color" value="#ff0000" required class="form-control form-control-sm" name="color">
+                          <!-- <input type="text" placeholder="Type here" class="form-control" id="color" name="color"> -->
+                      </div>
+                      <div class="mb-4">
+                        <label for="product_price" class="form-label">Price</label>
+                        <input type="text" placeholder="Type here" class="form-control" id="productPrice" name="productPrice">
+                    </div>
+                      <div class="mb-4">
+                        <label for="product_stock" class="form-label">Stock</label>
+                        <input type="text" placeholder="Type here" class="form-control" id="quantity" name="quantity">
+                    </div>
+                        <br>
+                        <!-- <div class="row gx-3">
+                            <div class="col-md-4  mb-3">
+                                <label for="product_sku" class="form-label">SKU</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="product_sku">
+                            </div>
+                            <div class="col-md-4  mb-3">
+                                <label for="product_color" class="form-label">Color</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="product_color">
+                            </div>
+                            <div class="col-md-4  mb-3">
+                                <label for="product_size" class="form-label">Size</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="product_size">
+                            </div>
+                        </div> -->
+                        
+                        <button type="submit" class="btn btn-primary mb-4 mt-2 ">Add Variant</button>
+                          
+                       
+            
+                 
+                                                  
+                            
+                            
+                             
+                
+
+                 <!-- card end// -->
+                
+                        <!-- <div class="mb-4">
+                            <label class="form-label">Price</label>
+                            <input type="text" placeholder="Type here" class="form-control">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Status</label>
+                            <select class="form-select">
+                                <option>Published</option>
+                                <option>Draft</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Tags</label>
+                            <input type="text" placeholder="Type here" class="form-control">
+                        </div> -->
+                        <!-- <a href="#" class="font-xs hover-up mr-15"><i class="font-xs material-icons md-close text-body"></i> Tech</a>
+                        <a href="#" class="font-xs hover-up mr-15"><i class="font-xs material-icons md-close text-body"></i> Mobile</a>
+                        <a href="#" class="font-xs hover-up mr-15"><i class="font-xs material-icons md-close text-body"></i> Apple</a>
+                        <hr> -->
+                        <!-- <h5 class="mb-3">Categories</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat">
+                            <label class="form-check-label" for="product-cat"> Bracelets </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-1">
+                            <label class="form-check-label" for="product-cat-1"> Earrings </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-2">
+                            <label class="form-check-label" for="product-cat-2"> Necklaces </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-3">
+                            <label class="form-check-label" for="product-cat-3"> Hand Accessories </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-4">
+                            <label class="form-check-label" for="product-cat-4"> Hand Accessories </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-5">
+                            <label class="form-check-label" for="product-cat-5"> Foot Accessories </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-8">
+                            <label class="form-check-label" for="product-cat-8"> Bags </label>
+                        </div>
+                    </div> -->
+                <!-- </div> card end//
+            </div>
+        </div> -->
+    </section>
+      <!-- <div class="container-fluid">
+        <div class="container-fluid">
+          <div class="card">
+            <div class="card-body">
+                <h1 class="title fw-bold mb-4">Collections</h1>
+                <h6 class="card-subtitle fw-semibold mb-4">Add,edit or delete a collection</h6>
+              <div class="card">
+                <div class="card-body">
+                  <form>
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Collection Name</label>
+                      <input type="text" class="form-control" id="Collection Name">                      
+                    </div>
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">Category</label>
+                      <input type="text" class="form-control" id="exampleInputPassword1">
+                    </div>
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">Description</label>
+                      <input type="text" class="form-control" id="exampleInputPassword1">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Create Collection</button>
+                    
+                    <button type="submit" class="btn btn-primary">Edit Collection</button>
+                  </form>
+                </div>
+              </div> -->
+              <!-- <h5 class="card-title fw-semibold mb-4">Disabled forms</h5>
+              <div class="card mb-0">
+                <div class="card-body">
+                  <form> -->
+                    <!-- <fieldset disabled>
+                      <legend>Disabled fieldset example</legend>
+                      <div class="mb-3">
+                        <label for="disabledTextInput" class="form-label">Disabled input</label>
+                        <input type="text" id="disabledTextInput" class="form-control" placeholder="Disabled input">
+                      </div>
+                      <div class="mb-3">
+                        <label for="disabledSelect" class="form-label">Disabled select menu</label>
+                        <select id="disabledSelect" class="form-select">
+                          <option>Disabled select</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="disabledFieldsetCheck" disabled>
+                          <label class="form-check-label" for="disabledFieldsetCheck">
+                            Can't check this
+                          </label>
+                        </div>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                    </fieldset>
+                  </form> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../adminassets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="../adminassets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../adminassets/js/sidebarmenu.js"></script>
+  <script src="../adminassets/js/app.min.js"></script>
+  <script src="../adminassets/libs/simplebar/dist/simplebar.js"></script>
+</body>
+
+</html>
+
+

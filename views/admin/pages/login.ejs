@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jhaanjhariya</title>
+  <link rel="shortcut icon" type="image/png" href="../adminassets/images/logos/jhaanjhariya fevicon.png" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../adminassets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="../adminassets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="../adminassets/css/styles.min.css" />
+</head>
+
+<body>
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <div
+      class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+      <div class="d-flex align-items-center justify-content-center w-100">
+        <div class="row justify-content-center w-100">
+          <div class="col-md-8 col-lg-6 col-xxl-3">
+            <div class="card mb-0">
+              <div class="card-body">
+                <a href="./index.html" class="text-nowrap logo-img text-center d-block py-3 w-100">
+                  <img src="../adminassets\images\logos\jhaanjhariya logo-color.png" width="180" alt="">
+                </a> 
+                <p class="text-center">Admin Login</p>
+                <form href="/postLogin" method="post" id="loginForm">
+                  <!-- <div class="error-message" id="form-error" style="display: none;"></div> -->
+                  <!-- Email input -->
+                  <div class="form-outline mb-4">
+                    <label class="form-label" for="form1Example13">Email address</label>
+                    <input type="text" id="email" name="email" placeholder="example@gmail.com"
+                      class="form-control form-control-lg" />
+                    <div class="error-message" id="email-error"></div>
+                    
+                  </div>
+                  <!-- Password input -->
+                  <div class="form-outline mb-4">
+                    <label class="form-label" for="form1Example23">Password</label>
+                    <input type="password" id="password" name="password" placeholder="pass****"
+                      class="form-control form-control-lg" />
+                    <div class="error-message" id="password-error"></div>
+                    
+                  </div>
+                  <!-- Submit button -->
+                  <button type="submit" id="submitButton" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2 btn-lg btn-block " disabled>Sign in</button>
+                  
+                </form>
+                
+
+                <!-- <form method="post" id="loginForm">
+                  <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Username</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                  </div>
+                  <div class="mb-4">
+                    <label for="exampleInputPassword1" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1">
+                  </div> -->
+                  
+                  <!-- <a href="" type="submit"  class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">Sign In</a> -->
+              <!-- <button type="submit" id="submitButton" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2 btn-lg btn-block" disabled >Sign in</button> -->
+
+                  <!-- <div class="d-flex align-items-center justify-content-center">
+                    <p class="fs-4 mb-0 fw-bold">New to Jhaanjhariya?</p>
+                    <a class="text-primary fw-bold ms-2" href="./user/pages/registration">Create an account</a>
+                  </div> -->
+                  <!-- <div class="d-flex align-items-center justify-content-between mb-4"> -->
+                    <!-- <div class="form-check">
+                      <input class="form-check-input primary" type="checkbox" value="" id="flexCheckChecked" checked>
+                      <label class="form-check-label text-dark" for="flexCheckChecked">
+                        Remeber this Device
+                      </label>
+                    </div> -->
+                    <!-- <a class="text-primary fw-bold" href="/admin/dashboard">Forgot Password ?</a> -->
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <script>
+    document.getElementById('submitButton').addEventListener('click', function () {
+      if(typeof Swal !='undefined'){
+      Swal.fire({
+        title: 'Successfully logged-in!',
+        buttons: false,
+        timer: 5000,
+      });
+    }else {
+      console.error('Sweetalert is not defined')
+    }
+    });
+  
+  </script>
+  <script>
+    const message = document.getElementById('message');
+
+const hide = () => {
+  message.style.display = 'none';
+}
+setTimeout(hide, 3000);
+// Get form and input elements
+const form = document.getElementById("loginForm");
+const emailInput = form.querySelector('input[name="email"]');
+const passwordInput = form.querySelector('input[name="password"]');
+const emailError = document.getElementById("email-error");
+const passwordError = document.getElementById("password-error");
+const submitButton = document.getElementById("submitButton");
+
+// Regular expression for validating email
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Function to check if an email is valid
+function isValidEmail(email) {
+  return emailRegex.test(email);
+}
+
+// Function to validate the form
+function validateForm() {
+  let valid = true;
+
+  if(emailInput.value.trim() === ''){
+              emailError.textContent = 'Email is required'
+  }else if (!isValidEmail(emailInput.value)) {
+      emailError.textContent = "Please enter a valid email address.";
+      valid = false;
+  } else {
+      emailError.textContent = "";
+  }
+
+  if (passwordInput.value.trim() === "") {
+      passwordError.textContent = "Password is required.";
+      valid = false;
+  } else {
+      passwordError.textContent = "";
+  }
+
+  // Enable or disable the submit button based on validity
+  submitButton.disabled = !valid;
+
+  return valid;
+}
+
+// Add blur event listeners for input fields
+emailInput.addEventListener("blur", validateForm);
+passwordInput.addEventListener("blur", validateForm);
+
+// Add submit event listener to the form
+form.addEventListener("submit", function (e) {
+  if (!validateForm()) {
+      e.preventDefault(); // Prevent form submission if it's invalid
+  }
+});
+  </script>
+  
+  
+</body>
+
+</html>

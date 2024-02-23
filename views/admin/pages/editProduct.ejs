@@ -1,0 +1,586 @@
+
+    
+   
+      <div class="container ">
+        <h2 mt-2>Edit Product</h2>
+        
+            <form action="/admin/editProduct/<%= product._id %>" method="post"
+                onsubmit="return validateProductForm()">
+                <div class="card">
+                    <div class="card-body">
+                        <hr class="mb-4 mt-0">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6>1. General info</h6>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="mb-4">
+                                    <label class="form-label">Product title</label>
+                                    <input type="text" placeholder="Type here" value="<%= product.productName %>" name="productName"
+                                        id="title" class="form-control">
+                                    <div class="error-message"></div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Description</label>
+                                    <textarea placeholder="Type here" class="form-control" name="description"
+                                        id="description" rows="2"><%= product.description %></textarea>
+                                    <div class="error-message"></div>
+                                </div>
+                                
+                            </div> <!-- col.// -->
+                        </div> <!-- row.// -->
+
+                        <hr class="mb-4 mt-0">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6>2. Category</h6>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="mb-4">
+                                    <select class="form-select" name="categoryName" id="category" required>
+                                        <option value="<%= product.categoryName._id %>">
+                                            <%= product.categoryName.categoryName %>
+                                        </option>
+                                        <% catList.forEach(category=> { %>
+                                            <option value="<%= category?._id %>">
+                                                <%= category.categoryName %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                    <div class="error-message"></div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="mb-4 mt-0">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6>3. Collection</h6>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="mb-4">
+                                    <select class="form-select" name="collectionName" id="collection" required>
+                                        <option value="<%= product.collectionName._id %>">
+                                            <%= product.collectionName.collectionName %>
+                                        </option>
+                                        <% collList.forEach(collections=> { %>
+                                            <option value="<%= collections?._id %>">
+                                                <%= collections.collectionName %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                    <div class="error-message"></div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="mb-4 mt-0">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6>4. Pricing</h6>
+                            </div>
+                            
+                                </div>
+                                <div class="mb-4">
+                                    <label for="salePrice">Sale Price</label>
+                                    <input type="text" placeholder="₹" value="<%= product.salePrice %>" name="salePrice"
+                                        id="salePrice" class="form-control">
+                                    <div class="error-message"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <h6>5. Variant</h6>
+                            </div>
+                            <div>
+                                <button class="btn btn-success" type="submit" form="variantForm" id="update">Update</button>
+                                <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                    data-bs-target="#addVariantModal">Add variant</button>
+                            </div>
+                            <form id="variantForm">
+                                <div class="col-md-12 d-flex flex-wrap">
+                                    <% product.variants.forEach((variant)=> { %>
+                                        <div class="variant col-md-3 m-3 rounded border align-items-center">
+                                            <div class="d-flex mx-1 justify-content-between">
+                                                <h3 class="ms-2 align-self-center">
+                                                    <%= variant.v_name %>
+                                                </h3>
+                                                <small class="ms-2 align-self-end text-warning">current stock :</small>
+                                                <h4 class="text-secondary align-self-end m-0">
+                                                    <%= variant.stock %>
+                                                </h4>
+                                            </div>
+                                            <input type="color" value="<%= variant.color %>" required
+                                                class="form-control form-control-sm input<%= variant.v_name %>"
+                                                name="color<%= variant.v_name %>">
+                                            <input type="number" value="" placeholder="add stock" title="Add Stock"
+                                                class="form-control form-control-sm input<%= variant.v_name %>" placeholder="Stock"
+                                                name="stock<%= variant.v_name %>">
+                                            <input type="number" value="<%= variant.price %>" title="Price" required
+                                                class="form-control form-control-sm input<%= variant.v_name %>" placeholder="Price"
+                                                name="price<%= variant.v_name %>">
+                                        </div>
+                                        <% }) %>
+                                            <% let productVar=JSON.stringify(product.variants) %>
+                                </div>
+                            
+                            
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <button type="button" class="btn btn-sm btn-primary mb-2" id="addNewImagesButton" style="display: none;"><i class="fas fa-plus-circle mb-1"></i> Update Product</button>
+                                    
+                                </div>
+                            </div>
+                            
+    
+                            <button type="button" class="btn btn-sm btn-primary mb-2" id="addNewImagesButton" style="display: none;">
+                                <i class="fas fa-plus-circle mb-1"></i> Add Images
+                            </button>
+
+    
+                            
+                        
+                         
+
+                        
+                    </div>
+                </div>
+            </form>
+
+            <div class="col-lg-12">
+                <div class="col-md-3">
+                    <h6>5. Media</h6>
+                </div>
+                <div class="card">
+                    <div class="card-body p-4">                        
+                        <% product.images.forEach((element, index)=> { %>
+                            <form action="/editimage/<%= product.images[index]._id %>/?_method=PUT"
+                                method="post" enctype="multipart/form-data">
+                                <div class="mb-3 d-flex align-items-center justify-content-between">
+                                    <img src="<%= product.images[index].thumbnailUrl %>" alt="Image"
+                                        id="previewImage<%= index %>" class="img-thumbnail mr-3"
+                                        style="max-width: 150px" />
+                                    <div class="d-flex flex-column">
+                                        <input type="file" class="form-control" id="image<%= index %>" accept="image/*"
+                                            style="display: none" name="image" />
+                                        <button type="button" class="btn btn-sm btn-primary mb-2 update-image-button"
+                                            data-index="<%= index %>">
+                                            <i class="fas fa-upload mb-1"></i> Select Image
+                                        </button>
+                                        <button type="submit" class="btn btn-sm btn-success"
+                                            id="submitImage<%= index %>" disabled>
+                                            <i class="fas fa-edit mb-1"></i> Update Image
+                                        </button>
+                                        <button type="button" onclick="removeImage('<%= product.images[index]._id %>')"
+                                            class="btn btn-sm btn-danger mt-2">
+                                            <i class="fas fa-trash mb-1"></i> Remove Image
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        <% }) %>
+                        <!-- Add a hidden file input for new images -->
+                        <button type="button" class="btn btn-sm btn-primary mb-2" id="addNewImagesButton" style="display: none;">
+                            <i class="fas fa-plus-circle mb-1"></i> Add Images
+                        </button>
+                        
+                    </div>
+                </div>
+            </div>
+            <!-- ... your existing HTML code above ... -->
+            <style>
+                #colorQuantityInputs {
+                    display: flex;
+                    margin-bottom: 5px;
+                    flex-wrap: wrap;
+                    gap: 5px;
+                }
+            
+                select, input {
+                    padding: 8px;        
+                    width: 150px;
+                    box-sizing: border-box;
+                }
+            
+                button {
+                    padding: 10px;
+                    background-color: #4CAF50;
+                    color: white;
+                    border: none;
+                    cursor: pointer;
+                }
+            </style>
+             
+
+<script>
+    // Check if there are no images, then show the "Add Images" button
+    const addNewImagesButton = document.getElementById("addNewImagesButton");
+    const images = document.querySelectorAll('.img-thumbnail');
+
+    if (images.length === 0) {
+        addNewImagesButton.style.display = 'block';
+    }
+
+    // Function to handle image removal
+    function removeImage(id) {
+        // Your existing removeImage function logic
+
+        // Check if there are no images after removal, then show the "Add Images" button
+        const remainingImages = document.querySelectorAll('.img-thumbnail');
+        if (remainingImages.length === 0) {
+            addNewImagesButton.style.display = 'block';
+        }
+    }
+
+    // Your other scripts...
+
+</script>
+
+<!-- ... your existing HTML code below ... -->
+
+                  
+                    <script>
+                        function validateProductForm() {
+                            // Reset error messages
+                            resetErrorMessages();
+                    
+                            // Validate Product Title
+                            var title = document.getElementById('title').value.trim();
+                            if (title === '') {
+                                displayErrorMessage('title', 'Product title is required.');
+                                return false;
+                            }
+                    
+                            // Validate Description
+                            var description = document.getElementById('description').value.trim();
+                            if (description === '') {
+                                displayErrorMessage('description', 'Description is required.');
+                                return false;
+                            }
+                    
+                            // Validate Category
+                            var category = document.getElementById('category').value;
+                            if (category === '') {
+                                displayErrorMessage('category', 'Please select a category.');
+                                return false;
+                            }
+                    
+                            // Validate Collection
+                            var collection = document.getElementById('collection').value;
+                            if (collection === '') {
+                                displayErrorMessage('collection', 'Please select a collection.');
+                                return false;
+                            }
+                    
+                            
+                            // Validate Product Price
+                            var productPrice = document.getElementById('productPrice').value.trim();
+                            if (productPrice === '') {
+                                displayErrorMessage('productPrice', 'Product price is required.');
+                                return false;
+                            }
+
+                            if (isNaN(parseFloat(productPrice)) || !isFinite(productPrice)) {
+                                displayErrorMessage('productPrice', 'Please enter a valid number for the product price.');
+                                return false;
+                            }
+
+                            var numericProductPrice = parseFloat(productPrice);
+
+                            if (numericProductPrice < 0) {
+                                displayErrorMessage('productPrice', 'Product price cannot be negative.');
+                                return false;
+                            }
+
+                            if (numericProductPrice % 1 !== 0) {
+                                displayErrorMessage('productPrice', 'Product price cannot have decimal values.');
+                                return false;
+                            }
+
+                            var productPrice = document.getElementById('productPrice').value.trim();
+                            if (productPrice === '' || isNaN(parseFloat(productPrice))) {
+                                displayErrorMessage('productPrice', 'Please enter a valid product price.');
+                                return false;
+                            }
+                    
+                            // Validate Sale Price
+                            var salePrice = document.getElementById('salePrice').value.trim();
+                            if (salePrice !== '' && (isNaN(parseFloat(salePrice)) || parseFloat(salePrice) >= parseFloat(productPrice))) {
+                                displayErrorMessage('salePrice', 'Please enter a valid sale price.');
+                                return false;
+                            }
+                    
+                            return true; // Form is valid
+                        }
+                    
+                        function resetErrorMessages() {
+                            var errorMessages = document.querySelectorAll('.error-message');
+                            errorMessages.forEach(function (errorMessage) {
+                                errorMessage.innerHTML = '';
+                            });
+                        }
+                    
+                        function displayErrorMessage(fieldId, message) {
+                            var errorField = document.querySelector('#' + fieldId + ' + .error-message');
+                            if (errorField) {
+                                errorField.innerHTML = message;
+                            }
+                        }
+                    </script>
+                    
+
+                    
+                    <script>
+                        // Function to handle file input change and update preview
+                        const updateImageButtons = document.querySelectorAll(".update-image-button");
+
+                        function handleFileInputChange(index) {
+                            const fileInput = document.getElementById("image" + index);
+                            const previewImage = document.getElementById("previewImage" + index);
+                            const submitButton = document.getElementById("submitImage" + index);
+
+                            fileInput.addEventListener("change", (event) => {
+                                if (fileInput.files && fileInput.files[0]) {
+                                    const reader = new FileReader();
+                                    reader.onload = function (e) {
+                                        previewImage.src = e.target.result;
+                                    };
+                                    reader.readAsDataURL(fileInput.files[0]);
+                                    // Enable the "Update Image" button when a file is selected
+                                    submitButton.removeAttribute("disabled");
+                                } else {
+                                    // Disable the "Update Image" button if no file is selected
+                                    submitButton.setAttribute("disabled", "disabled");
+                                }
+                            });
+
+                            // Trigger the hidden file input
+                            fileInput.click();
+                        }
+
+                        // Add event listeners to all update image buttons
+                        updateImageButtons.forEach((button, index) => {
+                            button.addEventListener("click", (event) => {
+                                handleFileInputChange(index);
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        function removeImage(id) {
+                            const imageId = id;
+                            const url = `/admin/delete-image/${imageId}`;
+                            const imageElement = document.getElementById(`previewImage${imageId}`);
+
+                            fetch(url, {
+                                method: "DELETE",
+                            })
+                                .then((response) => {
+                                    if (response.ok) {
+                                        console.log("Image removed successfully");
+                                        location.reload();
+                                        return response.json();
+                                    } else {
+                                        console.error("Failed to remove image");
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error("An error occurred:", error);
+                                });
+                        }
+                    </script>
+
+                    <script>
+                        // JavaScript to handle image preview
+                        document.getElementById("newImages").addEventListener("change", function () {
+                            const previewContainer = document.getElementById("previewNewImages");
+                            previewContainer.innerHTML = ""; // Clear previous previews
+
+                            const files = this.files;
+                            for (let i = 0; i < files.length; i++) {
+                                const file = files[i];
+                                const reader = new FileReader();
+
+                                reader.onload = function (e) {
+                                    const img = document.createElement("img");
+                                    img.src = e.target.result;
+                                    img.classList.add("img-thumbnail");
+                                    img.style.maxWidth = "150px";
+
+                                    const previewDiv = document.createElement("div");
+                                    previewDiv.style.position = "relative"; // Make the container relative for absolute positioning
+
+                                    // Create a remove button (X) for each image
+                                    const removeButton = document.createElement("button");
+                                    removeButton.innerText = "X";
+                                    removeButton.classList.add(
+                                        "btn",
+                                        "btn-sm",
+                                        "btn-danger",
+                                        "remove-button"
+                                    );
+                                    removeButton.style.position = "absolute";
+                                    removeButton.style.top = "0";
+                                    removeButton.style.left = "0";
+                                    removeButton.addEventListener("click", function () {
+                                        previewDiv.remove(); // Remove the preview when the button is clicked
+                                    });
+
+                                    previewDiv.appendChild(img);
+                                    previewDiv.appendChild(removeButton);
+
+                                    previewContainer.appendChild(previewDiv);
+                                };
+
+                                reader.readAsDataURL(file);
+                            }
+
+                            // Enable the "Upload Images" button
+                            document.getElementById("submitNewImages").removeAttribute("disabled");
+                        });
+                    </script>
+                   
+
+<script>
+    function showToast(message, type) {
+        // Create a new toast element
+        var toast = document.createElement('div');
+        toast.classList.add('toast', 'fade', 'show');
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+
+        // Set toast type (success, danger, etc.)
+        if (type) {
+            toast.classList.add('bg-' + type);
+        }
+
+        // Create toast body
+        var toastBody = document.createElement('div');
+        toastBody.classList.add('toast-body');
+        toastBody.innerText = message;
+
+        // Append toast body to toast
+        toast.appendChild(toastBody);
+
+        // Append toast to the document
+        document.body.appendChild(toast);
+
+        // Show the toast
+        var bootstrapToast = new bootstrap.Toast(toast);
+        bootstrapToast.show();
+
+        // Remove the toast after it is hidden
+        $(toast).on('hidden.bs.toast', function () {
+            document.body.removeChild(toast);
+        });
+    }
+</script>
+
+<script>
+    let variantForm = document.getElementById("variantForm");
+    let update = document.getElementById("update");
+    let productVariants = JSON.parse('<%- productVar %>')
+
+    // the logic is, by taking the only variants where any of the input fields of variant where changed before submission
+    // so the payload will only consist of the changed variants feilds
+    // at the backend assign the the names of fields for updating variant fields.
+
+    function isVariantChanged(variant) { 
+        const variantInputs = document.querySelectorAll(`.input${variant.v_name}`);
+        return Array.from(variantInputs).some(input => input.value !== input.defaultValue);
+    }
+
+    variantForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        let changedVariants = [];
+        for (const variant of productVariants) {
+            if (isVariantChanged(variant)) {
+                changedVariants.push(variant.v_name)
+            }
+        }
+        if (changedVariants.length === 0) {
+            Toastify({
+                text: "No updates were made",
+                duration: 1300,
+                gravity: "top",
+                position: "center",
+                backgroundColor: "#ff0000",
+                stopOnFocus: true,
+                offset: {
+                    y: 20
+                }
+            }).showToast();
+            return
+        };
+        const formData = new FormData(variantForm)
+        formData.append("changedVariants", JSON.stringify(changedVariants));
+
+        const urlSearchParams = new URLSearchParams(formData);
+        const formBody = urlSearchParams.toString();
+
+        fetch("/admin/updatevariants", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: formBody,
+        })
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    Toastify({
+                        text: data.message,
+                        duration: 2000,
+                        gravity: "top",
+                        position: "center",
+                        backgroundColor: "#03c03c",
+                        stopOnFocus: true,
+                        offset: {
+                            y: 20
+                        }
+                    }).showToast();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                }else{
+                    throw new Error(data.message)
+                }
+            })
+            .catch(error => {
+                Toastify({
+                    text: error.message,
+                    duration: 2000,
+                    gravity: "top",
+                    position: "center",
+                    backgroundColor: "#ff0000",
+                    stopOnFocus: true
+                }).showToast();
+                console.error('Fetch error:', error.message);
+            });
+    })
+</script>
+
+      
+      
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/adminassets/js/admin/addProductValidation.js"></script>
+  <script src="../adminassets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="../adminassets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../adminassets/js/sidebarmenu.js"></script>
+  <script src="../adminassets/js/vendor/app.min.js"></script>
+  <script src="../adminassets/libs/simplebar/dist/simplebar.js"></script>
+  <script src="/adminassets/js/admin/addProductValidation.js"></script>
+  <!-- Template CSS -->
+  <link href="/admin/assets/css/main.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</body>
+
+
+</html>

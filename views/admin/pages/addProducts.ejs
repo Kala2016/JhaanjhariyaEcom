@@ -1,0 +1,622 @@
+
+<%- include('../partials/header.ejs')%> 
+      <br>
+      <br>
+      <br>
+      <div class="container ">
+        <h2 mt-2>Add Product</h2>
+        <form action="/admin/addProducts" method="post" enctype="multipart/form-data"
+            
+            <div class="alert alert-danger fade show mt-3 col-md-6 text-center" id="error-message" role="alert"
+            style="display: none; ">
+        </div>
+            <div class="card">
+                <div class="card-body">
+                    <hr class="mb-4 mt-0">
+                    <div class="row">
+                        
+                        <div class="col-md-9">
+                            <div class="mb-4">
+                                <label class="form-label">Product title</label>
+                                <input type="text" placeholder="Type here" id="title" name="productName"
+                                    class="form-control common-input">
+                                <div class="error-message"></div> <!-- Error message for title -->
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Description</label>
+                                <textarea placeholder="Type here" class="form-control common-input" id="description"
+                                    name="description" rows="2"></textarea>
+                                <div class="error-message"></div> <!-- Error message for description -->
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Colors</label><div class="mb-4">
+                                  <!-- variant -->
+                                  <div class="container me-5 border rounded  text-white"
+                                  style="overflow:auto;height: 500px; overflow-x: hidden;">
+                                  <div class="m-2">
+                                    <p class="me-3 mb-0">Select number of variants:</p>
+                                    <div class="form-check form-check-inline">
+                                      <input class="form-check-input" type="radio" required id="1" name="variant" value="1">
+                                      <label class="form-check-label" for="1">1</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                      <input class="form-check-input" type="radio" required id="2" name="variant" value="2">
+                                      <label class="form-check-label" for="2">2</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                      <input class="form-check-input" type="radio" required id="3" name="variant" value="3">
+                                      <label class="form-check-label" for="3">3</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                      <input class="form-check-input" type="radio" required id="4" name="variant" value="4">
+                                      <label class="form-check-label" for="4">4</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                      <input class="form-check-input" type="radio" required id="5" name="variant" value="5">
+                                      <label class="form-check-label" for="5">5</label>
+                                    </div>
+                                  </div>
+                                  <div id="variantsContainer" class="mt-4 "></div>
+                                  
+
+                                  <div class="row" id="variantsContainer">
+                                    <div class="variant variant1 col-md-3 my-2 mx-3 rounded border" style="height: 150px;">
+                                      <h4 class="text-white">Variant 1</h4>
+                                      <input type="color" value="#ff0000" required class="form-control form-control-sm" name="color1">
+                                      <input type="number" required class="form-control form-control-sm" placeholder="Stock"
+                                        name="stock1">
+                                      <input type="number" required class="form-control form-control-sm" placeholder="Price"
+                                        name="price1">
+                                    </div>
+                                    <div class="variant variant2 col-md-3 my-2 mx-3 rounded border" style="height: 150px;">
+                                      <h4 class="text-white">Variant 2</h4>
+                                      <input type="color" value="#ff0000" class="form-control form-control-sm" name="color2">
+                                      <input type="number" class="form-control form-control-sm" placeholder="Stock" name="stock2">
+                                      <input type="number" class="form-control form-control-sm" placeholder="Price" name="price2">
+                                    </div>
+                                    <div class="variant variant3 col-md-3 my-2 mx-3 rounded border" style="height: 150px;">
+                                      <h4 class="text-white">Variant 3</h4>
+                                      <input type="color" value="#ff0000" class="form-control form-control-sm" name="color3">
+                                      <input type="number" class="form-control form-control-sm" placeholder="Stock" name="stock3">
+                                      <input type="number" class="form-control form-control-sm" placeholder="Price" name="price3">
+                                    </div>
+                                    <div class="variant variant3 col-md-3 my-2 mx-3 rounded border" style="height: 150px;">
+                                      <h4 class="text-white">Variant 4</h4>
+                                      <input type="color" value="#ff0000" class="form-control form-control-sm" name="color4">
+                                      <input type="number" class="form-control form-control-sm" placeholder="Stock" name="stock4">
+                                      <input type="number" class="form-control form-control-sm" placeholder="Price" name="price4">
+                                    </div>
+                                    <div class="variant variant3 col-md-3 my-2 mx-3 rounded border" style="height: 150px;">
+                                      <h4 class="text-white">Variant 5</h4>
+                                      <input type="color" value="#ff0000" class="form-control form-control-sm" name="color5">
+                                      <input type="number" class="form-control form-control-sm" placeholder="Stock" name="stock5">
+                                      <input type="number" class="form-control form-control-sm" placeholder="Price" name="price5">
+                                    </div>
+                                  </div>
+                                </div> 
+                              </div>                      
+                                
+                                 
+                                    
+                                 
+                             
+                            <div class="mb-4">                              
+                              <div class="col-md-9">
+                                <div class="mb-4">
+                                  <label class="form-label">Collection</label>
+                                    <select class="form-select" name="collectionName" id="collection">
+                                        <option value="">Select collection</option>
+                                        <% collList.forEach(collection=> { %>
+                                            <option value="<%= collection?._id %>">
+                                                <%= collection.collectionName %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                    <div class="error-message"></div>
+                                </div>
+                            </div>
+                            </div>
+                        </div> <!-- col.// -->
+                    </div> <!-- row.// -->
+
+                    <hr class="mb-4 mt-0">
+                    <div class="row">
+                       
+                        <div class="col-md-9">
+                            <div class="mb-4">
+                              <label class="form-label">Category</label>
+                                <select class="form-select" name="categoryName" id="category">
+                                    <option value="">Select category</option>
+                                    <% catList.forEach(category=> { %>
+                                        <option value="<%= category?._id %>">
+                                            <%= category.categoryName %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                                <div class="error-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="mb-4 mt-0">
+
+                    <div class="row">
+                      
+                        <div class="col-md-9">
+                            <!-- <div class="mb-4">
+                                <label for="Productprice">Product Price</label>
+                                <input type="text" placeholder="₹" name="productPrice" id="productPrice"
+                                    class="form-control">
+                                <div class="error-message"></div>
+                            </div> -->
+                            <div class="mb-4">
+                                <label for="salePrice">Sale Price</label>
+                                <input type="text" placeholder="₹" name="salePrice" id="salePrice" class="form-control">
+                                <div class="error-message"></div>
+                            </div>
+                        </div> <!-- col.// -->
+                    </div> <!-- row.// -->
+
+                    <hr class="mb-4 mt-0">
+
+                    <div class="row">
+                        
+                        <div class="col-md-9">
+                            <!-- <div class="mb-4">
+                                <label for="Quantity">Quantity</label>
+                                <input type="text" placeholder="No's" name="quantity" id="quantity"
+                                    class="form-control">
+                                <div class="error-message"></div>
+                            </div> -->
+                        </div> <!-- col.// -->
+                    </div> <!-- row.// -->
+                    <div class="card p-md-5 p-2 me-md-5">
+                      <h5>Upload Images</h5>
+                      <div class="form-group mt-2">
+                          <input type="file" class="form-control" name="images" id="image" accept="image/*" multiple onchange="previewImages(event)">
+                          <div class="error-message"></div>
+                      </div>
+                      <div id="imagePreview" class="mt-3"></div>
+                  </div>
+              </div>
+
+                  <button type="submit" class="btn btn-primary mb-4 mt-2">Add Product</button>
+                       
+                        
+    
+        </form>
+
+        
+    </div>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="../adminassets/js/addProductValidation.js"></script> -->
+      
+      <!-- <section class="content-main">
+        <div class="row">            
+            
+            <div class="col-9">
+                <div class="content-header">
+                    
+                    <h2 class="content-title"></h2>
+                    <div class=" justify-content-center" >
+                        <div>
+                        <button type="button" class="btn btn-outline-primary btn-sm m-1"onclick="saveToDraft()"  >Save to Draft</button>
+                        <button type="button" class="btn btn-primary btn-sm m-1"onclick="publish()" >Publish</button></div>
+                        
+                    </div>
+                        
+                    
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label for="title" class="form-label" style="font-size:25px" >Add New Product</label>
+                                      
+                            <br>
+                            <label for="subtitle" class="form-label">Add,Edit or Delete a product</label>
+                           
+                        </div>
+                        <div class="mb-4">
+                            <label for="product_title" class="form-label">Product title</label>
+                            <input type="text" placeholder="Type here" class="form-control" id="product_title" name="title">
+                        </div>
+                        <div class="row gx-3">
+                            <div class="col-md-4  mb-3">
+                                <label for="product_sku" class="form-label">SKU</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="product_sku" name="quantity">
+                            </div>
+                            <div class="col-md-4  mb-3">
+                                <label for="product_color" class="form-label">Color</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="product_color" name="color">
+                            </div>
+                            <div class="col-md-4  mb-3">
+                                <label for="product_sku" class="form-label">Price</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="product_sku" name="quantity">
+                            </div>
+                            <div class="col-md-4  mb-3">
+                                <label for="product_color" class="form-label">Promotion Price</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="product_color" name="color">
+                            </div> -->
+                            
+                            <!-- <div class="col-md-4  mb-3">
+                                <label for="product_size" class="form-label">Size</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="product_size" name="">
+                            </div> -->
+                        </div>
+<!--                         
+                      
+                        <!-- <div class="mb-4">
+                          <label for="product_brand" class="form-label">Category</label>
+                          <input type="text" placeholder="Type here" class="form-control" id="product_brand" name="categoryName">
+                      </div>
+                        <div class="mb-4">
+                            <label for="product_brand" class="form-label">Collection</label>
+                            <input type="text" placeholder="Type here" class="form-control" id="product_brand" name="collectionName">
+                        </div>
+                    </div> -->
+                </div> <!-- card end// -->
+                <!-- <div class="card mb-4">
+                    <div class="card-body">
+                        <div>
+                            <label class="form-label">Description</label>
+                            <textarea placeholder="Type here" class="form-control" rows="4" name="description"></textarea>
+                        </div>
+                    </div> -->
+                </div> <!-- card end// -->
+                <!-- <div class="card mb-4">
+                    <div class="card-body">
+                        <div>
+                            <label class="form-label" name="images" >Images</label>
+                            <input class="form-control" type="file">
+                        </div>
+                    </div> -->
+                </div> <!-- card end// -->
+            </div>
+            <!-- <div class="col-lg-3">
+                <div class="card mb-4">
+                    <div class="card-body"> -->
+                        
+                        
+                        <!-- <div class="mb-4">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" name="">
+                                <option>Published</option>
+                                <option>Draft</option>
+                            </select>
+                        </div> -->
+                        <!-- <div class="mb-4">
+                            <label class="form-label">Tags</label>
+                            <input type="text" placeholder="Type here" class="form-control">
+                        </div> -->
+                        <!-- <a href="#" class="font-xs hover-up mr-15"><i class="font-xs material-icons md-close text-body"></i> Tech</a>
+                        <a href="#" class="font-xs hover-up mr-15"><i class="font-xs material-icons md-close text-body"></i> Mobile</a>
+                        <a href="#" class="font-xs hover-up mr-15"><i class="font-xs material-icons md-close text-body"></i> Apple</a> -->
+                        <hr>
+                        <!-- <h5 class="mb-3">Categories</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat">
+                            <label class="form-check-label" for="product-cat"> Bracelets </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-1">
+                            <label class="form-check-label" for="product-cat-1"> Earrings </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-2">
+                            <label class="form-check-label" for="product-cat-2"> Necklaces </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-3">
+                            <label class="form-check-label" for="product-cat-3"> Hand Accessories </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-4">
+                            <label class="form-check-label" for="product-cat-4"> Hand Accessories </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-5">
+                            <label class="form-check-label" for="product-cat-5"> Foot Accessories </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-8">
+                            <label class="form-check-label" for="product-cat-8"> Bags </label>
+                        </div>
+                    </div> -->
+                </div> <!-- card end// -->
+            </div>
+           
+                    </div>
+                </div>
+            </div>
+        </div> 
+    <!-- </section>
+    <div class="col-lg-12">
+      <div class="col-md-3">
+          <h6>5. Media</h6>
+      </div> -->
+      <!-- <div class="card">
+          <div class="card-body p-4"> -->
+               
+      <!-- <div class="container-fluid">
+        <div class="container-fluid">
+          <div class="card">
+            <div class="card-body">
+                <h1 class="title fw-bold mb-4">Collections</h1>
+                <h6 class="card-subtitle fw-semibold mb-4">Add,edit or delete a collection</h6>
+              <div class="card">
+                <div class="card-body">
+                  <form>
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Collection Name</label>
+                      <input type="text" class="form-control" id="Collection Name">                      
+                    </div>
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">Category</label>
+                      <input type="text" class="form-control" id="exampleInputPassword1">
+                    </div>
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">Description</label>
+                      <input type="text" class="form-control" id="exampleInputPassword1">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Create Collection</button>
+                    
+                    <button type="submit" class="btn btn-primary">Edit Collection</button>
+                  </form>
+                </div>
+              </div> -->
+              <!-- <h5 class="card-title fw-semibold mb-4">Disabled forms</h5>
+              <div class="card mb-0">
+                <div class="card-body">
+                  <form> -->
+                    <!-- <fieldset disabled>
+                      <legend>Disabled fieldset example</legend>
+                      <div class="mb-3">
+                        <label for="disabledTextInput" class="form-label">Disabled input</label>
+                        <input type="text" id="disabledTextInput" class="form-control" placeholder="Disabled input">
+                      </div>
+                      <div class="mb-3">
+                        <label for="disabledSelect" class="form-label">Disabled select menu</label>
+                        <select id="disabledSelect" class="form-select">
+                          <option>Disabled select</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="disabledFieldsetCheck" disabled>
+                          <label class="form-check-label" for="disabledFieldsetCheck">
+                            Can't check this
+                          </label>
+                        </div>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                    </fieldset>
+                  </form> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <style>
+    #colorQuantityInputs {
+        display: flex;
+        margin-bottom: 5px;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    select, input {
+        padding: 8px;        
+        width: 150px;
+        box-sizing: border-box;
+    }
+
+    button {
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+  <script>
+    function addColorInput() {
+        const colorQuantityInputs = document.getElementById('colorQuantityInputs');
+
+        const colorInput = document.createElement('select');
+        colorInput.name = 'colors';
+        colorInput.innerHTML = `
+            <option value="red">Red</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+            <option value="yellow">Yellow</option>
+            <option value="purple">Purple</option>
+            <option value="orange">Orange</option>
+            <option value="pink">Pink</option>
+            <option value="gold">Gold</option>
+            <option value="silver">Silver</option>
+            <option value="metallic">Metallic</option>
+            <option value="white">White</option>
+            <option value="black">Black</option>
+        `;
+
+        const quantityInput = document.createElement('input');
+        quantityInput.type = 'number';
+        quantityInput.name = 'quantities';
+        quantityInput.placeholder = 'Quantity';
+
+        colorQuantityInputs.appendChild(colorInput);
+        colorQuantityInputs.appendChild(quantityInput);
+    }
+
+    document.getElementById('variantForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const colors = formData.getAll('colors');
+        const quantities = formData.getAll('quantities');
+
+        const colorQuantityArray = colors.map((color, index) => ({
+            color,
+            quantity: parseInt(quantities[index]) || 0,
+        }));
+
+        const variantData = {
+            name: formData.get('name'),
+            description: formData.get('description'),
+            quantity: colorQuantityArray,
+        };
+
+        console.log('Variant Data:', variantData);
+        // Now you can send the variantData to your backend for processing (e.g., using AJAX).
+    });
+</script>
+  <script>
+     function validateProductForm() {
+    // Reset error messages
+    document.getElementById('error-message').style.display = 'none';
+    document.querySelectorAll('.error-message').forEach(element => {
+      element.textContent = '';
+    });
+
+    // Validation logic for each field
+    const titleInput = document.getElementById('title');
+    const title = titleInput.value.trim();
+    const description = document.getElementById('description').value.trim();
+    const variantCount = document.querySelectorAll('input[name="variant"]:checked').length;
+    const collection = document.getElementById('collection').value.trim();
+    const category = document.getElementById('category').value.trim();
+    const productPrice = document.getElementById('productPrice').value.trim();
+    const salePrice = document.getElementById('salePrice').value.trim();
+     
+      // Flag to track validation status
+      let isValid = true;
+  
+      // Check if title is empty
+      if (title === '') {
+      document.querySelector('#title + .error-message').textContent = 'Please enter a product title.';
+      isValid = false;
+    } else if (!/^[A-Z][a-zA-Z0-9\s]*$/.test(title)) {
+      // Check if product name starts with a capital letter and has no leading/trailing whitespace
+      document.querySelector('#title + .error-message').textContent =
+        'Product title must start with a capital letter and have no leading/trailing whitespace.';
+      isValid = false;
+    } else {
+      // Check if the title already exists (case-insensitive)
+      const existingTitles = Array.from(document.querySelectorAll('.variant-title')).map(element => element.textContent.trim());
+      if (existingTitles.includes(title.toUpperCase())) {
+        document.querySelector('#title + .error-message').textContent = 'Product title already exists.';
+        isValid = false;
+      }
+    }
+
+  
+      // Check if description is empty
+      if (description === '') {
+        document.querySelector('#description + .error-message').textContent = 'Please enter a description.';
+        isValid = false;
+      }
+  
+      // Check if at least one variant is selected
+      if (variantCount === 0) {
+        document.querySelector('.mb-4 .error-message').textContent = 'Please select at least one variant.';
+        isValid = false;
+      }
+  
+      // Check if collection is not selected
+      if (collection === '') {
+        document.querySelector('#collection + .error-message').textContent = 'Please select a collection.';
+        isValid = false;
+      }
+  
+      // Check if category is not selected
+      if (category === '') {
+        document.querySelector('#category + .error-message').textContent = 'Please select a category.';
+        isValid = false;
+      }
+  
+          // Check if product price is empty, not a valid number, negative, or has decimal values
+      if (productPrice === '' || isNaN(productPrice) || productPrice < 0 || /\./.test(productPrice)) {
+      document.querySelector('#productPrice + .error-message').textContent = 'Please enter a valid non-negative integer for the product price.';
+      isValid = false;
+    }
+  
+      // Check if sale price is not a valid number
+      if (salePrice !== '' && isNaN(salePrice)) {
+        document.querySelector('#salePrice + .error-message').textContent = 'Please enter a valid sale price.';
+        isValid = false;
+      }
+  
+      // Display error message if form is not valid
+      if (!isValid) {
+        document.getElementById('error-message').style.display = 'block';
+      }
+  
+      return isValid;
+    }
+  </script> -->
+  
+  <!-- <script>
+    function saveToDraft() {
+      // Update the form action to point to the save to draft endpoint
+      document.querySelector('form').action = '/save-to-draft-endpoint';
+      // Submit the form
+      document.querySelector('form').submit();
+    }
+  
+    function publish() {
+      // Update the form action to point to the publish endpoint
+      document.querySelector('form').action = '/publish-endpoint';
+      // Submit the form
+      document.querySelector('form').submit();
+    }
+  </script> -->
+  
+
+<script>
+  function previewImages(event) {
+    const previewContainer = document.getElementById("imagePreview");
+    previewContainer.innerHTML = ""; // Clear previous previews
+
+    const files = event.target.files;
+
+    for (const file of files) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const imageElement = document.createElement("img");
+        imageElement.src = e.target.result;
+        imageElement.classList.add("preview-image");
+        previewContainer.appendChild(imageElement);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  }
+</script>
+<style>
+  .preview-image {
+    max-width: 100%;
+    max-height: 100px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+</style>
+
+  
+  <script src="../adminassets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="../adminassets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../adminassets/js/vendor/sidebarmenu.js"></script>
+  <script src="../adminassets/js/vendor/app.min.js"></script>
+  <script src="../adminassets/libs/simplebar/dist/simplebar.js"></script>
+  <!-- <script src="../adminassets/js/addProductValidation.js"></script> -->
+</body>
+
+</html>

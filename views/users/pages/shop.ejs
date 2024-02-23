@@ -1,0 +1,218 @@
+<%- include('../partials/header.ejs')%>
+
+<!-- Breadcrumb Section Begin -->
+<div class="breacrumb-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb-text">
+                    <a href="./"><i class="fa fa-home"></i> Home</a>
+                    <span>Shop</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb Section Begin -->
+
+<!-- Product Shop Section Begin -->
+<section class="product-shop spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-8 order-2 order-lg-1 produts-sidebar-filter">
+                <div class="filter-widget">
+                  <h4 class="fw-title">Categories</h4>
+                  <ul class="filter-catagories">
+                    <ul>
+                        <% for (let i = 0; i < category.length; i++) { %>
+                          <li>
+                            <a href="/shop?category=<%= category[i].categoryName %>"
+                              <% if (category[i]._id.equals(selectedCategory)) { %>class="active"<% } %>> 
+                              <%= category[i].categoryName %>
+                            </a>
+                          </li>
+                        <% } %>
+                      </ul>
+                      
+                   
+                    
+                    
+                      
+                  </ul>
+                </div>
+                <div class="filter-widget">
+                  <h4 class="fw-title">Collections</h4>
+                  <ul class="filter-catagories">
+                    
+                    <% for (let i = 0; i < collection.length; i++) { %>
+                        <li>
+                          <a href="/shop?collection=<%= collection[i].collectionName %>"
+                             <% if (collection[i].collectionName === selectedCollection) { %>class="active"<% } %>>
+                            <%= collection[i].collectionName %>
+                          </a>
+                        </li>
+                      <% } %>
+                      
+                  </ul>
+                </div>
+                
+                <!-- ... (existing code) ... -->
+                
+                
+                
+                
+                <!-- Your filter options go here -->
+            </div>
+            <div class="col-lg-9 order-1 order-lg-2">
+                <div class="product-show-option">
+                    <div class="row">
+                        <div class="col-lg-7 col-md-7">
+                            <div class="select-option">
+                                <select class="sorting">
+                                    <option value="">Default Sorting</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 col-md-5 text-right">
+                            <!-- Additional options if needed -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-list">
+                    <div class="row">
+                        <% products.forEach(product => { %>
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="product-item">
+                                <div class="pi-pic">
+                                    <!-- Product image -->
+                                    <% if (Array.isArray(product.images) && product.images.length > 0) { %>
+                                    <a href="/product/<%= product._id %>">
+                                        <img src="<%= product.images[0].imageUrl %>" alt="<%= product.productName %>">
+                                    </a>
+                                    <% } else { %>
+                                    <span>No image available</span>
+                                    <% } %>
+                
+                                    <!-- Wishlist icon -->
+                                    <div class="icon">
+                                        <i class="icon_heart_alt"></i>
+                                    </div>
+                                    
+                                    <!-- Cart and View Product links -->
+                                    <ul>
+                                        <li class="w-icon active"><a href="/shopping-cart"><i class="icon_bag_alt"></i></a></li>
+                                        <li class="quick-view"><a href="/product/<%= product._id %>">+ View Product</a></li>
+                                    </ul>
+                                </div>
+                
+                                <!-- Product details -->
+                                <div class="pi-text">
+                                    <div class="product-name" style="font-size: 20px;"><%= product.productName %></div>
+                                    
+                                    <% let salePrice = product.salePrice; %>
+                                    <% let offerPercentage = ((product.variants[0].price - salePrice) / product.variants[0].price) * 100 || 0; %>
+                                    Rs.<% let offerPrice = product.variants[0].price - salePrice || product.variants[0].price %>
+                                    
+                                    <!-- Display offer price and sale percentage -->
+                                    <% if (salePrice) { %>
+                                        <span class="mtext-106 cl2">
+                                            <i class="bi bi-currency-rupee" style="font-size: medium;"></i>
+                                            <span id="offerPrice">
+                                                <%= salePrice.toLocaleString("en-IN") %>
+                                            </span>
+                                        </span>
+                                        <span class="mtext-106 ms-3 cl2 text-danger" style="display: block;">
+                                            <small id="offerPercentage" class="text-secondary"><%= offerPercentage.toFixed(2) %>%OFF</small>
+                                            <i class="bi bi-currency-rupee" style="font-size: small;"></i>
+                                            <small id="price" class="text-decoration-line-through" style="text-decoration-line-through;">
+                                                Rs.<%= product.variants[0].price.toLocaleString("en-IN") %>
+                                            </small
+                                        </span>
+                                    <% } else { %>
+                                        <!-- If there's no sale, display regular price -->
+                                        <span class="mtext-106 cl2">
+                                            <i class="bi bi-currency-rupee" style="font-size:medium;"></i>
+                                            <span id="offerPrice">
+                                                <%= product.variants[0].price.toLocaleString("en-IN") %>
+                                            </span>
+                                        </span>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                        <% }); %>
+                    </div>
+                </div>
+                
+                
+                <!-- Pagination -->
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination" id="pagination">
+                      <!-- Pagination links will be dynamically added here -->
+                    </ul>
+                  </nav> 
+            </div>
+        </div>
+    </div>
+</section>
+  
+
+<style>
+    .custom-dropdown {
+        border: 1px solid #eee; /* Adjust the color and width as needed */
+        padding: 10px; /* Adjust the padding as needed */
+        border-radius: 5px; /* Optional: Add border-radius for rounded corners */
+        }
+    </style>
+
+<!-- Product Shop Section End -->
+
+
+
+  
+  <script>
+    // Assuming you have the total pages and current page information available from the backend
+    const totalPages = 4;
+    const currentPage = 1;
+  
+    const paginationContainer = document.getElementById("pagination");
+  
+    // Previous button
+    const previousButton = document.createElement("li");
+    previousButton.classList.add("page-item");
+    const previousLink = document.createElement("a");
+    previousLink.classList.add("page-link");
+    previousLink.href = `?page=${currentPage - 1}`;
+    previousLink.textContent = "Previous";
+    previousButton.appendChild(previousLink);
+    paginationContainer.appendChild(previousButton);
+  
+    // Page buttons
+    for (let i = 1; i <= totalPages; i++) {
+      const pageButton = document.createElement("li");
+      pageButton.classList.add("page-item");
+      const pageLink = document.createElement("a");
+      pageLink.classList.add("page-link");
+      pageLink.href = `?page=${i}`;
+      pageLink.textContent = i;
+      if (i === currentPage) {
+        pageButton.classList.add("active");
+      }
+      pageButton.appendChild(pageLink);
+      paginationContainer.appendChild(pageButton);
+    }
+  
+    // Next button
+    const nextButton = document.createElement("li");
+    nextButton.classList.add("page-item");
+    const nextLink = document.createElement("a");
+    nextLink.classList.add("page-link");
+    nextLink.href = `?page=${currentPage + 1}`;
+    nextLink.textContent = "Next";
+    nextButton.appendChild(nextLink);
+    paginationContainer.appendChild(nextButton);
+  </script>
+  
+
+<%- include('../partials/footer.ejs')%>

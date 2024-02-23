@@ -1,0 +1,144 @@
+<!-- <!DOCTYPE html>
+<html lang="en"> -->
+    <%- include('../partials/header.ejs')%>
+
+
+<body>
+    <div class="breacrumb-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb-text">
+                    <a href="#"><i class="fa fa-home"></i> Home</a>
+                    <span>Otp Verfication</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="otp-container">
+        <br>
+        <br>
+        <br>
+        <br>
+        <h2>OTP Verification</h2>
+        
+        <p>An OTP has been sent to your email address. Please enter the OTP below.</p>
+
+        <div>
+            <form action="/verify-otp" method="post" id="otpForm">
+                <input name="otp" id="otpField" style="display: none;">
+            </form>
+            <input type="text" class="otp-input" maxlength="1" id="digit1" oninput="focusNext(this)">
+            <input type="text" class="otp-input" maxlength="1" id="digit2" oninput="focusNext(this)">
+            <input type="text" class="otp-input" maxlength="1" id="digit3" oninput="focusNext(this)">
+            <input type="text" class="otp-input" maxlength="1" id="digit4" oninput="focusNext(this)">
+        </div>
+        <br>
+
+        <button onclick="verifyOTP()">Verify OTP</button>
+
+        <p class="resend-timer" id="resendTimer"></p>
+        <button onclick="resendOTP()" id="resendButton" disabled>Resend OTP</button>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+
+    <script>
+        let countdown;
+
+        function focusNext(input) {
+            const nextInput = input.nextElementSibling;
+            if (nextInput) {
+                nextInput.focus();
+            } else {
+                // All inputs are filled, trigger verification
+                verifyOTP();
+            }
+        }
+
+        function verifyOTP() {
+            // Implement your OTP verification logic here
+            const otp = document.getElementById('digit1').value +
+                document.getElementById('digit2').value +
+                document.getElementById('digit3').value +
+                document.getElementById('digit4').value;
+
+            console.log('Verifying OTP:', otp);
+            document.getElementById('otpField').value = otp;
+            document.getElementById('otpForm').submit(); 
+
+            // If OTP is valid, you can redirect or perform further actions
+        }
+           
+
+        function resendOTP() {
+            // Implement your OTP resend logic here
+            window.location.href="/sendOtpAgain"
+            // For demonstration purposes, we'll just simulate a delay
+            setTimeout(() => {
+                startResendTimer();
+                document.getElementById('resendButton').disabled = true;
+            }, 1000);
+        }
+
+        function startResendTimer() {
+            let seconds = 30;
+            const timerElement = document.getElementById('resendTimer');
+            const resendButton = document.getElementById('resendButton');
+
+            countdown = setInterval(function () {
+                timerElement.textContent = `Resend in ${seconds} seconds`;
+
+                if (seconds <= 0) {
+                    clearInterval(countdown);
+                    timerElement.textContent = '';
+                    resendButton.disabled = false;
+                }
+
+                seconds--;
+            }, 1000);
+        }
+
+        // Start the resend timer immediately when the page loads
+        startResendTimer();
+    </script>
+    
+        <!-- <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+        
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 100;
+            }
+    
+            .otp-container {
+                text-align: center;
+            }
+    
+            .otp-input {
+                width: 2rem;
+                padding: 0.5rem;
+                margin: 0 0.2rem;
+                text-align: center;
+            }
+    
+            .resend-timer {
+                margin-top: 1rem;
+            }
+        </style>
+    
+</body>
+
+<!-- </html> -->
+<%- include('../partials/footer.ejs')%>

@@ -1,0 +1,250 @@
+
+<%- include('../partials/header.ejs')%>
+    <!-- Breadcrumb Section Begin -->
+    <div class="breacrumb-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-text">
+                        <a href="/"><i class="fa fa-home"></i> Home</a>
+                        <span>SignUP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Register Section Begin -->
+    <div class="register-login-section spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                
+                <div class="register-form">
+                    <h2>Register</h2>
+                    <form id="registrationForm" action="/user-signup" method="post"   >
+                        <div class="group-input">
+                            <label for="fname">First Name *</label>
+                            <input type="text" id="fname" name="fname">
+                            <span id="fnameError" class="error-message"></span>
+                        </div>
+                        <div class="group-input">
+                            <label for="lname">Last Name *</label>
+                            <input type="text" id="lname" name="lname">
+                            <span id="lnameError" class="error-message"></span>
+                        </div>
+                        <div class="group-input">
+                            <label for="email">Email *</label>
+                            <input type="text" id="email" name="email">
+                            <span id="emailError" class="error-message"></span>
+                        </div>
+                        <div class="group-input">
+                            <label for="mobile">Mobile *</label>
+                            <input type="text" id="mobile" name="mobile">
+                            <span id="mobileError" class="error-message"></span>
+                        </div>
+                        <div class="group-input">
+                            <label for="pass">Password *</label>
+                            <input type="password" id="pass" name="password">
+                            <span id="passError" class="error-message"></span>
+                        </div>
+                        <div class="group-input">
+                            <label for="con-pass">Confirm Password *</label>
+                            <input type="password" id="con-pass">
+                            <span id="conPassError" class="error-message"></span>
+                        </div>
+
+                        <button type="submit" class="site-btn register-btn">REGISTER</button>
+                    </form>
+                    <div class="switch-login">
+                        <a href="/user-login" class="or-login">Or Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Attach event listener to form submission
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            // Prevent default form submission
+
+
+            event.preventDefault();
+
+
+            // Call the validateForm function
+            if (!validateForm()) {
+                // If validation passes, show OTP sections
+
+                showOtpSections();
+                
+            }
+        });
+
+        function validateForm() {
+            // Validate first name
+            var firstNameInput = document.getElementById('fname');
+            if (firstNameInput.value.trim() === '') {
+                displayError('fnameError', 'Please enter your first name.');
+                return false;
+            }
+
+            // Validate last name
+            var lastNameInput = document.getElementById('lname');
+            if (lastNameInput.value.trim() === '') {
+                displayError('lnameError', 'Please enter your last name.');
+                return false;
+            }
+
+            // Validate email
+            var emailInput = document.getElementById('email');
+            if (!isValidEmail(emailInput.value)) {
+                displayError('emailError', 'Please enter a valid email address.');
+                return false;
+            }
+
+            // Validate mobile
+            var mobileInput = document.getElementById('mobile');
+            if (!isValidMobile(mobileInput.value)) {
+                displayError('mobileError', 'Please enter a valid mobile number.');
+                return false;
+            }
+
+            // Validate password
+            var passwordInput = document.getElementById('pass');
+            if (passwordInput.value.length < 8) {
+                displayError('passError', 'Password must be at least 8 characters.');
+                return false;
+            }
+
+            // Validate password confirmation
+            var confirmPasswordInput = document.getElementById('con-pass');
+            if (confirmPasswordInput.value !== passwordInput.value) {
+                displayError('conPassError', 'Passwords do not match.');
+                return false;
+            }
+
+            // Check if user already exists (server-side check)
+            if (userAlreadyExists(emailInput.value)) {
+                displayError('emailError', 'User already exists.');
+                return false;
+            }
+            // If all validations pass, the form will be submitted
+            return true;
+        }
+
+        function isValidEmail(email) {
+            var emailRegex = /\S+@\S+\.\S+/;
+            return emailRegex.test(email);
+        }
+
+        function isValidMobile(mobile) {
+            var mobileRegex = /^\d{10}$/;
+            return mobileRegex.test(mobile);
+        }
+
+        function userAlreadyExists(email) {
+            // Simulate server-side check, replace with actual logic
+            return false;
+        }
+
+        function displayError(errorId, errorMessage) {
+            var errorElement = document.getElementById(errorId);
+            errorElement.textContent = errorMessage;
+            errorElement.style.color = 'red';
+        }
+    });
+
+    function showOtpSections() {
+            // Show OTP sections or trigger OTP verification logic here
+
+        function verifyOTP() {
+            document.getElementById('verifyOTPButton').addEventListener('click', () => {
+            console.log('click action in verify otp');
+            const otp = document.getElementById('otpInput').value
+            console.log('verifyOtp',otp);
+
+
+            fetch('/verify-otp?otp=' + otp, {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then((response) => {
+                if(response.ok) {
+                    window.open('/login')
+                }
+            })
+            .catch((error) => console.log(error))
+        })
+            // Implement your verifyOTP logic here
+            console.log('Verify OTP');
+            // Your OTP verification code goes here
+
+    }
+</script>
+
+// <script>
+        
+    
+//     // function verifyOTP() {
+//     //     // Implement your verifyOTP logic here
+//     //     document.getElementById('verifyOTPButton').addEventListener('click', () => {
+//     //         console.log('click action in verify otp');
+//     //         const otp = document.getElementById('otpInput').value
+//     //         console.log('verifyOtp',otp);
+
+
+//     //         fetch('/verify-otp?otp=' + otp, {
+//     //             method: 'POST', 
+//     //             headers: {
+//     //                 'Content-Type': 'application/json'
+//     //             }
+//     //         })
+//     //         .then((response) => {
+//     //             if(response.ok) {
+//     //                 window.open('/login')
+//     //             }
+//     //         })
+//     //         .catch((error) => console.log(error))
+//     //     })
+        
+//     //     console.log('Verify OTP');
+//     // }
+
+//     document.addEventListener('DOMContentLoaded', function () {
+//         var registerForm = document.querySelector('form');
+
+//         registerForm.addEventListener('submit', function (event) {
+//             // ... (your existing form validation logic)
+
+//             // If all validations pass, show OTP sections
+//             showOtpSections();
+//         });
+//     });
+// </script>
+
+
+
+<!-- <script src="/assets/js/users/registerValidation.js"></script> -->
+
+
+
+    
+        
+
+        
+
+
+        
+    
+    
+
+    
+
+    <%- include('../partials/footer.ejs')%>

@@ -1,0 +1,236 @@
+<%- include('../partials/header.ejs')%>     
+
+      <!--  Header End -->
+      <section class="content-main">
+        <div class="row">
+            <div class="col-9">
+                <div class="content-header">
+                    <h4 class="content-title"></h4>
+                    <div>
+                        <button class="btn btn-light rounded font-sm mr-5 text-body hover-up"></button>
+                        <button class="btn btn-md rounded font-sm hover-up"></button>
+                    </div>
+                </div>
+            </div>
+            <form action="" method="post" >
+              <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label for="product_title" class="form-label" style="font-size:25px;">Add New Category </label>
+                           
+                        </div>                        
+                        <div class="mb-4">
+                            <label for="product_title" class="form-label">Category title</label>
+                            <input type="text" placeholder="Type here" class="form-control" id="categoryName" name="categoryName">
+                        </div>
+                        <br>
+                        <!-- <div class="row gx-3">
+                            <div class="col-md-4  mb-3">
+                                <label for="product_sku" class="form-label">SKU</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="product_sku">
+                            </div>
+                            <div class="col-md-4  mb-3">
+                                <label for="product_color" class="form-label">Color</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="product_color">
+                            </div>
+                            <div class="col-md-4  mb-3">
+                                <label for="product_size" class="form-label">Size</label>
+                                <input type="text" placeholder="Type here" class="form-control" id="product_size">
+                            </div>
+                        </div> -->
+                        
+                            <button type="submit" class="btn btn-primary m-1">Create Category</button>
+                        </div>
+                    </div>
+                </div> <!-- card end// -->
+                  <div class="col-md-12">
+                    <!-- <h2 class="content-title card-title">Categories</h2> -->
+                    <table class="table table-bordered table-lg">
+                        <thead>
+                            <tr>
+                                <th class="fs-5" style="width: 30%;">Category Name</th>
+                                <!-- <th class="fs-5" style="width: 50%;">Description</th> -->
+                                <th class="fs-5 text-center" style="width: 20%;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          <% categories.forEach(categories   => { %>
+                              <tr>
+                                  <td style="width: 30%;">
+                                      <%= categories.categoryName %>
+                                  </td>
+                                  <td style="width: 100%;">
+                                      <div class="d-flex justify-content">
+                                          <a href="/admin/editCategory/<%= categories._id %>" class="btn btn-primary">Edit</a>
+                                          <% if (categories.isListed) { %>
+                                              <form action="/admin/UnList/<%- categories._id %>" method="post">
+                                                  <button type="submit" class="btn btn-warning m-1 unblock-button">Unlist</button>
+                                              </form>
+                                          <% } else { %>
+                                              <form action="/admin/list/<%- categories._id %>" method="post">
+                                                  <button type="submit" class="btn btn-success m-1 block-button">List</button>
+                                              </form>
+                                          <% } %>
+                                      </div>
+                                  </td>
+                              </tr>
+                          <% }); %>
+                      </tbody>
+                    </table>
+                </div>
+              
+              
+                <!-- <div class="card mb-4">
+                    <div class="card-body">
+                        <div>
+                            <label class="form-label">Description</label>
+                            <textarea placeholder="Type here" class="form-control" rows="4" name="catgDescription"></textarea>
+                        </div>
+                    </div>
+                </div> <!-- card end// -->
+                <!-- <div class="card mb-4">
+                    <div class="card-body">
+                        <div>
+                            <label class="form-label">Images</label>
+                            <input class="form-control" type="file">
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+            </form>
+            
+                 
+                                                  
+                            
+                            
+                             
+                
+
+                 <!-- card end// -->
+                
+                        <!-- <div class="mb-4">
+                            <label class="form-label">Price</label>
+                            <input type="text" placeholder="Type here" class="form-control">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Status</label>
+                            <select class="form-select">
+                                <option>Published</option>
+                                <option>Draft</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Tags</label>
+                            <input type="text" placeholder="Type here" class="form-control">
+                        </div> -->
+                        <!-- <a href="#" class="font-xs hover-up mr-15"><i class="font-xs material-icons md-close text-body"></i> Tech</a>
+                        <a href="#" class="font-xs hover-up mr-15"><i class="font-xs material-icons md-close text-body"></i> Mobile</a>
+                        <a href="#" class="font-xs hover-up mr-15"><i class="font-xs material-icons md-close text-body"></i> Apple</a>
+                        <hr> -->
+                        <!-- <h5 class="mb-3">Categories</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat">
+                            <label class="form-check-label" for="product-cat"> Bracelets </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-1">
+                            <label class="form-check-label" for="product-cat-1"> Earrings </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-2">
+                            <label class="form-check-label" for="product-cat-2"> Necklaces </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-3">
+                            <label class="form-check-label" for="product-cat-3"> Hand Accessories </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-4">
+                            <label class="form-check-label" for="product-cat-4"> Hand Accessories </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-5">
+                            <label class="form-check-label" for="product-cat-5"> Foot Accessories </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-8">
+                            <label class="form-check-label" for="product-cat-8"> Bags </label>
+                        </div>
+                    </div> -->
+                <!-- </div> card end//
+            </div>
+        </div> -->
+    </section>
+      <!-- <div class="container-fluid">
+        <div class="container-fluid">
+          <div class="card">
+            <div class="card-body">
+                <h1 class="title fw-bold mb-4">Collections</h1>
+                <h6 class="card-subtitle fw-semibold mb-4">Add,edit or delete a collection</h6>
+              <div class="card">
+                <div class="card-body">
+                  <form>
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Collection Name</label>
+                      <input type="text" class="form-control" id="Collection Name">                      
+                    </div>
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">Category</label>
+                      <input type="text" class="form-control" id="exampleInputPassword1">
+                    </div>
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">Description</label>
+                      <input type="text" class="form-control" id="exampleInputPassword1">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Create Collection</button>
+                    
+                    <button type="submit" class="btn btn-primary">Edit Collection</button>
+                  </form>
+                </div>
+              </div> -->
+              <!-- <h5 class="card-title fw-semibold mb-4">Disabled forms</h5>
+              <div class="card mb-0">
+                <div class="card-body">
+                  <form> -->
+                    <!-- <fieldset disabled>
+                      <legend>Disabled fieldset example</legend>
+                      <div class="mb-3">
+                        <label for="disabledTextInput" class="form-label">Disabled input</label>
+                        <input type="text" id="disabledTextInput" class="form-control" placeholder="Disabled input">
+                      </div>
+                      <div class="mb-3">
+                        <label for="disabledSelect" class="form-label">Disabled select menu</label>
+                        <select id="disabledSelect" class="form-select">
+                          <option>Disabled select</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="disabledFieldsetCheck" disabled>
+                          <label class="form-check-label" for="disabledFieldsetCheck">
+                            Can't check this
+                          </label>
+                        </div>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                    </fieldset>
+                  </form> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../adminassets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="../adminassets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../adminassets/js/sidebarmenu.js"></script>
+  <script src="../adminassets/js/app.min.js"></script>
+  <script src="../adminassets/libs/simplebar/dist/simplebar.js"></script>
+</body>
+
+</html>
+

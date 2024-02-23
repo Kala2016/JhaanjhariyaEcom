@@ -1,0 +1,145 @@
+<%-include('../partials/header.ejs') %> 
+
+<br>
+<br>
+<br>
+<br>  
+
+<h1>User Management</h1>
+<div class="col-search mx-5">
+    <form class="searchform" action="/admin/user/search" method="post">
+        <div class="input-group">
+            <input list="search_terms" type="text" class="form-control" name="search"
+                placeholder="Search a user">
+            
+            <button class="btn btn-primary" type="submit"> <i class="material-icons md-search"></i>Search</button>
+
+        </div>
+    </form>
+</div>
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <!-- <th>Profile</th> -->
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% if (users?.length> 0) { %>
+          <% for (let i=0; i < users.length; i++) { %>
+            <% if (users[i].fname !== 'admin') { %>
+                    <tr>
+                        <!-- <td><i class="fas fa-user-circle fa-lg"></i></td> -->
+                        <td><%- users[i].fname %></td>
+                        <td><%- users[i].email %></td>
+                        <td><%- users[i].mobile %></td>
+                        <td>
+
+                            <% if (users[i].is_Blocked) { %>  
+                               <form action="/admin/user/blockUser/<%- users[i]?._id %>" method="post">
+                                      <button type="submit"
+                                          class="btn btn-success btn-sm block-button">Unblock</button>
+                                  </form>
+
+                                <% } else { %>
+                                   <form action="/admin/user/blockUser/<%- users[i]?._id %>" method="post">
+                                      <button type="submit"
+                                          class="btn btn-danger btn-sm block-button">Block</button>
+                                  </form>
+                                    <% } %> 
+                                  
+                        </td>
+                    </tr>
+                    <% } %>
+                    <% } %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="4">
+                                    <h2>NO USERS FOUND</h2>
+                                </td>
+                            </tr>
+                            <% } %>
+    </tbody>
+</table>
+
+
+</div>
+
+
+</div>
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel"
+aria-hidden="true">
+<!-- Similar structure as the Add User Modal -->
+</div>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<style>
+.custom-toggle {
+position: relative;
+display: inline-block;
+width: 40px;
+height: 20px;
+}
+
+.custom-toggle input {
+display: none;
+}
+
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #ccc;
+transition: .4s;
+border-radius: 34px;
+}
+
+.slider:before {
+position: absolute;
+content: "";
+height: 15px;
+width: 15px;
+left: 3px;
+bottom: 3px;
+background-color: white;
+transition: .4s;
+border-radius: 50%;
+}
+
+input:checked + .slider {
+background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+transform: translateX(20px);
+}
+</style>
+
+   
+  <script src="../adminassets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="../adminassets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../adminassets/js/vendors/sidebarmenu.js"></script>
+  <script src="../adminassets/js/vendors/app.min.js"></script>
+  <script src="../adminassets/libs/simplebar/dist/simplebar.js"></script>
+</body>
+
+
+    <!-- User Form -->  
+    
+       
+
+    
