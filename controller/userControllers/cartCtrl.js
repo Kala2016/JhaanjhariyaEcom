@@ -33,16 +33,23 @@ const addtoCart = async (req, res) => {
     console.log("Request Body:", req.body);
     const ID = req.session.user._id;
     console.log("id===", req.session.user._id);
-
+``
     const { productId, variantId, quantity } = req.body;
 
+    console.log('variantId',variantId)
+
+    const  prodExist = await productCollection.findById({_id:productId});
+
+
+    
+    const variantExists = await variant.exists({ _id: variantId });
     // Check if variantId is provided
     if (!variantId) {
       return res.status(400).json({ message: "Variant ID is required" });
     }
 
     // Check if the variant ID is valid
-    const variantExists = await VariantModel.exists({ _id: variantId });
+    
     if (!variantExists) {
       return res.status(404).json({ message: "Variant not found" });
     }
@@ -75,7 +82,10 @@ const addtoCart = async (req, res) => {
     console.log("Cart Updated:", cartUpdated);
 
     if (cartUpdated) {
-      return res.redirect("/users/pages/shopping-cart");
+      
+      return res
+      .status(200)
+      .json("items added to cart");
     } else {
       return res.status(400).json({ message: "Couldn't update Cart", success: false });
     }
