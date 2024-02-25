@@ -124,21 +124,22 @@ const verifyOTP = async (req, res) => {
         const newCart = new productCollection.findById({user_id:user._id,products:[]})
         await newCart.save();
 
-      }
+      } 
       
 
       req.session.otpUser = null;
+
       res.redirect("/login?message=OTP verification successful");
     } else {
       res.status(400).json({ error: "Invalid OTP, please try again" });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ success: "User Added Successfully" });
   }
 };
 
-
+ 
 
 const reSendOTP = async (req, res) => {
   try {

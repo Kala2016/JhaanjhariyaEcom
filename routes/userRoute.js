@@ -52,6 +52,7 @@ userRoute.get("/product/variants/:id",homeController.getVariantDetails)
 
 // shopping-cart
 userRoute.get('/shopping-cart',userValid,userLoggedIn,cartController.getCartPage)
+userRoute.post('/shopping-cart',userValid,userLoggedIn,cartController.addtoCart)
 userRoute.post("/addtocart",userValid,userLoggedIn,cartController.addtoCart);
 
 // userRoute.put("/productaddtocart",userValid,userLoggedIn,cartController.productAddtoCart);

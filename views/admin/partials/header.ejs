@@ -197,7 +197,37 @@
                       <i class="ti ti-list-check fs-6"></i>
                       <p class="mb-0 fs-3">My Task</p>
                     </a> -->
-                    <a href="admin" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                    <a href="admin" id="logoutButton" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+
+<script>
+    // Add event listener to the logout button
+    document.getElementById('logoutButton').addEventListener('click', function (event) {
+        // Prevent the default behavior of the link
+        event.preventDefault();
+
+        // Check if SweetAlert2 is defined
+        if (typeof Swal !== 'undefined') {
+            // Display the flash message
+            Swal.fire({
+                title: 'Successfully logged out!',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        } else {
+            // Handle case when SweetAlert2 is not defined
+            console.error('SweetAlert2 is not defined');
+        }
+
+        // After showing the flash message, proceed with logout redirection
+        setTimeout(function () {
+            window.location.href = "admin"; // Redirect to the logout page
+        }, 2000); // Adjust the delay as needed
+    });
+</script>
+
+                    
+                    </script>
                   </div>
                 </div>
               </li>

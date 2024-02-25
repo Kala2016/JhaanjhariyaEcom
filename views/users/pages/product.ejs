@@ -253,17 +253,12 @@
                                 <!-- Form for adding product to cart -->
                                 <form action="/addtoCart" method="POST">
                                     <!-- Hidden input field for product ID -->
-                                    <input type="hidden" name="productId" value="<%= %>">
-                                    <input type="hidden" name="variantId" value="<%=  %>">
-                                    <input type="hidden" name="quantityId" value="<%= %>">
+                                    <input type="hidden" name="productId" value="<%=products._id%>">
+                                    <input type="hidden" name="variantId" value="<%=products.variants[0]._id %>">
+                                    <input type="hidden" name="quantity" value="<%=products.variants[0].stock%>">                                  
                                     
-                                    
-
-                                   
-                                    
-
                                     <!-- Hidden input field for redirect URL after adding to cart -->
-                                    <input type="hidden" name="redirect" value="/shopping-cart">
+                                    
                                     <!-- Submit button to add product to cart -->
                                     <button type="submit" class="primary-btn pd-cart">Add To Cart</button>
                                 </form>
