@@ -1,7 +1,8 @@
 const userCollection = require("../../models/userSchema");
 const bcrypt = require("bcrypt");
-
+const crypto = require("crypto");
 const transporter = require("../../config/emailSender");
+const { forgetPassMail } = require("../../utility/forgetPassMail");
 
 require("dotenv").config();
 
@@ -24,7 +25,6 @@ const getLogin = (req, res) => {
     res.render("./users/pages/user-login",{loggedIn :false,user});
   }
 };
-
 
 
 
@@ -71,10 +71,149 @@ const postLogin = async (req, res) => {
   }
 };
 
+const forgotPasswordpage = async (req,res)=>{
+
+  try {
+
+    res.render('./users/pages/forgetPassEmail' )
+    
+  } catch (error) {
+
+    console.error(error)
+    
+  }
+}
+
+// UserSchema methods
+  const createResetPasswordToken = async function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000; // Token expires in 10 minutes
+  return resetToken;
+};
+
+
+// sendEmail to reset password--
+const sendResetLink = async (req, res) => {
+  try {
+      console.log('user', req.body.email);
+      const email = req.body.email;
+      const user = await userCollection.findOne({ email: email });
+
+      if (!user) {
+          req.flash('danger', `User Not found for this ${email}`)
+          res.redirect("/forgetPassword");
+
+      }
+
+      const resetToken = await user.createResetPasswordToken();
+      await user.save();
+
+      const resetUrl = `${req.protocol}://${req.get("host")}/resetPassword/${resetToken}`;
+      console.log('resetUrl', resetUrl);
+
+      try {
+          forgetPassMail(email, resetUrl, user.fname);
+          req.flash('info', `Reset Link sent to this ${email}`)
+          res.redirect("/forgetPassword");
+
+      } catch (error) {
+          user.passwordResetToken = undefined;
+          user.passwordResetTokenExpires = undefined;
+          console.error(error);
+          console.log("There was an error sending the password reset email, please try again later");
+
+          req.flash('Warning', 'Error in sending Email')
+          return res.redirect("/forgetPassword");
+      }
+
+  } catch (error) {
+      console.error(error)
+  }
+}
+
+
+// Resetting the password-- POST
+const resetPassPage = async (req, res) => {
+  try {
+
+      const token = crypto.createHash("sha256").update(req.params.token).digest("hex");
+      const user = await userCollection.findOne({ passwordResetToken: token, passwordResetTokenExpires: { $gt: Date.now() } });
+
+      if (!user) {
+          req.flash('warning', 'Token expired or Invalid')
+          res.redirect("/users/pages/forgetPassEmail");
+      }
+
+      res.render("users/pages/resetPassword",{token}) ;
+
+  } catch (error) {
+      console.error(error)
+  }
+}
+
+
+// Resetting the password-- POST
+const resetPassword = async (req, res) => {
+
+
+  console.log('token',token)
+
+  const token = req.params.token;
+  try {
+      const user = await userCollection.findOne({ passwordResetToken: token, passwordResetTokenExpires: { $gt: Date.now() } });
+
+      if (!user) {
+
+          req.flash('warning', 'Token expired or Invalid')
+          res.redirect("/forgetPassword");
+      }
+      // Update password
+    const newPassword = req.body.password;
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        
+      
+
+      user.password = hashedPassword;
+      user.passwordResetToken = null;
+      user.passwordResetTokenExpires = null;
+      user.passwordChangedAt = Date.now();
+
+      await user.save();
+
+      console.log('password change', user.password)
+      req.flash("success", "Password changed");
+      res.redirect("/login");
+
+  } catch (error) {
+      console.error(error)
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = {
   postLogin,
   getLogin,
   securePassword,
+  forgotPasswordpage,
+  sendResetLink,
+  resetPassPage,
+  resetPassword
+
+
+
 };
 
 

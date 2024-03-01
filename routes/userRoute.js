@@ -53,10 +53,16 @@ userRoute.get("/product/variants/:id",homeController.getVariantDetails)
 // shopping-cart
 userRoute.get('/shopping-cart',userValid,userLoggedIn,cartController.getCartPage)
 userRoute.post('/shopping-cart',userValid,userLoggedIn,cartController.addtoCart)
-userRoute.post("/addtocart",userValid,userLoggedIn,cartController.addtoCart);
+userRoute.post("/addtocart",userValid,userLoggedIn,cartController.addtoCart)
+userRoute.post('/updateCart',userValid,userLoggedIn,cartController.updateCart)
 
 // userRoute.put("/productaddtocart",userValid,userLoggedIn,cartController.productAddtoCart);
 
+// forget-Password and reset password section
+userRoute.get('/forgetPassword', loginController.forgotPasswordpage);
+userRoute.post('/forgetPassword', loginController.sendResetLink);
+userRoute.get('/resetPassword/:token', loginController.resetPassPage);
+userRoute.put('/resetPassword/:token',loginController.resetPassword);
 
 
 

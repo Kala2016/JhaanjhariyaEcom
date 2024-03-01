@@ -60,8 +60,8 @@ const getShoppingpage = async (req, res) => {
     );
     console.log("Cart ==", cart);
 
-    const cartitems = cart ? cart.items : ["No cart"];
-    console.log("Cart items", cartitems);
+    const cartitem = cart ? cart.item : ["No cart"];
+    console.log("Cart items", cartitem);
 
     const variants = await productCollection.find();
 
@@ -118,7 +118,7 @@ const getproductpage = async (req, res) => {
     const cart = await productCollection.findOne({
       user_id: req.session.userId,
     });
-    const cartitems = cart ? cart.items : ["No cart"];
+    const cartitem = cart ? cart.item : ["No cart"];
 
     const catId = category.find(
       (cat) => cat.categoryName === req.query.category

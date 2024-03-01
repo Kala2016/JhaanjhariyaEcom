@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const dotenv = require("dotenv").config();
 const logger = require("morgan");
 const mongoose = require('mongoose')
-
+const connectFlash = require('connect-flash')
 const cookieParcer = require('cookie-parser')
 
 const PORT = process.env.PORT || 4000;
@@ -50,6 +50,15 @@ app.use(
     res.locals.user = req.session.user;
     next()
   })
+
+
+  // using for sending message to ejs
+app.use(connectFlash());
+app.use((req, res, next) => {
+    res.locals.messages = req.flash()
+    next();
+})
+
    
 
 //for user Routes

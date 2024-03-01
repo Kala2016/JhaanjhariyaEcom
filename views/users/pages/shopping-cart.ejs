@@ -5,15 +5,15 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="breadcrumb-text product-more">
-                    <a href="./home.html"><i class="fa fa-home"></i> Home</a>
-                    <a href="./shop.html">Shop</a>
+                    <a href="/"><i class="fa fa-home"></i> Home</a>
+                    <a href="/shop">Shop</a>
                     <span>Shopping Cart</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- Breadcrumb Section Begin -->
+<!-- Breadcrumb Section End -->
 
 <!-- Shopping Cart Section Begin -->
 <section class="shopping-cart spad">
@@ -26,69 +26,60 @@
                             <tr>
                                 <th>Image</th>
                                 <th class="p-name">Product Name</th>
+                                <th>Variant</th>
                                 <th>Price</th>
+                                <th>salePrice</th>                                
                                 <th>Quantity</th>
                                 <th>Total</th>
                                 <th><i class="ti-close"></i></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="cart-pic first-row"><img src="assets/img/cart-page/product-1.jpg" alt=""></td>
-                                <td class="cart-title first-row">
-                                    <h5>Pure Pineapple</h5>
-                                </td>
-                                <td class="p-price first-row">$60.00</td>
-                                <td class="qua-col first-row">
-                                    <div class="quantity">
-                                        <div class="pro-qty">
-                                            <input type="text" value="1">
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="total-price first-row">$60.00</td>
-                                <td class="close-td first-row"><i class="ti-close"></i></td>
-                            </tr>
-                            <tr>
-                                <td class="cart-pic"><img src="assets/img/cart-page/product-2.jpg" alt=""></td>
-                                <td class="cart-title">
-                                    <h5>American lobster</h5>
-                                </td>
-                                <td class="p-price">$60.00</td>
-                                <td class="qua-col">
-                                    <div class="quantity">
-                                        <div class="pro-qty">
-                                            <input type="text" value="1">
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="total-price">$60.00</td>
-                                <td class="close-td"><i class="ti-close"></i></td>
-                            </tr>
-                            <tr>
-                                <td class="cart-pic"><img src="assets/img/cart-page/product-3.jpg" alt=""></td>
-                                <td class="cart-title">
-                                    <h5>Guangzhou sweater</h5>
-                                </td>
-                                <td class="p-price">$60.00</td>
-                                <td class="qua-col">
-                                    <div class="quantity">
-                                        <div class="pro-qty">
-                                            <input type="text" value="1">
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="total-price">$60.00</td>
-                                <td class="close-td"><i class="ti-close"></i></td>
-                            </tr>
+                            <% if (cart && cart.length > 0) { %>
+                                <% let grandTotal = 0; %>
+                                <% cart.forEach((cartItem, index) => { %>
+                                   
+                                    <tr>
+                                        <td class="cart-pic first-row">
+                                            <img src="<%= cartItem.productId.images[0].imageUrl %>" alt="" style="max-width: 100px; max-height: 100px;">
+                                        </td>
+                                        <td class="cart-title first-row">
+                                            <h5><%= cartItem.productId.productName %></h5>                                             
+                                        </td>
+                                        <td>
+                                            <div class="variant-color" style="background-color: <%= cartItem.variantId.color %>;"></div>
+                                        </td>
+                                        <td class="p-price first-row">Rs.<%= cartItem.variantId.price %></td>
+                                        <td class="p-salePrice first-row">Rs. <%= cartItem.productId.salePrice %></td>
+                                        
+                                        <td class="qua-col">
+                                            <div class="quantity">
+                                                <div class="pro-qty">                                                   
+                                                    <input type="text" class="qty-input" value="1" min="1">                                                   
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="total-price first-row" id="subtotal_<%= cartItem.productId %>"><%= (cartItem.productId.salePrice *
+                                                                cartItem.quantity).toLocaleString()%></td>
+                                        <td class="close-td first-row"><i class="ti-close"></i></td>    
+                                    </tr>
+                                    <% grandTotal += subtotal; %>
+                                <% }); %>
+                            <% } else { %>  
+                                <tr>
+                                    <td colspan="6">Cart is empty</td>
+                                </tr>
+                            <% } %>
                         </tbody>
+                        
                     </table>
                 </div>
                 <div class="row">
                     <div class="col-lg-4">
                         <div class="cart-buttons">
-                            <a href="#" class="primary-btn continue-shop">Continue shopping</a>
-                            <a href="#" class="primary-btn up-cart">Update cart</a>
+                            <a href="/shop" class="primary-btn continue-shop">Continue shopping</a>
+                            <a href="/updateCart" class="primary-btn up-cart">Update cart</a>
                         </div>
                         <div class="discount-coupon">
                             <h6>Discount Codes</h6>
@@ -101,8 +92,9 @@
                     <div class="col-lg-4 offset-lg-4">
                         <div class="proceed-checkout">
                             <ul>
-                                <li class="subtotal">Subtotal <span>$240.00</span></li>
-                                <li class="cart-total">Total <span>$240.00</span></li>
+                                <li class="subtotal">Subtotal <span><%=subtotal.toLocaleString() %></span></li>
+                                <li class="subtotal">Discount <span>10%</span></li>
+                                <li class="cart-total">Total <span><%=subtotal.toLocaleString() %>%></span></li>
                             </ul>
                             <a href="#" class="proceed-btn">PROCEED TO CHECK OUT</a>
                         </div>
@@ -111,15 +103,59 @@
             </div>
         </div>
     </div>
-</section>
+</section>  
+               
 
 
+<style>
+    .variant-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%; /* For a round box */
+    /* Or */
+    /* border-radius: 5px; */ /* For a square box */
+}
 
+</style>
+
+// <script>
+//     $(document).ready(function() {
+//     // Function to handle the click event of the plus button
+//     $(".plus-btn").click(function() {
+//         var input = $(this).parent().find("input");
+//         var currentValue = parseInt(input.val());
+//         input.val(currentValue + 1);
+//     });
+
+//     // Function to handle the click event of the minus button
+//     $(".minus-btn").click(function() {
+//         var input = $(this).parent().find("input");
+//         var currentValue = parseInt(input.val());
+//         if (currentValue > 1) {
+//             input.val(currentValue - 1);
+//         }
+//     });
+// });
+
+// </script>
+
+// <script>
+//     function updateSubtotal(index) {
+//         const quantityInput = document.querySelector(`input[type="number"][value="${index}"]`);
+//         const subtotalCell = document.getElementById(`subtotal_${index}`);
+//         const price = parseFloat(quantityInput.getAttribute('data-price'));
+//         const quantity = parseFloat(quantityInput.value);
+//         const subtotal = price * quantity;
+//         subtotalCell.textContent = subtotal.toFixed(2);
+
+//         // Recalculate grand total
+//         let grandTotal = 0;
+//         const subtotalCells = document.querySelectorAll("[id^='subtotal_']");
+//         subtotalCells.forEach(cell => {
+//             grandTotal += parseFloat(cell.textContent);
+//         });
+//         document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
+//     }
+// </script>
 
 <%- include('../partials/footer.ejs')%>
-
-    <!-- Breadcrumb Section Begin -->
-    
-
-
-                             
