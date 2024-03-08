@@ -3,12 +3,10 @@ const userCollection = require("../models/userSchema");
 
 const userLoggedIn = async (req, res, next) => {
   try {
-    console.log(" userLoggedIn middleware");
     if (req.session.user) {
-      console.log("Session user found:", req.session.user);
       const user = await userCollection.findById(req.session.user._id);
-      console.log("User found in database:", user);
       if (!user.is_Blocked) {
+        req.userId = user._id
        return  next();
       }
       // res.redirect("/logout", {

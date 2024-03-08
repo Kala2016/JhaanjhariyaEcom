@@ -1,8 +1,14 @@
-const mongoose = require("mongoose");
+  const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const productCollection = require('../models/ProductSchema')
+const variant = require("../models/variantSchema")
+const address = require("../models/addressSchema")
+const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 
 const userSchema = new Schema({
+
+
   fname: {
     required: true,
     type: String,
@@ -32,14 +38,22 @@ const userSchema = new Schema({
   status:{
     type:String,
   },
+  salt: String,
+
+  image_url:{
+    type:String,
+    default:"1.png"
+  },
+  addresses:[address.schema],
+  
   cart:[
     {
-        product_id:{
+        productId:{
             type:mongoose.Types.ObjectId,
             required:true,
-            ref:"product"
+            ref:"productCollection"
         },
-        variant_id:{
+        variantId:{
             type:mongoose.Types.ObjectId,
             required:true,
             ref:"variant"
@@ -49,7 +63,13 @@ const userSchema = new Schema({
             required:true
         }
     }
-]
+],
+
+addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }],
+
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetTokenExpires: Date,
   
 }, { timestamps: true });
 
@@ -65,14 +85,14 @@ userSchema.methods.addToCart = async function (productId,variantId,quantity) {
       throw new Error('Not enough stock available');
   }
 
-  const existingCartItem = this.cart.find(item => item.product.equals(product._id,variant._id));
+  // const existingCartItem = this.cart.find(item => item.product.equals(product._id,variant._id));
 
   if (existingCartItem) {
       // If the product already exists in the cart, update the quantity
       existingCartItem.quantity += quantity; // Increment the quantity
   } else {
       // this.cart.push({ product: product._id, quantity }); // If not in the cart, add as a new item
-      this.cart.push({ product: product._id,variant_id, quantity: 1 });
+      this.cart.push({ product: productId,variantId, quantity: 1 });
   }
 
   await this.save();
@@ -80,9 +100,33 @@ userSchema.methods.addToCart = async function (productId,variantId,quantity) {
 };
 
 
+userSchema.pre('save', async function (next) {
+  if (this.isNew) {
+      const salt = bcrypt.genSaltSync(10);
+      this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
+userSchema.methods.isPasswordMatched = async function (enteredPassword) {
+  // Checking for matching password
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// resetPassword
+userSchema.methods.createResetPasswordToken = async function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
+};
 
 
-
+userSchema.methods.removeFromCart = function (productId) {
+  // Remove an item from the cart by product ID
+  this.cart = this.cart.filter(cartItem => !cartItem.product.equals(productId));
+  return this.save();
+};
 
 const userCollection = mongoose.model("userCollection", userSchema);
 

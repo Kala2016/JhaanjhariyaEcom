@@ -6,6 +6,7 @@ const variantSchema = new mongoose.Schema({
       required:true,
       ref:"product"
   },
+  
   v_name:{
       type:String,
       required:true
