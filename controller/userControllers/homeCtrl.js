@@ -202,6 +202,9 @@ const getVariantDetails = async (req, res) => {
   }
 };
 
+
+
+
 module.exports = {
   getLogout,
   getUserRoute,

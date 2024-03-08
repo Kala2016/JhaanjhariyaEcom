@@ -135,7 +135,9 @@ const verifyOTP = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: "User Added Successfully" });
+      res.redirect("/login?message=OTP verification successful");
+      
+    // res.status(500).json({ success: "User Added Successfully" });
   }
 };
 

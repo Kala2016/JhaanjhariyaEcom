@@ -1,7 +1,8 @@
-const mongoose = require("mongoose");
+  const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const productCollection = require('../models/ProductSchema')
-const variant = require("../models/variantSchema");
+const variant = require("../models/variantSchema")
+const address = require("../models/addressSchema")
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 
@@ -38,6 +39,13 @@ const userSchema = new Schema({
     type:String,
   },
   salt: String,
+
+  image_url:{
+    type:String,
+    default:"1.png"
+  },
+  addresses:[address.schema],
+  
   cart:[
     {
         productId:{
@@ -56,6 +64,8 @@ const userSchema = new Schema({
         }
     }
 ],
+
+addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }],
 
   passwordChangedAt: Date,
   passwordResetToken: String,
@@ -109,6 +119,13 @@ userSchema.methods.createResetPasswordToken = async function () {
   this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
   this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
+};
+
+
+userSchema.methods.removeFromCart = function (productId) {
+  // Remove an item from the cart by product ID
+  this.cart = this.cart.filter(cartItem => !cartItem.product.equals(productId));
+  return this.save();
 };
 
 const userCollection = mongoose.model("userCollection", userSchema);

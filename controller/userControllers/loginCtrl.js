@@ -84,13 +84,6 @@ const forgotPasswordpage = async (req,res)=>{
   }
 }
 
-// UserSchema methods
-  const createResetPasswordToken = async function () {
-  const resetToken = crypto.randomBytes(32).toString("hex");
-  this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-  this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000; // Token expires in 10 minutes
-  return resetToken;
-};
 
 
 // sendEmail to reset password--
@@ -142,10 +135,10 @@ const resetPassPage = async (req, res) => {
 
       if (!user) {
           req.flash('warning', 'Token expired or Invalid')
-          res.redirect("/users/pages/forgetPassEmail");
+          res.redirect("./users/pages/forgetPassEmail");
       }
 
-      res.render("users/pages/resetPassword",{token}) ;
+      res.render("./users/pages/resetPassword",{token}) ;
 
   } catch (error) {
       console.error(error)
@@ -154,12 +147,10 @@ const resetPassPage = async (req, res) => {
 
 
 // Resetting the password-- POST
-const resetPassword = async (req, res) => {
-
-
-  console.log('token',token)
+const resetPassword = async (req, res) => { 
 
   const token = req.params.token;
+  console.log('token',token)
   try {
       const user = await userCollection.findOne({ passwordResetToken: token, passwordResetTokenExpires: { $gt: Date.now() } });
 
@@ -210,7 +201,10 @@ module.exports = {
   forgotPasswordpage,
   sendResetLink,
   resetPassPage,
-  resetPassword
+  resetPassword,
+  
+
+  
 
 
 

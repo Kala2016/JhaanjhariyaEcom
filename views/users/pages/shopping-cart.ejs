@@ -1,4 +1,5 @@
-<%- include('../partials/header.ejs')%>
+<%- include('../partials/header.ejs') %>
+
 <!-- Breadcrumb Section Begin -->
 <div class="breacrumb-section">
     <div class="container">
@@ -28,7 +29,7 @@
                                 <th class="p-name">Product Name</th>
                                 <th>Variant</th>
                                 <th>Price</th>
-                                <th>salePrice</th>                                
+                                <th>Sale Price</th>                                
                                 <th>Quantity</th>
                                 <th>Total</th>
                                 <th><i class="ti-close"></i></th>
@@ -38,33 +39,50 @@
                             <% if (cart && cart.length > 0) { %>
                                 <% let grandTotal = 0; %>
                                 <% cart.forEach((cartItem, index) => { %>
-                                   
                                     <tr>
                                         <td class="cart-pic first-row">
                                             <img src="<%= cartItem.productId.images[0].imageUrl %>" alt="" style="max-width: 100px; max-height: 100px;">
                                         </td>
                                         <td class="cart-title first-row">
-                                            <h5><%= cartItem.productId.productName %></h5>                                             
+                                            <h5><%= cartItem.productId.productName %></h5>
                                         </td>
                                         <td>
                                             <div class="variant-color" style="background-color: <%= cartItem.variantId.color %>;"></div>
                                         </td>
                                         <td class="p-price first-row">Rs.<%= cartItem.variantId.price %></td>
-                                        <td class="p-salePrice first-row">Rs. <%= cartItem.productId.salePrice %></td>
-                                        
-                                        <td class="qua-col">
-                                            <div class="quantity">
-                                                <div class="pro-qty">                                                   
-                                                    <input type="text" class="qty-input" value="1" min="1">                                                   
-                                                </div>
+                                        <td class="p-salePrice first-row">Rs. <%= cartItem.productId.salePrice %></td>                                      
+                                       
+
+                                        <td class="product-quantity">
+                                            <div class="input-group">
+                                                <span class="input-group-btn">
+                                                    <button type="button" id="minusButton" class="btn btn-danger quantity-button minus mx-2" onclick="decrementQuantity( `<%= cartItem._id %>`)">-</button>
+
+                                                </span>
+                                                <input id="quantity-<%= cartItem._id %>" value="<%= cartItem.quantity %>" min="1" class="form-control quantity-input" style="width: 10px;" <% if (cartItem.product && cartItem.quantity > cartItem.product.quantity) { %> style="pointer-events:none; width:30px;" <% } %> >
+
+
+                                                    <span class="input-group-btn">
+                                                        <button type="button" id="r" class="btn btn-success quantity-button plus mx-2" onclick="incrementQuantity( `<%= cartItem._id %>`)">+</button>
+
+                                                    </span>
                                             </div>
+                                            <div id="cart-message" class="p-2 rounded-pill bg-danger"
+                                                style="display: none; position: absolute; top: 70%; right:0px;color:rgb(255, 255, 255)">
+                                            </div>
+                                            <h5 style="color: rgb(135, 6, 182); font-size: 15px; margin-right: 41px; margin-top: 2px; margin-bottom: -25px;"
+                                                id="AvailableStock-<%= cartItem.productId %>"></h5>
                                         </td>
                                         
-                                        <td class="total-price first-row" id="subtotal_<%= cartItem.productId %>"><%= (cartItem.productId.salePrice *
-                                                                cartItem.quantity).toLocaleString()%></td>
-                                        <td class="close-td first-row"><i class="ti-close"></i></td>    
+                                        <td class="total-price first-row" id="subtotal_<%= index %>"><%= (cartItem.productId.salePrice * cartItem.quantity).toLocaleString() %></td>
+                                        <td class="product-remove first-row">
+                                            <button style="width: 30px; height: 30px;" onclick="showConfirmation(`<%= cartItem._id %>`)"><i class="ti-close"></i></button>
+
+                                               
+                                            
+                                        </td>
                                     </tr>
-                                    <% grandTotal += subtotal; %>
+                                    <% grandTotal += (cartItem.productId.salePrice * cartItem.quantity); %>
                                 <% }); %>
                             <% } else { %>  
                                 <tr>
@@ -72,7 +90,6 @@
                                 </tr>
                             <% } %>
                         </tbody>
-                        
                     </table>
                 </div>
                 <div class="row">
@@ -92,70 +109,200 @@
                     <div class="col-lg-4 offset-lg-4">
                         <div class="proceed-checkout">
                             <ul>
-                                <li class="subtotal">Subtotal <span><%=subtotal.toLocaleString() %></span></li>
-                                <li class="subtotal">Discount <span>10%</span></li>
-                                <li class="cart-total">Total <span><%=subtotal.toLocaleString() %>%></span></li>
+                                <li class="subtotal">Subtotal <span><%= grandTotal.toLocaleString() %></span></li>
+                                <!-- Assuming you want to show 10% discount -->
+                                <li class="discount">Discount <span>10%</span></li>
+                                <li class="cart-total">Total <span><%= (grandTotal * 0.9).toLocaleString() %></span></li>
                             </ul>
                             <a href="#" class="proceed-btn">PROCEED TO CHECK OUT</a>
                         </div>
-                    </div>
+                    </div>  
                 </div>
             </div>
         </div>
     </div>
 </section>  
-               
-
 
 <style>
     .variant-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%; /* For a round box */
-    /* Or */
-    /* border-radius: 5px; */ /* For a square box */
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    // sweet Alert when deleting a product from the cart
+    function showConfirmation(productId) {
+        console.log('hhh');
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You are about to remove this item from your cart.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, remove it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If the user clicks "Yes," redirect to the removeProduct endpoint
+                window.location.href = "/removeProduct/" + productId;
+            }
+        });
+    }
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    const cartMessage = document.getElementById('cart-message');
+    const hideMessage = () => {
+        cartMessage.style.display = 'none';
+    };
+
+    function updateCartItemQuantity(productId, newQuantity) {
+        $.ajax({
+            type: 'POST',
+            url: `/updateCartItem/${productId}`,
+            data: { quantity: newQuantity },
+            success: function (response) {
+                if (response.success) {
+                    $(`#quantity-${productId}`).val(newQuantity);   
+
+                    // Update the subtotal for the individual product
+                    const productPrice = parseFloat($(`#salePrice-${productId}`).text().replace(/[^0-9.-]+/g, ''));
+                    const subtotal = productPrice * newQuantity;
+
+                    $(`#subtotal-${productId}`).text(`₹${subtotal.toLocaleString()}`);
+
+                    // Update the HTML element that displays the total amount
+                    $('#total-amount').text(`₹${response.totalPrice.toLocaleString()}`);
+                }
+                if (!response.success) {
+                    console.log(response.message);
+                    cartMessage.innerText = `${response.message}! `;
+                    cartMessage.style.display = 'block';
+                    setTimeout(hideMessage, 1000);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                if (jqXHR.status === 400) {
+                    // Handle out of stock or other errors
+                    console.error('Request rejected:', jqXHR.responseJSON.message);
+                } else {
+                    // Handle other error cases
+                    console.error('Error:', textStatus, errorThrown);
+                }
+            },
+        });
+    }
+
+    // Button increment and decrement
+    function incrementQuantity( productId) {
+    
+    const quantityInput = document.getElementById('quantity-' + productId);
+    let currentQuantity = parseInt(quantityInput.value);
+    currentQuantity++;
+    quantityInput.value = currentQuantity;
+
+    if (typeof productId !== 'object') {
+        const currentQuantity = parseInt($(`#quantity-${productId}`).val());
+        const newQuantity = currentQuantity + 1;
+        updateCartItemQuantity(productId, newQuantity);
+        // checkProductAvailability();
+    }
 }
 
-</style>
+    function decrementQuantity(productId) {
+        const quantityInput = document.getElementById("quantity-" + productId);
+        let currentQuantity = parseInt(quantityInput.value);
+        if(currentQuantity>1){
+            currentQuantity--;
+            quantityInput.value = currentQuantity;
+        }
+        
+        if (typeof productId !== 'object') {  
+            
+                        
+            const currentQuantity = parseInt($(`#quantity-${productId}`).val());
+            $(`#quantity-${productId}-btn`).attr("disabled", false);
+            
+            if (currentQuantity <= 1){
+                $(`#quantity-${productId}-btn`).attr("disabled","true");
+                }
+            
+            const newQuantity = currentQuantity - 1;
 
-// <script>
-//     $(document).ready(function() {
-//     // Function to handle the click event of the plus button
-//     $(".plus-btn").click(function() {
-//         var input = $(this).parent().find("input");
-//         var currentValue = parseInt(input.val());
-//         input.val(currentValue + 1);
-//     });
+            // Enable increment button if quantity is less than total stock
+    const totalStock = parseInt($("#total-stock").text()); // Assuming you have an element with id "total-stock" displaying total stock
+    if (currentQuantity < totalStock) {
+        $(`#quantity-${productId}-btn`).attr("disabled", false);
+    } else {
+        $(`#quantity-${productId}-btn`).attr("disabled", "true");
+    }
+            updateCartItemQuantity(productId, newQuantity);
+            // checkProductAvailability();
+            }
+        
 
-//     // Function to handle the click event of the minus button
-//     $(".minus-btn").click(function() {
-//         var input = $(this).parent().find("input");
-//         var currentValue = parseInt(input.val());
-//         if (currentValue > 1) {
-//             input.val(currentValue - 1);
-//         }
-//     });
-// });
+    }    
 
-// </script>
+    
 
-// <script>
-//     function updateSubtotal(index) {
-//         const quantityInput = document.querySelector(`input[type="number"][value="${index}"]`);
-//         const subtotalCell = document.getElementById(`subtotal_${index}`);
-//         const price = parseFloat(quantityInput.getAttribute('data-price'));
-//         const quantity = parseFloat(quantityInput.value);
-//         const subtotal = price * quantity;
-//         subtotalCell.textContent = subtotal.toFixed(2);
+</script> 
 
-//         // Recalculate grand total
-//         let grandTotal = 0;
-//         const subtotalCells = document.querySelectorAll("[id^='subtotal_']");
-//         subtotalCells.forEach(cell => {
-//             grandTotal += parseFloat(cell.textContent);
-//         });
-//         document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
-//     }
-// </script>
+<script>
+    function checkProductAvailability() {
+    $.ajax({
+        type: "GET",
+        url: "/checkProductAvailability",
+        success: function (response) {
+            let allProductsAvailable = true;
+            response.cartItems.forEach(item => {
+                const productId = item.product._id;
+                const quantityInput = $(`#quantity-${productId}`);
+                const href = $('#checkout-link');
+                const checkoutButton = $('.checkout-tag');
 
-<%- include('../partials/footer.ejs')%>
+                // Check if the product is out of stock
+                if (item.quantity > item.product.quantity) {
+                    // Disable the quantity input and display a message
+                    quantityInput.remove("disabled", true);
+                    quantityInput.val('0');
+                    allProductsAvailable = false; // Set the flag to false
+                    $(`#AvailableStock-${productId}`).text(`Available stock ${item.product.quantity}`);
+                    $(`#subtotal-${productId}`).text(`OUT OF STOCK!`);
+                    $(`#subtotal-${productId}`).css('color', 'red')
+                } else {
+                    // Enable the quantity input
+                    quantityInput.removeAttr("disabled");
+                    // Update the subtotal based on the updated quantity and price
+                    const subtotal = item.product.salePrice * item.quantity;
+                    $(`#subtotal-${productId}`).text(`₹${subtotal.toLocaleString()}`);
+                }
+
+                if (allProductsAvailable) {
+                    $(`#outOfStock-${productId}`).text("");
+                    $(`#AvailableStock-${productId}`).text('')
+                    $(`#subtotal-${productId}`).css('color', '')
+                    checkoutButton.prop("disabled", false);
+                    href.attr('href', '/checkout');
+                } else {
+                    checkoutButton.prop("disabled", true);
+                    href.removeAttr('href');
+                }
+            });
+        },
+        error: function (textStatus, errorThrown) {
+            console.error("Error checking product availability:", textStatus, errorThrown);
+        }
+    });
+}
+// checkProductAvailability(); 
+</script>
+
+
+
+
+
+<%- include('../partials/footer.ejs') %>
