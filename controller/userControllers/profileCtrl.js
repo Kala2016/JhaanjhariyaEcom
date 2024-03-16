@@ -1,23 +1,26 @@
 const userCollection = require("../../models/userSchema")
+const  bcrypt = require('bcrypt');
 
 
 
-const getUserProfilePage = async (req,res)=>{
-
+const getUserProfilePage = async (req, res) => {
     try {
-        const user =req.session.user
-        console.log("user",user)
-        const userData = await userCollection.findOne({email:user.email});
-        console.log("userData",userData)
-        res.status(200);
-        res.render('./users/pages/userProfile',{userData})
-    } catch (error) {
-        console.error('Internal Server Error==')
-        
-    }
+        const user = req.session.user;
+        const userData = await userCollection.findOne({ email: user.email });
 
+        if (!userData) {
+            return res.status(404).send("User not found");
+        }
+        console.log('user data', userData);
+        res.render('users/pages/userProfile',  {userData} );
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal Server Error");
+    }
 }
 
+
+    
 
 const uploadDp = async (req,res)=>{
 
@@ -37,7 +40,7 @@ const uploadDp = async (req,res)=>{
     } catch (error) {
 
        res.status(500).json('Internal Server Error')
-       console.log(error.message)
+       console.error(error.message)
         
     }
 
@@ -45,39 +48,94 @@ const uploadDp = async (req,res)=>{
 
 const geteditProfile =async( req,res)=>{
     try {
-        const user = await userCollection.findById(req.userId)
+        const user = await userCollection.findById(req.user._id)
         res.status(200)
-        res.render("user/profile")
+        res.render("users/pages/userProfile")
         
     } catch (error) {
 
         res.status(500).json('Internal Server error')
+        console.error(error.message)
         
     }
 }
 
 
-const editProfile = async (req,res)=>{
+const editProfile = async (req, res) => {
     try {
-        const {fname,lname,email,mobile,}= req.body
+        const { fname, lname, email, mobile } = req.body;
+        console.log('Request Body', req.body)
 
-        await userCollection.findByIdAndUpdate(req.user._id),{
-            fname:fname,
-            lname:lname,
-            email:email,
-            mobile:mobile
-
-
+        // Check if req.user exists before accessing its properties
+        if (!req.userId) {
+            return res.status(400).json({ message: "User not found", success: false });
         }
 
-        return  res.redirect('/users/pages/userProfile')
+        // Update user profile based on the provided data
+        await userCollection.findByIdAndUpdate(req.userId, {
+            fname: fname,
+            lname: lname,
+            email: email,
+            mobile: mobile
+        });
 
-        
+        return res.redirect('/userProfile');
     } catch (error) {
-        res.status(500).json('Internal Server Error')
-        
+        // Handle any errors that occur during the update process
+        console.error(error);
+        return res.status(500).json('Internal Server Error');
     }
 }
+
+
+
+
+// password Change Page
+const changePasswordPage =async(req,res)=>{
+
+    try {
+
+        res.render('users/pages/changePassword')
+        
+    } catch (error) {
+        console.error(error.message)
+    }
+
+}
+
+
+const changePassword = async (req, res) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+
+        // Find the user by session ID or any other identifier
+        const user = await userCollection.findById(req.session.user._id);
+        if (!user) {
+            return res.status(400).json({ message: "User not found", success: false });
+        }
+
+        // Compare old password with the password stored in the database
+        const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!passwordMatch) {
+            return res.status(400).json({ message: "Old password does not match", success: false });
+        }
+
+        // Hash the new password
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update user's password in the database
+        await userCollection.findByIdAndUpdate(user._id, { $set: { password: hashedNewPassword } });
+
+        // Redirect to login page after successfully changing password
+        res.redirect('/login');
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error!");
+    }
+};
+
+
+
 
 
 
@@ -85,6 +143,8 @@ module.exports ={
     getUserProfilePage,
     uploadDp,
     geteditProfile,
-    editProfile
+    editProfile,
+    changePasswordPage,
+    changePassword
 
 }

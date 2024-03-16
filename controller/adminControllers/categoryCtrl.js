@@ -16,28 +16,36 @@ const getCategory = async (req, res) => {
   }
 };
 
-// insert category
-
 const insertCategory = async (req, res) => {
   try {
-    const {categoryName} = req.body   
-    const categoryData = await CategoryCollection.findOne({ categoryName: categoryName });    
-    
-    if (categoryData) {
-      res.status(409).json({ success: false, message: 'Category already exists' });
+    const categoryName = req.body.addCategory;
+    const findCat = await CategoryCollection.findOne({ categoryName: { $regex: new RegExp(categoryName, 'i') } });
+
+    if (findCat) {
+      const catCheck = `Category ${categoryName} already exists`;
+      // Fetch categories and pass them to the template
+      const categories = await CategoryCollection.find();
+      res.render('./admin/pages/addCategory', { catCheck, categories, title: 'addCategory' });
     } else {
-      const addcategory =await CategoryCollection.create({
-        categoryName: categoryName,        
-        
+      const result = new CategoryCollection({
+        categoryName: categoryName,
       });
-      const categories = await CategoryCollection.find({});
-      res.render('admin/pages/addCategory', { category: categories }); 
+      await result.save();
+
+      // Fetch categories and pass them to the template
+      const categories = await CategoryCollection.find();
+      res.render('./admin/pages/addCategory', {
+        message: `Category ${categoryName} added successfully`,
+        categories,
+        title: 'addCategory',
+      });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error(error.message);
   }
 };
+
+
 
 
 // list category
@@ -130,6 +138,7 @@ const searchCategory = async (req, res) => {
 }
 
 
+
 module.exports = {
   getCategory,
   insertCategory,
@@ -137,5 +146,6 @@ module.exports = {
   updateCategory,
   editCategory,
   unList,
-  list
+  list,
+  searchCategory
 }

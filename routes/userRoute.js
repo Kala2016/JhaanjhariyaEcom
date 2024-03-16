@@ -16,6 +16,7 @@ const loginController = require("../controller/userControllers/loginCtrl");
 const signupController = require("../controller/userControllers/signupCtrl");
 const profileController = require("../controller/userControllers/profileCtrl");
 const addressController = require("../controller/userControllers/addressCtrl");
+const orderController = require("../controller/userControllers/orderCtrl")
 
 // Middleware to set views folder for admin
 userRoute.use((req, res, next) => {
@@ -85,12 +86,6 @@ userRoute.get('/checkProductAvailability', userLoggedIn, cartController.checkPro
 userRoute.get('/removeProduct/:id',userValid,userLoggedIn,cartController.removeProductfromCart)
 
 
-
-
-
-
-// userRoute.put("/productaddtocart",userValid,userLoggedIn,cartController.productAddtoCart);
-
 // forget-Password and reset password section 
 userRoute.get('/forgetPassword', loginController.forgotPasswordpage);
 userRoute.post('/forgetPassword', loginController.sendResetLink);
@@ -99,21 +94,38 @@ userRoute.post('/resetPassword/:token',loginController.resetPassword);
 
 //userProfile
 
-userRoute.get('/userProfile',profileController.getUserProfilePage);
-userRoute.post('/editProfile',profileController.geteditProfile);
-userRoute.put('/editProfile',profileController.editProfile)
-userRoute.post('/uploadDp',imageUpload.single("image"),profileController.uploadDp)
+userRoute.get('/userProfile',userValid,userLoggedIn,profileController.getUserProfilePage);
+
+userRoute.post('/editProfile',userValid,userLoggedIn,profileController.editProfile)
+
+userRoute.post('/uploadDp',imageUpload.single("image"),userValid,userLoggedIn,profileController.uploadDp)
+userRoute.get('/changePassword',userValid,userLoggedIn,profileController.changePasswordPage)
+userRoute.post('/changePassword',userValid,userLoggedIn,profileController.changePassword)
 
 
 //addAddress
-userRoute.get("/savedAddress",addressController.savedAddress)
-userRoute.get('/addAddress', addressController.addAddressPage)
-userRoute.get('/')
+
+userRoute.get('/addAddressPage',userValid,userLoggedIn,addressController.addAddressPage)
+userRoute.put('/addAddress',userValid,userLoggedIn,addressController.insertAddress)
+userRoute.get('/editAddressPage',userValid,userLoggedIn,addressController.editAddressPage)
+userRoute.delete('/deleteAddress/:id',userValid,userLoggedIn,addressController.deleteAddress)
+userRoute.post('/updateAddress/:id', userValid, userLoggedIn, addressController.updateAddress);
 
 
 
 
-userRoute.get('*', (req, res) => { res.render('users/pages/404') })
+//Checkout & placeorders
+
+userRoute.get('/checkoutPage',userValid,userLoggedIn,orderController.checkoutPage)
+userRoute.get('/orders',userValid,userLoggedIn,orderController.orderPlacedPage)
+
+
+
+
+
+
+
+
 
 
 

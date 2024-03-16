@@ -6,6 +6,32 @@ const CollectionModel = require("../../models/collectionSchema");
 const { ObjectId } = require("mongodb");
 const variant= require("../../models/variantSchema");
 
+//Search 
+
+const search =  async (req, res) => {
+  try {
+    id =req.params.id;
+      let query={$text:{$search:` "${id}"`}};
+      var results = await productCollection.find(query).toArray();
+        if (!results.length){
+          return res.status(404).json({message:"No products found"});
+        }else{
+            // console.log('Results',results);
+             return res.status(200).json(results);
+           }  
+    
+  } catch (error) {
+    console.log("Error in Searching", error);
+    return res.status(500).json({ message: "Server Error!" });
+    
+  }
+}
+
+
+
+
+
+
 // Load Home Page
 const getUserRoute = async (req, res) => {
   try {
@@ -211,4 +237,5 @@ module.exports = {
   getproductpage,
   getShoppingpage,
   getVariantDetails,
+  search
 };

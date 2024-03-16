@@ -68,6 +68,7 @@ app.use("/", userRoute);
 app.use("/admin", adminRoute);
 
 
+// app.use('*', (req, res) => { res.render('users/pages/404') })
 
 //Server
 
