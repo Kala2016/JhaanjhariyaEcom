@@ -44,7 +44,7 @@ const userSchema = new Schema({
     type:String,
     default:"1.png"
   },
-  addresses:[address.schema],
+  addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'address' }],addresses:[address.schema],
   
   cart:[
     {
@@ -65,7 +65,6 @@ const userSchema = new Schema({
     }
 ],
 
-addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }],
 
   passwordChangedAt: Date,
   passwordResetToken: String,

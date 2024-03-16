@@ -112,8 +112,11 @@ const insertProduct = async (req, res) => {
         });
       }
       console.log("imageUrls", imageUrls);
+      let imageId;
+      if (imageUrls.length > 0){
       const image = await Images.create(imageUrls);
-      const imageId = image.map((image) => image._id).reverse();
+      const imageId = image.map((image) => image._id).reverse()};
+
 
       const newProduct = await productCollection.create({
         productName: req.body.productName,
@@ -331,7 +334,6 @@ const editProductPage = async (req, res) => {
   }
 };
 
-//update Product Page
 
 const updateProduct = async (req, res) => {
   try {
@@ -364,11 +366,13 @@ const editImage = async (req, res) => {
     const thumbnailBuffer = await sharp(file.path).resize(300, 300).toBuffer();
     const imageUrl = path.join("/adminassets/uploads", file.filename);
     const thumbnailUrl = path.join("/adminassets/uploads", file.filename);
+    const product = await productCollection.findById({_id :id});
 
     const images = await Images.findByIdAndUpdate(imageId, {
       imageUrl: imageUrl,
       thumbnailUrl: thumbnailUrl,
-    });
+
+    }, { new: true }); //return the updated document
 
     req.flash("success", "Image updated");
     res.redirect("back");
@@ -378,22 +382,42 @@ const editImage = async (req, res) => {
 };
 
 // Delete image using fetch
+// const deleteImage = async (req, res) => {
+//   try {
+//     const imageId = req.params.id;
+//     // Optionally, can remove the image from your database
+//     await Images.deleteOne({ _id: imageId });
+//     const product = await productCollection.findOneAndUpdate(
+//       { images: imageId },
+//       { $pull: { images: imageId } },
+//       { new: true }
+//     );
+//     res.json({ message: "Images Removed" });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
+
 const deleteImage = async (req, res) => {
   try {
     const imageId = req.params.id;
     // Optionally, can remove the image from your database
+    // Assuming Images is a model or collection from MongoDB
     await Images.deleteOne({ _id: imageId });
     const product = await productCollection.findOneAndUpdate(
       { images: imageId },
       { $pull: { images: imageId } },
       { new: true }
     );
-    res.json({ message: "Images Removed" });
+    // Sending a confirmation message to the client
+    res.json({ message: "Image about to be deleted. Confirm?", imageId });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 const getallProduct = async (req, res) => {
   try {
@@ -456,4 +480,5 @@ module.exports = {
   getallProduct,
   addVariant,
   updateVariants,
+  
 };

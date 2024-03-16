@@ -16,33 +16,31 @@ const getCartPage = async (req, res) => {
         populate: { path: "images" },
       })
       .populate("cart.variantId");
-    console.log("cartData ", cart.cart);
 
     if (cart.cart.length === 0) {
       // When user has an empty cart
-      res.render("./users/pages/shopping-cart", { cart: [], total: 0 });
-      // console.log("Cart not found for user:", req.session.user~Id);
-      // return res.status(404).send("Cart not found");
-    } else {
-      const userCart = cart.cart;
-
-      // Calculate subtotal
-      
-
-      const subtotal = userCart.reduce((total, cartitem) => {
-        // console.log('cartitem',cartitem?.productId?.salePrice);
-        return total + cartitem.productId.salePrice * cartitem.quantity;
-      }, 0);
-      console.log("subtotal", subtotal);
-
-      const grandTotal =subtotal
-
-      res.render("./users/pages/shopping-cart", { cart: userCart, subtotal,grandTotal }); // Passed userCart and subtotal as variables to the template
+      return res.render("./users/pages/shopping-cart", { cart: [], total: 0 });
     }
+
+    const userCart = cart.cart;
+
+    // Calculate subtotal
+    const subtotal = userCart.reduce((total, cartitem) => {
+      return total + cartitem.productId.salePrice * cartitem.quantity;
+    }, 0);
+
+    // Use subtotal as salesPrice
+    const salesPrice = subtotal;
+
+    const grandTotal = subtotal;
+
+    res.render("./users/pages/shopping-cart", { cart: userCart, subtotal, grandTotal, salesPrice });
   } catch (error) {
     console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 };
+
 
 const addtoCart = async (req, res) => {
   try {
@@ -51,10 +49,7 @@ const addtoCart = async (req, res) => {
 
     const { quantity = 1 } = req.query;
 
-    console.log(
-      "Request Body:===========================================",
-      req.body
-    );
+ 
     const ID = req.session.user._id;
     console.log("id===", req.session.user._id);
 
@@ -197,10 +192,19 @@ const checkProductAvailability = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
+
+
 module.exports = {
   getCartPage,
   addtoCart,
   updateCart,
   removeProductfromCart,
-  checkProductAvailability
+  checkProductAvailability,
+
 };

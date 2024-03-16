@@ -44,10 +44,12 @@ adminRoute.post('/list/:id', productCtrl.listProduct)
 adminRoute.post('/unList/:id',productCtrl.unListProduct)  
 adminRoute.get('/editProduct/:id',productCtrl.editProductPage)
 adminRoute.post('/editProduct/:id',productCtrl.updateProduct)
-adminRoute.put('/editimage/:id', upload.single("image"),
+adminRoute.put('/editimage/productId/image/:imageId', upload.single("image"),
     productCtrl.editImage)
+adminRoute.put('/updateProduct/:id',productCtrl.updateProduct)   
 adminRoute.delete('/delete-image/:id', productCtrl.deleteImage),
 adminRoute.post('/searchProduct',productCtrl.getaProduct)
+adminRoute.post('/')
 
 
 

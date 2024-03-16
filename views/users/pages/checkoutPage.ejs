@@ -1,0 +1,173 @@
+<%- include('../partials/header.ejs')%>
+
+<!-- Breadcrumb Section Begin -->
+<div class="breacrumb-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb-text product-more">
+                    <a href="./login.ejs"><i class="fa fa-home"></i> Home</a>
+                    <a href="./shop.html">Shop</a>
+                    <span>Check Out</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb Section End -->
+
+<!-- Shopping Cart Section Begin -->
+<section class="checkout-section spad">
+    <div class="container">
+        <form action="#" class="checkout-form">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="checkout-content">
+                        <input type="text" placeholder="Enter Your Coupon Code">
+                    </div>
+                    <div class="place-order">
+                        <h4>Your Order</h4>
+                        
+                        <div class="order-total">
+                            <table class="order-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (Array.isArray(cartItem) && cartItem.length > 0) { %>
+                                        <% let grandTotal = 0; %>
+                                        <% cartItem.forEach(function(cartItem) { %>
+                                            <tr>
+                                                <td><%= cartItem.product.productName %></td>
+                                                <td>x <%= cartItem.quantity %></td>
+                                                <td>
+                                                    <% if (cartItem.product && cartItem.product.salePrice !== undefined) { %>
+                                                        <%= (cartItem.product.salePrice * cartItem.quantity).toLocaleString() %>
+                                                    <% } else { %>
+                                                        N/A
+                                                    <% } %>
+                                                    
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="3">No items in cart</td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="fw-normal" colspan="2">Subtotal</td>
+                                        <td><%= cartSubtotal.toLocaleString() %></td> <!-- Update this line -->
+                                    </tr>
+                                    <tr>
+                                        <td class="total-price" colspan="2">Total</td>
+                                        <td><%= grandTotal.toLocaleString() %></td>
+<%#  %>                                    </tr>
+                                </tfoot>
+                                
+                                </table>
+                            
+                            
+                            <div class="payment-check">
+                                <div class="pc-item">
+                                    <label for="pc-check">
+                                        Cheque Payment
+                                        <input type="checkbox" id="pc-check">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                                <div class="pc-item">
+                                    <label for="pc-paypal">
+                                        Paypal
+                                        <input type="checkbox" id="pc-paypal">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                                <div class="pc-item">
+                                    <label for="pc-paypal">
+                                        Cash on Delivery
+                                        <input type="checkbox" id="pc-paypal">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="order-btn">
+                                <button type="submit" class="site-btn place-btn">Place Order</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="checkout-content">
+                        <a href="/user-login" class="content-btn">Click Here To Login</a>
+                    </div>
+                    <h4>Billing Details</h4>
+                    <div class="row">
+                        <!-- Radio buttons arranged side by side -->
+
+                        <% if(address.length>0) {%>
+                            <% address.forEach(address=> { %>
+                                
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="address"
+                                                value="<%= address._id %>" required>
+                                            <label class="form-check-label">
+                                                `<%= address.addressType %> %>`<br>
+                                                <%= address.address_name %> %><br>                                                
+                                                    <%= address.house_name %><br>
+                                                        <%= address.street_address %>, <%= address.city %> ,<%= address.state %> , <%=
+                                                                    address.pincode %><br>
+                                                                    Phone: <%= address.phone %>, Alt Phone: <%= address.alt_phone %>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }); %>
+                                    <% } else { %>
+                                        <div class="d-flex justify-content-between">
+                                            <h4 class="mb-4">No address found</h4>
+                                        </div>
+                                        <% } %>
+                        
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="create-item">
+                            <label for="acc-create">
+                                Add New Address
+                                <input type="checkbox" id="acc-create">
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!-- Shopping Cart Section End -->
+
+<style>
+    .form-check-input {
+        transform: scale(0.3); /* Adjust the scale value to resize the radio button */
+    }
+</style>
+
+<style>
+    td {
+        padding: 5px; /* Adjust the padding as needed */
+        border-bottom: 1px;color: gray;
+    }
+</style>
+
+
+
+
+<%- include('../partials/footer.ejs')%>
