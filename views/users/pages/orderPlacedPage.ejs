@@ -1,0 +1,126 @@
+<%- include('../partials/header') %>
+
+<div class="checkout-area pt-5 pb-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="text-center">
+                    <h2 class="display-3 text-success mb-4">Success!</h2>
+                    <h4 class="display-3 text-success mb-4">Thank you for your Order</h4>
+
+                    <div class="order-details mt-4">
+                        <p class="lead"><strong class="text-success">Order Details:</strong></p>
+                        <table class="table table-striped table-left"> <!-- Added class "table-left" -->
+                            <tr>
+                                <th>Order ID:</th>
+                                <td><span class="text-primary"><%= order.orderId %></span></td>
+                            </tr>
+                            <tr>
+                                <th>Total Amount:</th>
+                                <td>Rs.<span class="text-primary"><%= (order.total).toLocaleString() %></span></td>
+                            </tr>
+                            <tr>
+                                <th>Delivery Address:</th>
+                                <td>
+                                    <% if (order.address) { %> <!-- Update this line -->
+                                        <span class="text-primary">
+                                            <%= order.address.address_name %>,
+                                            <%= order.addresshouse_name %>,
+                                            <%= order.address.street_address %>,
+                                            <%= order.address.city %>
+                                        </span>
+                                    <% } else { %>
+                                        <span>No delivery address found.</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Estimated Arrival Date:</th>
+                                <td>
+                                    <span class="text-primary">
+                                        <%= order.estimatedDelivery.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Payment Method:</th>
+                                <td><span class="text-primary"><%= order.paymentMethod %></span></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="quickview-btn-cart mt-3">
+                        <a class="btn btn-warning btn-hover-black mr-3" href="/shop">Continue Shopping</a>
+                        <a class="btn btn-secondary btn-hover-black" href="/viewOrder">View Orders</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<style>
+    /* Styles for the orderPlacedPage */
+.checkout-area {
+    padding-top: 100px; /* Adjust padding as needed */
+    padding-bottom: 100px; /* Adjust padding as needed */
+}
+
+.order-details {
+    background-color: #f8f9fa; /* Light background color */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
+}
+
+.order-details h2 {
+    color: #28a745; /* Success text color */
+}
+
+.order-details ul li {
+    margin-bottom: 10px;
+}
+
+.order-details ul li strong {
+    color: #ffc107; /* Primary text color */
+}
+
+.order-details ul li .text-primary {
+    color: #6c757d; /* Secondary text color */
+}
+
+.quickview-btn-cart a {
+    display: inline-block;
+    margin-top: 20px;
+    margin-right: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #fff; /* Text color */
+    background-color: #ffc107; /* Primary button color */
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.quickview-btn-cart a:hover {
+    background-color: #6c757d; /* Hover color */
+}
+
+.table-left th,
+.table-left td {
+    text-align: left;
+}
+
+
+</style>
+
+
+<%- include('../partials/footer.ejs') %>

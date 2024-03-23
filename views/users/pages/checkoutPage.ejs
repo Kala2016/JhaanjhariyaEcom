@@ -1,5 +1,7 @@
 <%- include('../partials/header.ejs')%>
 
+
+
 <!-- Breadcrumb Section Begin -->
 <div class="breacrumb-section">
     <div class="container">
@@ -16,157 +18,253 @@
 </div>
 <!-- Breadcrumb Section End -->
 
-<!-- Shopping Cart Section Begin -->
-<section class="checkout-section spad">
+<div class="checkout-area ptb-100">
     <div class="container">
-        <form action="#" class="checkout-form">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="coupon-accordion">
+                    <!-- ACCORDION START -->
+                    <!-- <h3>Have a coupon? <span id="showcoupon">Click here to enter your code</span></h3><br>
+                    <form action="" method="POST" id="couponForm">
+                        <div id="checkout_coupon" class="coupon-checkout-content">
+                            <div class="coupon-info">
+                                <p class="checkout-coupon">
+                                    <input type="text" id="couponCode" placeholder="Coupon code" name="coupon" />
+                                    <input type="submit" id="couponButton" value="Apply Coupon" />
+                                </p>
+                                <p id="coupon-details"></p>
+                            </div>
+                        </div>
+                    </form> -->
+                    <!-- ACCORDION END -->
+                </div>
+            </div>
+        </div><br>
+        <form action="/placeOrder" method="POST" id="checkout-form">
             <div class="row">
-                <div class="col-lg-6">
-                    <div class="checkout-content">
-                        <input type="text" placeholder="Enter Your Coupon Code">
-                    </div>
-                    <div class="place-order">
-                        <h4>Your Order</h4>
-                        
-                        <div class="order-total">
-                            <table class="order-table">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% if (Array.isArray(cartItem) && cartItem.length > 0) { %>
-                                        <% let grandTotal = 0; %>
-                                        <% cartItem.forEach(function(cartItem) { %>
-                                            <tr>
-                                                <td><%= cartItem.product.productName %></td>
-                                                <td>x <%= cartItem.quantity %></td>
-                                                <td>
-                                                    <% if (cartItem.product && cartItem.product.salePrice !== undefined) { %>
-                                                        <%= (cartItem.product.salePrice * cartItem.quantity).toLocaleString() %>
-                                                    <% } else { %>
-                                                        N/A
-                                                    <% } %>
-                                                    
-                                                </td>
-                                            </tr>
-                                        <% }); %>
-                                    <% } else { %>
-                                        <tr>
-                                            <td colspan="3">No items in cart</td>
-                                        </tr>
-                                    <% } %>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td class="fw-normal" colspan="2">Subtotal</td>
-                                        <td><%= cartSubtotal.toLocaleString() %></td> <!-- Update this line -->
-                                    </tr>
-                                    <tr>
-                                        <td class="total-price" colspan="2">Total</td>
-                                        <td><%= grandTotal.toLocaleString() %></td>
-<%#  %>                                    </tr>
-                                </tfoot>
-                                
-                                </table>
-                            
-                            
-                            <div class="payment-check">
-                                <div class="pc-item">
-                                    <label for="pc-check">
-                                        Cheque Payment
-                                        <input type="checkbox" id="pc-check">
-                                        <span class="checkmark"></span>
-                                    </label>
+                <div class="col-lg-6 col-md-12 col-12">
+                    <div class="checkbox-form">
+                        <div class="d-flex">
+                            <h3>Billing Address</h3>
+                            <a class="btn-hover list-btn-style mb-4 billing-address-btn" data-toggle="tooltip" title="Add new Address"
+                                href="/addAddressPage?from=checkoutPage">Add New Address</a>
+                        </div>
+                        <div class="row">
+                            <% if (address.length > 0) { %>
+                                <% address.forEach(address => { %>
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="address"
+                                                    value="<%= address._id %>" required>
+                                                <label class="form-check-label">
+                                                    <%= address.house_name %><br>
+                                                    <%= address.addressType %><br>
+                                                    <%= address.house_name %>, <br>
+                                                    <%= address.street_address %>,<br>
+                                                    <%= address.city %>,
+                                                    <br>
+                                                    <%= address.state %>,
+                                                    <%= address.postCode %><br>
+                                                    Phone no.: <%= address.phone %> Alt Phone No.:<%= address.alt_phone %>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="d-flex justify-content-between">
+                                    <h4 class="mb-4">No address found</h4>
                                 </div>
-                                <div class="pc-item">
-                                    <label for="pc-paypal">
-                                        Paypal
-                                        <input type="checkbox" id="pc-paypal">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                                <div class="pc-item">
-                                    <label for="pc-paypal">
-                                        Cash on Delivery
-                                        <input type="checkbox" id="pc-paypal">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="order-btn">
-                                <button type="submit" class="site-btn place-btn">Place Order</button>
-                            </div>
+                            <% } %>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div class="checkout-content">
-                        <a href="/user-login" class="content-btn">Click Here To Login</a>
-                    </div>
-                    <h4>Billing Details</h4>
-                    <div class="row">
-                        <!-- Radio buttons arranged side by side -->
+                <div class="col-lg-6 col-md-12 col-12">
+                    <div class="your-order">
+                        <h3>Your order</h3>
+                        <input type="hidden" id="originalCartData" name="cartItems"
+                            value="<%= JSON.stringify(cartItem) %>" />
 
-                        <% if(address.length>0) {%>
-                            <% address.forEach(address=> { %>
-                                
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="address"
-                                                value="<%= address._id %>" required>
-                                            <label class="form-check-label">
-                                                `<%= address.addressType %> %>`<br>
-                                                <%= address.address_name %> %><br>                                                
-                                                    <%= address.house_name %><br>
-                                                        <%= address.street_address %>, <%= address.city %> ,<%= address.state %> , <%=
-                                                                    address.pincode %><br>
-                                                                    Phone: <%= address.phone %>, Alt Phone: <%= address.alt_phone %>
-                                            </label>
+                        <div class="your-order-table table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="product-name">Product</th>
+                                        <th class="product-total">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% cartItem.forEach(item => { %>
+                                        <tr class="cart_item">
+                                            <td class="product-name">
+                                                <%= item.product.productName %> <strong class="product-quantity">
+                                                    × <%= item.quantity %></strong>
+                                            </td>
+                                            <td class="product-total">
+                                                <span class="amount">
+                                                    <%= (item.product.salePrice * item.quantity).toLocaleString() %>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="cart-subtotal">
+                                        <th>Cart Subtotal</th>
+                                        <td><span class="amount">
+                                                <%= (cartSubtotal).toLocaleString() %>
+                                            </span></td>
+                                    </tr>
+                                    <tr class="processingFee">
+                                        <th>Processing Fee</th>
+                                        <td><span class="amount">₹<%= processingFee %></span></td>
+                                    </tr>
+                                    <tr class="order-total">
+                                        <th>Order Total</th>
+                                        <td><strong>₹<span class="amount" id="orderTotal"><%= grandTotal %></span></strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <!-- <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5>Wallet</h5>
+                                    <p>Available Balance: ₹<span id="walletBalanceAmount"></span></p>
+                                </div>
+                            </div> -->
+                        </div>
+                        <div class="payment-method">
+                            <div class="row">
+                                <div class="col-md-12">                                
+                                <div class="payment-accordion">
+                                    <div class="panel-group" id="paymentMethods">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h5 class="panel-title">Choose your Payment Method</h5>
+                                            </div>
+                                            <br>
+                                            <div id="paymentMethodsContent" class="panel-collapse collapse show"
+                                                data-bs-parent="#paymentMethods">
+                                                <div class="panel-body">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" value="COD"
+                                                            name="paymentMethod" id="COD" required>
+                                                        <label class="form-check-label" for="cashOnDelivery">Cash On
+                                                            Delivery (COD)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <% }); %>
-                                    <% } else { %>
-                                        <div class="d-flex justify-content-between">
-                                            <h4 class="mb-4">No address found</h4>
-                                        </div>
-                                        <% } %>
-                        
-                    </div>
-                    <div class="col-lg-12">
-                        <div class="create-item">
-                            <label for="acc-create">
-                                Add New Address
-                                <input type="checkbox" id="acc-create">
-                                <span class="checkmark"></span>
-                            </label>
+                                </div>                           
+                                
+                            </div>
+                            
                         </div>
                     </div>
+                    <% if (address.length > 0) { %>
+                        <div class="order-button-payment">
+                            <button type="submit" id="submitButton">Place order</button>
+                        </div>
+                        
+                    <% } else { %>
+                        <p class="text-center text-danger">You have no address! Please add an Address to place your
+                            order.</p>
+                    <% } %>
                 </div>
             </div>
         </form>
     </div>
-</section>
-<!-- Shopping Cart Section End -->
+</div>
 
 <style>
-    .form-check-input {
-        transform: scale(0.3); /* Adjust the scale value to resize the radio button */
+    /* Custom styles for the checkout page */
+
+    /* Billing Address Section */
+    .checkbox-form {
+        margin-bottom: 30px;
+    }
+
+    /* Order Summary Section */
+    .your-order {
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 5px;
+    }
+
+    .your-order h3 {
+        margin-bottom: 20px;
+    }
+
+    .your-order-table {
+        margin-bottom: 20px;
+    }
+
+    .order-button-payment {
+        margin-top: 20px;
+    }
+
+    /* Place Order Button */
+    #submitButton {
+        width: 100%;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        background-color: #ffc107;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    #submitButton:hover {
+        background-color: #6c757d;
+    }
+
+    /* Styling for Billing Address Addition Button */
+    .billing-address-btn {
+        background-color: #6c757d;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        margin-left: 10px;
+    }
+
+    .billing-address-btn:hover {
+        background-color: #ffc107;
     }
 </style>
 
-<style>
-    td {
-        padding: 5px; /* Adjust the padding as needed */
-        border-bottom: 1px;color: gray;
-    }
-</style>
+<!-- Script Section -->
+<script>
+    $('#checkout-form').submit(function (e) {
+            e.preventDefault();
+            const submitButton = document.getElementById('submitButton');
+            submitButton.disabled = true; // Disables the submit button
 
+            // checking the cartItems if there is any changes--
+            $.ajax({
+                url: '/checkout',
+                method: 'GET',
+                data: {
+                    originalCartInput
+                },
+                success: function (response) {
+                    if (response.success) {
+                        console.log(response);
+                        placeOrder()  //if no change in cart place the order else refresh
+                        submitButton.disabled = false
+                    } else {
+                      changeInCartAlert()
+                      submitButton.disabled = false
+                    }
+
+                },
+                error: function (err) {
+                    console.error(err);
+                }
+            });
+        });
+</script>
 
 
 

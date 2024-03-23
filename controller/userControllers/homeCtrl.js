@@ -76,39 +76,40 @@ const getLogout = async (req, res) => {
 
 const getShoppingpage = async (req, res) => {
   try {
-    console.log(req.query);
-    let salePrice = 0;
-    const category = await CategoryCollection.find({ isListed: true });
-    const collection = await CollectionModel.find();
-    const cart = await userCollection.findOne(
-      { user_id: "userid" },
-      { upsert: true }
-    );
-    console.log("Cart ==", cart);
+    // Extract query parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const sort = req.query.sort || null;
+    const categoryFilter = req.query.category || null;
+    const collectionFilter = req.query.collection || null;
+    const category =  await CategoryCollection.find()
+    const collection = await CollectionModel.find()
+    
 
-    const cartitem = cart ? cart.item : ["No cart"];
-    console.log("Cart items", cartitem);
-
-    const variants = await productCollection.find();
-
-    const catId = category.find(
-      (cat) => cat.categoryName === req.query.category
-    )?._id;
+    // Prepare filter criteria
     const filter = { isListed: true };
-
-    if (req.query.category) {
-      filter.categoryName = catId;
+    if (categoryFilter) {
+      const catId = CategoryCollection.find(cat => cat.categoryName === categoryFilter)?._id;
+      if (catId) {
+        filter.categoryName = catId;
+      }
     }
-    console.log("category", category);
-
-    const collId = collection.find(
-      (coll) => coll.collectionName === req.query.collection
-    )?._id;
-
-    if (req.query.collection) {
-      filter.collectionName = collId;
+    if (collectionFilter) {
+      const collId = CollectionModel.find(coll => coll.collectionName === collectionFilter)?._id;
+      if (collId) {
+        filter.collectionName = collId;
+      }
     }
 
+    // Prepare sorting criteria
+    let sortCriteria = {};
+    if (sort === 'lowToHigh') {
+      sortCriteria.salePrice = 1;
+    } else if (sort === 'highToLow') {
+      sortCriteria.salePrice = -1;
+    }
+
+    // Find products based on filter criteria, pagination, and sorting
     const products = await productCollection
       .find(filter)
       .populate("productName")
@@ -116,23 +117,29 @@ const getShoppingpage = async (req, res) => {
       .populate("categoryName")
       .populate("collectionName")
       .populate("variants")
-      .populate("salePrice");
+      .populate("salePrice")
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort(sortCriteria);
 
+    // Render the page with the filtered, paginated, and sorted products
     res.render("./users/pages/shop", {
       products: products,
       category: category,
       collection: collection,
-      variants: variants,
-      selectedCategory: req.query.category,
-      selectedCollection: req.query.collection,
-      salePrice: salePrice,
+      selectedCategory: categoryFilter,
+      selectedCollection: collectionFilter,
+      salePrice: 0, // Consider if you need to adjust this value
+      currentPage: page,
+      totalPages: Math.ceil(products.length / limit) || 1, // Calculate total pages
     });
-
-    // console.log("selectedCategory", selectedCategory);
   } catch (error) {
     console.error(error);
+    // Handle errors appropriately
+    res.status(500).send("Internal Server Error");
   }
 };
+
 
 const getproductpage = async (req, res) => {
   try {

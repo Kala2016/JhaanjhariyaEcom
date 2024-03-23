@@ -91,6 +91,7 @@ const insertProduct = async (req, res) => {
         try {
           const imageBuffer = await sharp(file.path)
             .resize(600, 800)
+            .extract({ left: 0, top: 0, width: 300, height: 300 }) // Crop the image
             .toBuffer();
           const thumbnailBuffer = await sharp(file.path)
             .resize(300, 300)
@@ -102,7 +103,6 @@ const insertProduct = async (req, res) => {
           console.error("Error processing image:", error);
         }
       }
-
       const variantArray = [];
       for (let i = 1; i <= req.body.variant; i++) {
         variantArray.push({

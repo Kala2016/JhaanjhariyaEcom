@@ -1,0 +1,202 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        /* Add your custom styles here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-primary:hover,
+        .btn-danger:hover {
+            background-color: #0056b3;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
+        }
+        table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align:left;
+
+}
+
+.order-info, .product-info {
+    width: 800px;
+    height: 500px; /* Adjust height as needed */
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <% if (viewOrder) { %>
+        <% viewOrder.items.forEach(item => { %>
+        <h2 class="text-center">Edit Order</h2>
+        <table>
+            <tr>
+                <th colspan="2">Order Information</th>
+            </tr>
+            <tr>
+                <td>Order ID:</td>
+                <td><%= viewOrder.orderId %></td>
+            </tr>
+            <tr>
+                <td>Customer Email:</td>
+                <td><%= viewOrder.user.email %></td>
+            </tr>
+            <tr>
+                <td>Customer Address:</td>
+                <td>
+                    <%= viewOrder.address.address_name %>, <%= viewOrder.address.house_name %>,
+                    <%= viewOrder.address.street_name %>, <%= viewOrder.address.city %>,
+                    <%= viewOrder.address.state %>, <%= viewOrder.address.pincode %>,
+                    <%= viewOrder.address.phone %>, <%= viewOrder.address.alt_phone %>
+                </td>
+            </tr>
+            <tr>
+                <td>Order Status:</td>
+                <td>
+                    <% if (item.status == 'Return requested' || item.status == 'Refunded') { %>
+                    <span class="font-weight-bold"><%= item.status %></span>
+                    <% } else { %>
+                    <select name="status" class="form-control">
+                        <% if (item.status !== 'Refunded') { %>
+                        <option value="<%= item.status %>"><%= item.status %></option>
+                        <% } %>
+                        <% if (item.status !== 'Cancelled' && item.status !== 'Delivered') { %>
+                        <option value="Pending">Pending</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <% } %>
+                    </select>
+                    <% } %>
+                </td>
+            </tr>
+        </table>
+        
+        <table>
+            <tr>
+                <td rowspan="8"><img src="<%= item.product.images[0].imageUrl %>" alt="Product Image"
+                        class="img-fluid" width="150px" height="150px" a></td>
+                
+            </tr>
+        
+            <tr>
+                <th colspan="2">Product Details</th>
+            </tr>
+            
+            <td>Product Name:</td>
+                <td><%= item.product.productName %></td>
+            <tr>
+                <td>Quantity:</td>
+                <td><%= item.quantity %></td>
+            </tr>
+            <tr>
+                <td>Price:</td>
+                <td>₹<%= (item.product.salePrice).toLocaleString() %></td>
+            </tr>
+            <tr>
+                <td>Processing Fee:</td>
+                <td>₹<%= viewOrder.processingFee %></td>
+            </tr>
+            <% if (viewOrder.discount) { %>
+            <tr>
+                <td>Discount Amount:</td>
+                <td>₹<%= viewOrder.discount %></td>
+            </tr>
+            <% } %>
+            <tr>
+                <td>Total Amount:</td>
+                <td>₹<%= (viewOrder.total).toLocaleString() %></td>
+            </tr>
+        </table>
+        
+        <div class="text-center">
+            <% if (item.status == 'Return requested') { %>
+            <form action="/admin/orders/editOrder/<%= viewOrder._id %>" method="post">
+                <input type="hidden" name="productId" value="<%= item.product._id %>">
+                <input type="hidden" name="status" value="Refunded">
+                <button type="submit" class="btn btn-danger">Confirm Return</button>
+            </form>
+            <% } else { %>
+            <form action="/admin/orders/editOrder/<%= viewOrder._id %>" method="post">
+                <input type="hidden" name="productId" value="<%= item.product._id %>">
+                <button type="submit" class="btn btn-primary">Update Status</button>
+            </form>
+            <% } %>
+        </div>
+        <% }) %>
+        <% } else { %>
+        <h2 class="text-center">No Order found</h2>
+        <% } %>
+    </div>
+</body>
+
+</html>
+
+
+
+                

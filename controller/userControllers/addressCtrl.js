@@ -71,9 +71,12 @@ const insertAddress = async (req, res) => {
 const editAddressPage = async (req, res) => {
   try {
     const userId = req.session.user._id;
-    const addressId = req.params.id;
+    const addressId = req.params.addressId;
 
     const user = await userCollection.findOne({ _id: userId });
+
+    console.log('userId',userId)
+    console.log('addressId',addressId)
     
     // Find the address with the given ID from the user's addresses array
     const editData = user.addresses.find(address => address._id == addressId);
@@ -94,6 +97,7 @@ const editAddressPage = async (req, res) => {
 const updateAddress = async (req, res) => {
   try {
     const id = req.params.id;
+    console.log('id',req.body);
     // Extract address details from the request body
     const { name, address, town, state, postCode, phone, altPhone } = req.body;
     // Update the address details in the database

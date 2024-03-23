@@ -1,82 +1,133 @@
-const Order = require("../../models/orderSchema");
-const { order: orderStatus } = require("../../config/enum");
+const orderModel = require("../../models/orderSchema");
+const { order: orderStatus, order } = require("../../config/enum");
+const productCollection = require("../../models/ProductSchema");
+const userCollection = require("../../models/userSchema");
 
-const getOrders = async (req, res) => {
+
+
+const ordersPage = async (req, res) => {
   try {
-    const orders = await Order.find({})
-      .populate("customer_id")
-      .sort({ order_id: -1 });
-    res.render("admin/pages/orders", { orders: orders });
+
+      const listOrder = await orderModel.find().populate({
+          path: 'items.product',
+          model: 'productCollection'
+      })
+          .sort({ orderDate: -1 });
+
+      res.render('./admin/pages/orders', { title: 'Orders', orders: listOrder })
   } catch (error) {
-    console.log(error.message);
+      console.error(error)
   }
-};
-
-const orderDetails = async (req, res) => {
-  try {
-    const ID = req.params.id;
-    const order = await Order.findOne({ order_id: ID })
-      .populate("customer_id")
-      .populate("items.product_id")
-      .populate("items.variant_id");
-    res.render("admin/pages/orderDetails", { order: order });
-  } catch (error) {
-    console.error(error.message);
-  }
-};
-
-const cancelOrders = async (req, res) => {
-  try {
-    const orderId = req.body.orderId;
-    const order = await Order.findOneAndUpdate(
-      { order_id: orderId },
-      {
-        $set: {
-          status: orderStatus.CBA,
-          CBA: true,
-        },
-      }
-    )
-    if(order){
-        res.status(200).json({message:"Order Delivered"});
-    }else{
-        res.status(400).json({message:"Order Delivery Failed"});
-        
-    }
-  } catch (error) {
-
-    console.error(error.message)
-        res.status(500).json("Internal Server Error");
-    }
-  }
-
-
-
-const markasDelivered = async (req,res)=>{
-    try {
-        const orderId = req.body.orderId;
-        const returnDate = new Date(new Date().setSeconds(new Date().getSeconds()+ 7*24*60*60));
-
-        const order = await Order.findOneAndUpdate({order_id:orderId},{$set:{
-            status:orderStatus.DELIVERED,return_date:returnDate,delivered_date:Date.now()
-        }})
-
-        if (order){
-            res.status(200).json({message:"Order cancelled!",success:true});
-        }else{
-            res.status(400).json({message:"Order cancellation failed!",success:false});
-        }
-
-    } catch (error) {
-        console.log(error.message)
-        res.status(500).json("Internal Server Error!");
-        
-    }
 }
 
+
+const editOrderPage = async (req, res) => {
+  try {
+      const orderId = req.params.id
+      console.log('orderid', orderId);
+      const findOrder = await orderModel.findOne({ _id: orderId })
+          .populate({
+              path: 'items.product',
+              model: 'productCollection',
+              populate: {
+                  path: 'images',
+              },
+          })
+          .populate('address')
+          .populate('user')
+
+          console.log('findOrder', findOrder);
+      res.render('./admin/pages/editOrder',{viewOrder:findOrder} )
+  } catch (error) {
+      console.error(error)
+  }
+}
+
+
+
+// update Order status  , return product , refund and credit amount to wallet--
+const updateOrder = async (req, res) => {
+  try {
+      const orderId = req.params.id;
+      const status = req.body.status;
+      const productId = req.body.productId;
+      console.log('status when admin update order', status);
+
+      const update = await orderModel.findOneAndUpdate(
+          { _id: orderId, 'items.product': productId }, // Match the order and the product
+          { $set: { 'items.$.status': status } } // Update the status of the matched product
+      );
+      if (status == 'Shipped') { // Update shippedDate date
+
+          await orderModel.findOneAndUpdate(
+              { _id: orderId },
+              { $set: { shippedDate: new Date() } }
+          );
+      } else if (status == 'Delivered') { // Update delivered date
+          if (update.paymentStatus == '') { }
+          await orderModel.findOneAndUpdate(
+              { _id: orderId },
+              { $set: { deliveredDate: new Date(), paymentStatus: 'Paid' } }
+          );
+      } else { }
+
+      if (update) { //if update is success            
+          console.log('inside if updated ');
+          if (status == 'Cancelled' && update.paymentMethod == 'COD') { //if the admin updates the status to cancelled ,increase the quantity.
+              decreaseQuantity(orderId, productId)
+
+          } else if (status == 'Cancelled' && (update.paymentMethod == 'RazorPay'
+              || update.paymentMethod == 'Wallet' || update.paymentMethod == 'WalletWithRazorpay')) {
+
+              let productPrice = await decreaseQuantity(orderId, productId);
+              const userId = update.user;
+              const description = 'Order Cancelled';
+              const type = 'credit'
+
+              if (update.discount > 0) {
+                  if (update.items.length > 1) {
+                      productPrice -= (update.discount / update.items.length)
+                  } else {
+                      productPrice -= update.discount;
+                  }
+              }
+              updateWalletAmount(userId, productPrice, description, type)
+
+          } else if (status == 'Refunded') {
+              // increase the quantity and decrease sold , returns the product price
+              let productPrice = await decreaseQuantity(orderId, productId);
+              const userId = update.user;
+              const description = 'Refund';
+              const type = 'credit'
+
+              if (update.discount > 0) {
+                  if (update.items.length > 1) {
+                      productPrice -= (update.discount / update.items.length)
+                  } else {
+                      productPrice -= update.discount;
+                  }
+              }
+
+              updateWalletAmount(userId, productPrice, description, type)
+          } else {
+              console.log('NOthing in updating');
+          }
+
+          res.redirect('/admin/orders')
+      } else {
+          res.status(404).render('./admin/404');
+      }
+
+  } catch (error) {
+      console.error(error)
+  }
+}
+
+
 module.exports = {
-  getOrders,
-  orderDetails,
-  cancelOrders,
-  markasDelivered
-};
+  ordersPage,
+  editOrderPage,
+  updateOrder
+
+
+}
