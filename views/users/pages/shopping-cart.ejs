@@ -50,7 +50,7 @@
                                             <div class="variant-color" style="background-color: <%= cartItem.variantId.color %>;"></div>
                                         </td>
                                         <td class="p-price first-row">Rs.<%= cartItem.variantId.price %></td>
-                                        <td class="p-salePrice first-row">Rs. <%= cartItem.productId.salePrice %></td>                                      
+                                        <td class="p-salePrice first-row" id="salePrice-<%=  cartItem._id  %>">Rs. <%= cartItem.productId.salePrice %></td>                                      
                                        
 
                                         <td class="product-quantity">
@@ -74,7 +74,7 @@
                                                 id="AvailableStock-<%= cartItem.productId %>"></h5>
                                         </td>
                                         
-                                        <td class="total-price first-row" id="subtotal_<%= index %>"><%= (cartItem.productId.salePrice * cartItem.quantity).toLocaleString() %></td>
+                                        <td class="total-price first-row" id="subtotal-<%= cartItem._id %>"><%= (cartItem.productId.salePrice * cartItem.quantity).toLocaleString() %></td>
                                         <td class="product-remove first-row">
                                             <button style="width: 30px; height: 30px;" onclick="showConfirmation(`<%= cartItem._id %>`)"><i class="ti-close"></i></button>
 
@@ -95,8 +95,9 @@
                 <div class="row">
                     <div class="col-lg-4">
                         <div class="cart-buttons">
-                            <a href="/shop" class="primary-btn continue-shop">Continue shopping</a>
+                            <!-- <a href="/shop" class="primary-btn continue-shop">Continue shopping</a> -->
                             <a href="/updateCart" class="primary-btn up-cart">Update cart</a>
+                            <a href="/shop" class="primary-btn up-cart">Continue shopping</a>
                         </div>
                         <div class="discount-coupon">
                             <h6>Discount Codes</h6>
@@ -109,10 +110,10 @@
                     <div class="col-lg-4 offset-lg-4">
                         <div class="proceed-checkout">
                             <ul>
-                                <li class="subtotal">Subtotal <span><%= grandTotal.toLocaleString() %></span></li>
+                                <li class="subtotal" >Subtotal <span id="cart-total"><%= grandTotal.toLocaleString() %></span></li>
                                 <!-- Assuming you want to show 10% discount -->
                                 <li class="discount">Discount <span>10%</span></li>
-                                <li class="cart-total">Total <span><%= (grandTotal * 0.9).toLocaleString() %></span></li>
+                                <li class="cart-total" >Total <span id="grand-total"><%= (grandTotal * 0.9).toLocaleString() %></span></li>
                             </ul>
                             <a href="/checkoutPage" class="proceed-btn">PROCEED TO CHECK OUT</a>
                         </div>
@@ -167,16 +168,22 @@
             data: { quantity: newQuantity },
             success: function (response) {
                 if (response.success) {
-                    $(`#quantity-${productId}`).val(newQuantity);   
+                
+                        document.getElementById(`quantity-${productId}`).value = newQuantity;
 
-                    // Update the subtotal for the individual product
-                    const productPrice = parseFloat($(`#salePrice-${productId}`).text().replace(/[^0-9.-]+/g, ''));
-                    const subtotal = productPrice * newQuantity;
+// Update the subtotal for the individual product
+                const productPriceText = document.getElementById(`salePrice-${productId}`).textContent
+                const productPrice = parseInt(productPriceText.replace(/\D/g, ''), 10); 
+                const subtotal = productPrice * newQuantity;
+                    console.log(productPrice, subtotal);
 
-                    $(`#subtotal-${productId}`).text(`₹${subtotal.toLocaleString()}`);
+                document.getElementById(`subtotal-${productId}`).textContent = `₹${subtotal.toLocaleString()}`;
 
-                    // Update the HTML element that displays the total amount
-                    $('#total-amount').text(`₹${response.totalPrice.toLocaleString()}`);
+           // Update the HTML element that displays the total amount
+             const totalAmountElement = document.getElementById('cart-total');
+              totalAmountElement.textContent = `₹${response.totalPrice.toLocaleString()}`;
+                    const grandTotal = document.getElementById('grand-total')
+                    grandTotal.innerText =  `₹ ${Math.floor(response.totalPrice * 0.9)}`
                 }
                 if (!response.success) {
                     console.log(response.message);
@@ -206,9 +213,8 @@
     quantityInput.value = currentQuantity;
 
     if (typeof productId !== 'object') {
-        const currentQuantity = parseInt($(`#quantity-${productId}`).val());
-        const newQuantity = currentQuantity + 1;
-        updateCartItemQuantity(productId, newQuantity);
+       
+        updateCartItemQuantity(productId, currentQuantity);
         // checkProductAvailability();
     }
 }
@@ -219,10 +225,9 @@
         if(currentQuantity>1){
             currentQuantity--;
             quantityInput.value = currentQuantity;
-        }
+        } 
         
-        if (typeof productId !== 'object') {  
-            
+        if (typeof productId !== 'object') {              
                         
             const currentQuantity = parseInt($(`#quantity-${productId}`).val());
             $(`#quantity-${productId}-btn`).attr("disabled", false);
@@ -231,7 +236,7 @@
                 $(`#quantity-${productId}-btn`).attr("disabled","true");
                 }
             
-            const newQuantity = currentQuantity - 1;
+            // const newQuantity = currentQuantity - 1;
 
             // Enable increment button if quantity is less than total stock
     const totalStock = parseInt($("#total-stock").text()); // Assuming you have an element with id "total-stock" displaying total stock
@@ -240,7 +245,7 @@
     } else {
         $(`#quantity-${productId}-btn`).attr("disabled", "true");
     }
-            updateCartItemQuantity(productId, newQuantity);
+            updateCartItemQuantity(productId, currentQuantity);
             // checkProductAvailability();
             }
         

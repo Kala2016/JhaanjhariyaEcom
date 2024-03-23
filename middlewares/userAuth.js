@@ -6,20 +6,21 @@ const userLoggedIn = async (req, res, next) => {
     if (req.session.user) {
       const user = await userCollection.findById(req.session.user._id);
       if (!user.is_Blocked) {
-        req.userId = user._id
-       return  next();
+        req.userId = user._id;
+        return next(); // Proceed to the next middleware
       }
-      // res.redirect("/logout", {
-      //   error: "Blocked ,You cant access the page",
-      // });     
-            
+      // User is blocked, so redirect to logout with an error message
+      return res.redirect("/logout?blocked=true");
     } else { 
-      res.redirect("/login");
+      // If user is not logged in, redirect to the login page
+      return res.redirect("/login");
     }
   } catch (error) {
-    console.log(error);
+    console.error("Error in userLoggedIn middleware:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
 
 const userNotLoggedIn = async (req, res, next) => {
   try {

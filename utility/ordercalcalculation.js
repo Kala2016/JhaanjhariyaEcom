@@ -1,4 +1,5 @@
 function calculateSubtotal(userWithCart) {
+    console.log(userWithCart,'user dat in calculate')
     const cartItem = userWithCart.cart.map(cartItem => ({ // Access the cart items and their quantities
         product: cartItem.productId,
         quantity: cartItem.quantity,

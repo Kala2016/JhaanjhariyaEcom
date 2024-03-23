@@ -3,6 +3,8 @@ const productCollection = require("../../models/ProductSchema");
 const Variant = require("../../models/variantSchema");
 const { ObjectId } = require("mongodb");
 const { userLoggedIn } = require("../../middlewares/userAuth");
+const { calculateSubtotal } = require("../../utility/ordercalcalculation");
+
 
 //cart page
 
@@ -19,7 +21,7 @@ const getCartPage = async (req, res) => {
 
     if (cart.cart.length === 0) {
       // When user has an empty cart
-      return res.render("./users/pages/shopping-cart", { cart: [], total: 0 });
+      return res.render("./users/pages/shopping-cart", { cart: [], subtotal: 0, grandTotal: 0});
     }
 
     const userCart = cart.cart;
@@ -114,10 +116,10 @@ const updateCart = async (req, res) => {
   try {
     const  productId  = req.params.id;
     const newQuantity = parseInt(req.body.quantity);
-
     const user = req.session.user._id
     console.log('user56789',user);
-    const userData = await userCollection.findOne({_id : user});
+    const userData = await userCollection.findOne({_id : user}).populate(
+       "cart.productId")
     console.log('User Data>>>',userData);
 
     const cartItem = userData.cart.find(cartItem => cartItem._id.toString()===productId)
@@ -141,7 +143,7 @@ const updateCart = async (req, res) => {
     await userData.save();
 
     let totalPrice = 0;
-    user.cart.forEach((cartItem) => {
+    userData.cart.forEach((cartItem) => {
       const quantity = cartItem.quantity;
       const productPrice = cartItem.productId.salePrice; // Adjust according to your data structure
       totalPrice += productPrice * quantity;

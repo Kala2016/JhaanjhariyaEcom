@@ -95,9 +95,7 @@ userRoute.post('/resetPassword/:token',loginController.resetPassword);
 //userProfile
 
 userRoute.get('/userProfile',userValid,userLoggedIn,profileController.getUserProfilePage);
-
 userRoute.post('/editProfile',userValid,userLoggedIn,profileController.editProfile)
-
 userRoute.post('/uploadDp',imageUpload.single("image"),userValid,userLoggedIn,profileController.uploadDp)
 userRoute.get('/changePassword',userValid,userLoggedIn,profileController.changePasswordPage)
 userRoute.post('/changePassword',userValid,userLoggedIn,profileController.changePassword)
@@ -117,7 +115,13 @@ userRoute.post('/updateAddress/:id', userValid, userLoggedIn, addressController.
 //Checkout & placeorders
 
 userRoute.get('/checkoutPage',userValid,userLoggedIn,orderController.checkoutPage)
-userRoute.get('/orders',userValid,userLoggedIn,orderController.orderPlacedPage)
+userRoute.post('/checkoutPage', userValid, userLoggedIn, orderController.checkoutPage);
+userRoute.get('/checkCart',userValid,userLoggedIn,orderController.checkCart)
+userRoute.post('/placeOrder',userValid,userLoggedIn,orderController.placeOrder)
+userRoute.get('/orderPlacedPage',userValid,userLoggedIn,orderController.orderPlacedPage)
+userRoute.get('/orders',userLoggedIn,orderController.orders)
+userRoute.post('/viewOrder/:id',userLoggedIn,orderController.viewOrder);
+
 
 
 

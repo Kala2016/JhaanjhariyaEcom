@@ -81,10 +81,10 @@ adminRoute.post('/user/blockUser/:id',isAdminLoggedIn,userCtrl.blockUser)
 
 //Order Management
 
-adminRoute.get("/orders",isAdminLoggedIn,orderCtrl.getOrders);
-adminRoute.get("/orderdetails/:id",isAdminLoggedIn,orderCtrl.orderDetails);
-adminRoute.put("/cancelorder",isAdminLoggedIn,orderCtrl.cancelOrders)
-adminRoute.put("/markasdeliverd",isAdminLoggedIn,orderCtrl.markasDelivered)
+adminRoute.get("/orders",isAdminLoggedIn,orderCtrl.ordersPage);
+adminRoute.get('/editOrder/:id', isAdminLoggedIn,orderCtrl.editOrderPage)
+adminRoute.post('/editOrder/:id', isAdminLoggedIn, orderCtrl.updateOrder)
+
 
 
 module.exports = adminRoute;

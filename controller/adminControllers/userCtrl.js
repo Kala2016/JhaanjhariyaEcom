@@ -32,14 +32,29 @@ const blockUser = async (req, res) => {
     const findUser = await userCollection.findById(id);
     const updateUser = await userCollection.findByIdAndUpdate(
       id,
-      { $set: { is_Blocked:!findUser.is_Blocked } },
+      { $set: { is_Blocked: !findUser.is_Blocked } },
       { new: true }
     );
-    res.redirect("/admin/userList");
+
+    // Redirect to userList if the user is unblocked, else destroy session
+    if (!updateUser.is_Blocked) {
+      return res.redirect("/admin/userList");
+    }
+
+    // User is blocked, destroy session
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error destroying session:", err);
+      }
+      // Redirect the user to the login page or any other appropriate page
+      res.redirect("/admin/userList");
+    });
   } catch (error) {
-    console.error("Error in blockUser", error);
+    console.error("Error in blockUser:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
 
 
 module.exports = {

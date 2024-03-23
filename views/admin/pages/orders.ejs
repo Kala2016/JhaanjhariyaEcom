@@ -1,167 +1,112 @@
 <%- include('../partials/header.ejs')%>     
 
-
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-	<style>
-	    .paginate_button{
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <style>
+        .paginate_button{
             padding: 0px !important;
             margin-left: 0px !important;
         }
-	</style>
+    </style>
 </head>
 
-
-
 <br>
 <br>
 <br>
 <br>
-<div class="m-3 pt-1">
-    <div>
-        <h2>ORDERS</h2>
-        <div class="container">
-            <div class="px-4 text-center col-md-12" >
-                <table class="table table-dark table-bordered border" id=orderTable>
-                    <thead class="table-light koulen" >
+<br>
+<br>
+<br>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Order List </h2>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table style="width: 100%;" id="example" class="table table-striped table-bordered table-sm"
+                    cellspacing="0" width="100%">
+                    <thead>
                         <tr>
-                            <th scope="col">Order ID</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Payment Type</th>
-                            <th scope="col">Total Price</th>
-                            <th colsapn="2">Action</th>
+                            <th>OrderID</th>
+                            <th scope="col">Products</th>
+                            <th scope="col">Customer Name</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Action</th>
                         </tr>
                     </thead>
-                    <tbody class="">
-                        <% orders.forEach((order,index)=> { %>
+                    <tbody>
+                        <% if (orders.length > 0) { %>
+                            <% orders.forEach(order => { %>
+                                <tr>
+                                    <td><%= order.orderId %></td>
+                                    <td><%= order.items.length %></td>
+                                    <td><%= order.address.address_name %></td> <!-- Adjust this line according to your order schema -->
+                                    <td><%= (order.total).toLocaleString() %></td>
+                                    <td><%= order.orderDate.toLocaleDateString('en-IN', { year: 'numeric', month: 'numeric', day: 'numeric' }) + ' ' +
+                                        order.orderDate.toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric' }) %></td>
+                                    <td>
+                                        <a href="/admin/editOrder/<%= order._id %>" class="btn btn-md rounded font-sm" style="padding: 5px 10px; font-size: 12px;">Detail</a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
                             <tr>
-                                <td>
-                                    # <%= order.order_id %>
-                                </td>
-                                <td>
-                                    <%= order.customer_id.email %>
-                                </td>
-                                <td>
-                                    <%= order.customer_id.name %>
-                                </td>
-                                <% let OS = order.status %>
-                                <td id="status<%= index %>" class="<%= (OS === 'Processing' || OS === 'Shipped') ? 'text-warning' : (OS === 'Cancelled' || OS === 'Cancelled by Admin') ? 'text-danger' : (OS === 'Returned') ? 'text-info' : (OS === 'Delivered') ? 'text-success' : 'text-muted' %>">
-                                    <%= OS %>
-                                </td>																		
-                                <td>
-                                    <%= order.payment_type %>
-                                </td>
-                                <td>
-                                    <%= order.totalPrice %>
-                                </td>
-                                <td>
-                                    <a href="/admin/orderdetails/<%= order.order_id %>"><button class="btn btn-sm btn-info">
-                                        View Order
-                                    </button></a>
+                                <td colspan="6">
+                                    <h2>No Orders yet</h2>
                                 </td>
                             </tr>
-
-                            <!-- Modal -->
-                            <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="orderModalLabel">
-                                                Order Details
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <!-- Add your order details content here -->
-                                            <p>Status: Shipped</p>
-                                            <p>Payment Type: Credit Card</p>
-                                            <p>Total Price: $100.00</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                Close
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <% }) %>
-                                <script>
-                                    function cancelOrder(id, index) {
-                                        Swal.fire({
-                                            title: "Are you sure?",
-                                            text: "Once canceled, you cannot undo this action!",
-                                            icon: "warning",
-                                            showCancelButton: true,
-                                            confirmButtonText: "Confirm",
-                                            cancelButtonText: "Cancel",
-                                            confirmButtonColor: "#d33",
-                                            cancelButtonColor: "#3085d6",
-                                        })
-                                            .then((result) => {
-                                                if (result.isConfirmed) {
-
-                                                    fetch("/admin/cancelorder", {
-                                                        method: "PUT",
-                                                        headers: {
-                                                            "Content-Type": "application/json",
-                                                        },
-                                                        body: JSON.stringify({
-                                                            orderId: id,
-                                                        }),
-                                                    })
-                                                        .then(response => {
-                                                            return response.json();
-                                                        })
-                                                        .then(data => {
-                                                            if (data.success === true) {
-                                                                Swal.fire("Success!", "Order cancelled successfully.", "success");
-                                                                document.getElementById(`cancel${index}`).remove();
-                                                                document.getElementById(`status${index}`).textContent = "Cancelled by admin";
-                                                            } else {
-                                                                Swal.fire("Failed!", "Order cancellation failed.", "error");
-                                                            }
-                                                        })
-                                                        .catch(error => {
-                                                            console.error(error);
-                                                            Swal.fire("Error!", "An error occurred during order cancellation.", "error");
-                                                        });
-                                                } else {
-                                                    Swal.fire("Cancelled", "Order cancellation canceled.", "info");
-                                                }
-                                            });
-                                    }
-
-                                </script>
+                        <% } %>
                     </tbody>
                 </table>
-                <script>
-                    $(document).ready(function () {
-                        new DataTable('#orderTable', {
-                            order: [[0, 'desc']],
-                            "lengthMenu": [7, 20, 30, 50],
-                            "pageLength": 7
-                        });
-                    });
-                </script>
             </div>
         </div>
     </div>
+</section>
 
+<style>
+    .fa-list-alt,
+    .fa-gift,
+    .fa-tag,
+    .fa-image {
+        color: #adb5bd;
+    }
 
-</div>
+    .text {
+        color: black;
+        font-weight: 400;
+    }
 
- 
+    .menu-item {
+        text-decoration: none;
+    }
+
+    a {
+        text-decoration: none !important;
+    }
+
+    .logo-img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        new DataTable('#example', {
+            order: [[4, 'desc']]
+        });
+    });
+</script>
