@@ -1,186 +1,178 @@
-<%- include('../partials/header.ejs') %>
-<!-- login-area start -->
-<div class="register-area ptb-100">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12 col-12 col-lg-6 col-xl-6 ms-auto me-auto">
-                <div class="card shadow p-3">
-                    <div class="row no-gutters">
-                        <!-- Product Image -->
-                        <div class="col-md-4 d-flex align-items-center justify-content-center">
-                            <img src="<%= product.images[0].imageUrl %>" class="card-img" alt="Product Image" />
-                        </div>
-
-                        <div class="col-md-8">
-                            <div class="card-body">
-
-                                <h5 class="card-title">
-                                    <strong>Product Name:</strong>
-                                    <span>
-                                        <%= product.title %>
-                                    </span>
-                                </h5>
-
-                                <p class="card-text">
-                                    <strong>Ordered Date: <%= order.orderDate.toLocaleDateString('en-IN', {
-                                            weekday: 'long' , year: 'numeric' , month: 'long' , day: 'numeric' }) %>
-                                    </strong>
-                                </p>
-                                <!-- Ship To Name -->
-                                <p class="card-text">
-                                    <strong>Ship To :</strong>
-                                    <span>
-                                        <%= order.billingAddress.address_name %>,
-                                            <%= order.billingAddress.house_name %>,
-                                                <%= order.billingAddress.street_address %>,
-                                                    <%= order.billingAddress.city %>,
-                                                        <%= order.billingAddress.state %>,
-                                                            <%= order.billingAddress.pincode %>,
-                                                                <%= order.billingAddress.phone %>
-                                                                <%= order.billingAddress.alt_phone %>
-                                    </span>
-                                </p>
-
-                                <p class="card-text">
-                                    <strong>Order Status:</strong>
-                                    <strong class="<%= status === 'Pending'
-                                    ? 'text-warning' : (status === 'Shipped' ? 'text-primary' :
-                                    (status === 'Cancelled' ? 'text-danger' :
-                                    (status === 'Delivered' ? 'text-success':
-                                    (status === 'Returned' ? 'text-info' :
-                                    (status === 'Refunded' ? 'text-success': '' ))))) %>">
-                                        <%= status %>
-                                    </strong>
-                                </p>
-                                <p class="card-text">
-                                    <strong>Product Price:</strong> ₹<%= (price).toLocaleString() %>
-                                </p>
-                                <p class="card-text">
-                                    <strong>ProcessingFee:</strong> ₹<%= order.processingFee %>
-                                </p>
-                                <% if (order.discount) { %>
-                                    <p class="card-text">
-                                        <strong>Discount:</strong>- ₹<%= order.discount  %>
-                                    </p>
-                                <% } %>
-                                <p class="card-text"><strong>Quantity: <%= quantity %></strong> </p>
-                                <p class="card-text"><strong>Order Total: </strong>₹<%= (order.total).toLocaleString()
-                                        %>
-                                </p>
-                                <p class="card-text">
-                                    <strong>Payment Method: </strong>
-                                    <%= order.paymentMethod %>
-                                </p>
-
-                                <% if (status !=='Refunded' ) { %>
-                                    <p class="card-text"><strong>Payment Status:</strong>
-                                        <strong class="<%= order.paymentStatus === 'Pending'? 'text-warning' :
-                                    (order.paymentStatus === 'Paid' ? 'text-success' : '' ) %>">
-                                            <%= order.paymentStatus %>
-                                        </strong>
-                                    </p>
-                                    <% } %>
-
-
-                                        <% if (status=='Delivered' ) { %>
-
-                                            <p class="card-text text-muted">
-                                                <span>Didn't like the product ? , you can return it within 7
-                                                    days.</span>
-                                            </p>
-                                            <div class="row">
-                                                <!-- Column for the "Return Product" button -->
-                                                <div class="col-md-6">
-                                                    <form action="/return-product/<%= order._id %>?_method=PUT"
-                                                        method="POST">
-                                                        <input type="hidden" name="productId"
-                                                            value="<%= productId %>">
-                                                        <button type="submit" class="btn btn-success"
-                                                            style="height: 40px;">Return Product</button>
-                                                    </form>
-                                                </div>
-                                                <!-- Column for the "Download Invoice" button -->
-                                                <div class="col-md-6">
-                                                    <button type="button" class="btn btn-info" id="invoiceBtn"
-                                                        data-invoice-id="<%= order._id %>"
-                                                        style="height: 40px; font-size: 10px;">Download Invoice</button>
-                                                </div>
-                                            </div>
-                                            <% } else if (status=='Return requested' ){ %>
-                                                <p class="card-text text-muted">
-                                                    <span>Return request sent, Once the the request is confirmed the
-                                                        amount will
-                                                        be credited to wallet (excluding processingFee).</span>
-                                                </p>
-
-                                                <% } else if (status=='Refunded' ) { %>
-
-                                                    <p class="card-text text-muted">
-                                                        <span>Your return request confirmed, The amount is credited to
-                                                            the
-                                                            wallet.</span>
-                                                    </p>
-
-                                                    <% } else { %>
-
-                                                        <% if (status !=='Cancelled' ) { %>
-                                                            <!-- Cancel Button -->
-                                                            <form action="/cancelOrder/<%= order._id %>?_method=PUT"
-                                                                method="POST" id="cancelForm">
-                                                                <input type="hidden" name="productId"
-                                                                    value="<%= product._id %>">
-                                                                <input type="hidden" name="newStatus" value="Cancelled">
-                                                                <button type="submit" id="cancel-button"
-                                                                    class="btn btn-danger h-auto">Cancel
-                                                                    Order</button>
-                                                            </form>
-                                                            <% } else { %>
-                                                                <p class="card-text text-danger">
-                                                                    <strong>Order Cancelled</strong>
-                                                                </p>
-                                                                <% } %>
-                                                                    <% } %>
-                            </div>
-                        </div>
-                    </div>
 
 
 
-                    <!-- Review Section -->
-                    <!-- <div class="container mt-5">
-                        <hr class="border-2 border-secondary" />
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h3>Write a Review</h3>
-                                <form action="/user/review/add/Replace with product ID" method="post">
-                                    
-                                    <div class="form-group">
-                                        <label for="rating">Rating:</label>
-                                        <select class="form-control" id="rating" name="rating">
-                                            <option value="5">5 stars</option>
-                                            <option value="4">4 stars</option>
-                                            <option value="3">3 stars</option>
-                                            <option value="2">2 stars</option>
-                                            <option value="1">1 star</option>
-                                        </select>
-                                    </div>
-                                  
-                                    <div class="form-group">
-                                        <label for="reviewText">Review:</label>
-                                        <textarea class="form-control" id="reviewText" name="review" rows="4"></textarea>
-                                    </div>
-                                  
-                                    <button type="submit" class="btn btn-primary h-auto">Submit Review</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div> -->
 
-                </div>
-            </div>
+<head>
+    <style>
+        /* Add your custom styles here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-primary:hover,
+        .btn-danger:hover {
+            background-color: #0056b3;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
+        }
+        table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align:left;
+
+}
+
+.order-info, .product-info {
+    width: 800px;
+    height: 500px; /* Adjust height as needed */
+}
+
+    </style>
+</head>
+
+<body>
+    <h2 class="text-center">Order Details</h2>
+    <div class="container">
+        <% if (viewOrder) { %>
+        <% viewOrder.items.forEach(item => { %>
+       
+        <table>
+            <!-- <tr>
+                <th colspan="2">Order Information</th>
+            </tr> -->
+            <tr>
+                <td>Order #</td>  
+                <td><%= viewOrder._id %></td>
+            </tr>
+            <tr>
+                <td>Customer Email:</td>
+                <td><%= viewOrder.user.email %></td>
+            </tr>
+            <tr>
+                <td>Shipping Address:</td>
+                <td>
+                    <%= viewOrder.address.address_name %>, <%= viewOrder.address.house_name %>,
+                    <%= viewOrder.address.street_name %>, <%= viewOrder.address.city %>,
+                    <%= viewOrder.address.state %>, <%= viewOrder.address.pincode %>,
+                    <%= viewOrder.address.phone %>, <%= viewOrder.address.alt_phone %>
+                </td>
+            </tr>
+            
+            
+        </table>
+        
+        <table>
+            <!-- <tr>
+                <th colspan="2">Order Summary</th>
+            </tr> -->
+            <tr>
+                <td rowspan="8" style="text-align: center;">
+                    <img src="<%= item.product.images[0].imageUrl %>" alt="Product Image" style="max-width: 100%; height: auto; margin: auto;" class="img-fluid" width="150px" height="150px">
+                </td>
+            </tr>       
+        
+            
+            
+            <td>Product Name:</td>
+                <td><%= item.product.productName %>
+                </td>
+            <tr>
+                <td>Quantity:</td>
+                <td><%= item.quantity %></td>
+            </tr>
+            <tr>
+                <td>Product Price:</td>
+                <td>₹<%= (item.product.salePrice).toLocaleString() %></td>
+            </tr>
+            <tr>
+                <td>Shipping Cost:</td>
+                <td>₹<%= viewOrder.processingFee %></td>
+            </tr>
+            <% if (viewOrder.discount) { %>
+            <tr>
+                <td>Discount Amount:</td>
+                <td>₹<%= viewOrder.discount %></td>
+            </tr>
+            <% } %>
+            <tr>
+                <td>Grand Total:</td>
+                <td>₹<%= (viewOrder.total).toLocaleString() %></td>
+            </tr>
+        </table>  
+        
+        
+        
+        <% }) %>
+        <% } else { %>
+        <h2 class="text-center">No Order found</h2>
+        <% } %>
+        
+        <div class="quickview-btn-cart mt-3">
+            <a class="btn btn-grey btn-hover-black mr-3" href="/shop">Continue Shopping</a>
+            <a class="btn btn-grey btn-hover-black" href="/orderStatus/<%=  %>">View Orders Status</a>
         </div>
     </div>
-</div>
+    
+    <!-- login-area start -->
+
 <script>
     const cancelButton = document.getElementById('cancel-button')
     const cancelForm = document.getElementById('cancelForm')
@@ -247,5 +239,34 @@
 
 
 </script>
+</body>
 
-<%- include('../partials/footer') %>
+<style>
+    .quickview-btn-cart a {
+    display: inline-block;
+    margin-top: 20px;
+    margin-right: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #fff; /* Text color */
+    background-color: #ffc107; /* Primary button color */
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.quickview-btn-cart a:hover {
+    background-color: #6c757d; /* Hover color */
+}
+</style>
+
+</html>
+
+
+
+
+
+
+                

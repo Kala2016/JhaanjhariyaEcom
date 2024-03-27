@@ -78,11 +78,18 @@
                                 </select>
                             </div>
                         </div>
+
+                        <form action="/search" method="GET">
+                            <input type="text" name="query" placeholder="Search products...">
+                            <button type="submit">Search</button>
+                          </form>
+                          
                         <div class="col-lg-5 col-md-5 text-right">
                             <!-- Additional options if needed -->
                         </div>
                     </div>
                 </div>
+                
 
                 <div class="product-list">
                     <div class="row">
@@ -162,6 +169,24 @@
     </div>
 </section>
   
+<style>
+    /* Style for the search button */
+    .search-button {
+        background-color: #007bff; /* Change to your preferred color */
+        color: #fff; /* Text color */
+        border: 1px solid #007bff; /* Border color */
+        padding: 8px 16px; /* Adjust padding as needed */
+        border-radius: 4px; /* Rounded corners */
+        cursor: pointer; /* Show pointer on hover */
+        font-size: 16px; /* Adjust font size as needed */
+    }
+    
+    /* Optional: Hover effect */
+    .search-button:hover {
+        background-color: #0056b3; /* Darker shade of the primary color */
+        border-color: #0056b3; /* Darker shade of the primary color */
+    }
+</style>
 
 <style>
     .custom-dropdown {
@@ -247,6 +272,21 @@
             });
     });
 });
+
+</script>
+
+<script>
+    const query = document.querySelector('input[name="query"]').value;
+fetch(`/search?query=${query}`)
+    .then(response => response.json())
+    .then(data => {
+        // Handle search results
+        console.log(data);
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Error during search:', error);
+    });
 
 </script>
 

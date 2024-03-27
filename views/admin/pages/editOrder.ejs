@@ -164,8 +164,8 @@ th, td {
             </tr>
             <% if (viewOrder.discount) { %>
             <tr>
-                <td>Discount Amount:</td>
-                <td>₹<%= viewOrder.discount %></td>
+                <td>Status:</td>
+                <td>₹<%= viewOrder.status %></td>
             </tr>
             <% } %>
             <tr>
@@ -175,18 +175,13 @@ th, td {
         </table>
         
         <div class="text-center">
-            <% if (item.status == 'Return requested') { %>
-            <form action="/admin/orders/editOrder/<%= viewOrder._id %>" method="post">
+            <form action="/admin/editOrder/<%= viewOrder._id %>" method="post">
+                <!-- Form fields for updating the order status -->
                 <input type="hidden" name="productId" value="<%= item.product._id %>">
-                <input type="hidden" name="status" value="Refunded">
-                <button type="submit" class="btn btn-danger">Confirm Return</button>
-            </form>
-            <% } else { %>
-            <form action="/admin/orders/editOrder/<%= viewOrder._id %>" method="post">
-                <input type="hidden" name="productId" value="<%= item.product._id %>">
+                <input type="hidden" name="status" value="Shipped"> <!-- Example status value -->
                 <button type="submit" class="btn btn-primary">Update Status</button>
             </form>
-            <% } %>
+            
         </div>
         <% }) %>
         <% } else { %>

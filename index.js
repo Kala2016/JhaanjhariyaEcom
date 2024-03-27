@@ -10,6 +10,7 @@ const mongoose = require('mongoose')
 const connectFlash = require('connect-flash')
 const cookieParcer = require('cookie-parser')
 
+
 const PORT = process.env.PORT || 4000;
 
 const userRoute = require("./routes/userRoute");
@@ -50,6 +51,9 @@ app.use(
     res.locals.user = req.session.user;
     next()
   })
+
+  // app.use('/search',searchRouter);
+
 
 
   // using for sending message to ejs

@@ -4,13 +4,12 @@ var ProductSchema = new mongoose.Schema(
   {
     productName: {
       type: String,
-      required: true,
+      required: true, 
     },
     description: {
       type: String,
       required: true,
     },
-    
     categoryName: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CategoryCollection",
@@ -50,6 +49,9 @@ var ProductSchema = new mongoose.Schema(
   
   { timestamps: true }
 );
+
+// Create a text index on the 'productName' field
+ProductSchema.index({ productName: 'text' });
 
 // Export the model
 const productCollection = mongoose.model("productCollection", ProductSchema);

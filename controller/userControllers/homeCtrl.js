@@ -5,27 +5,37 @@ const CollectionModel = require("../../models/collectionSchema");
 // const Cart = require("../../models/cartSchema");
 const { ObjectId } = require("mongodb");
 const variant= require("../../models/variantSchema");
+const express = require('express')
+const router = express.Router();
 
 //Search 
 
-const search =  async (req, res) => {
+// Define the search route
+
+
+const searchRouter = async (req, res) => {
   try {
-    id =req.params.id;
-      let query={$text:{$search:` "${id}"`}};
-      var results = await productCollection.find(query).toArray();
-        if (!results.length){
-          return res.status(404).json({message:"No products found"});
-        }else{
-            // console.log('Results',results);
-             return res.status(200).json(results);
-           }  
+    const query = req.query.query;
+    if (!query) {
+      return res.status(400).json({ message: 'Please provide a search query' });
+    }
+    // Perform the search query on the productCollection
+    const results = await productCollection.find({ $text: { $search: query } });
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'No products found matching your search' });
+    }
+    res.render("./users/pages/product", {
+      products: results,      
+
+     });
+
     
   } catch (error) {
-    console.log("Error in Searching", error);
-    return res.status(500).json({ message: "Server Error!" });
-    
+    console.error('Error in searching:', error);
+    return res.status(500).json({ message: 'Server Error!' });
   }
-}
+};
+
 
 
 
@@ -76,29 +86,38 @@ const getLogout = async (req, res) => {
 
 const getShoppingpage = async (req, res) => {
   try {
-    // Extract query parameters
+    // Fetch category and collection data from the database
+    const category = await CategoryCollection.find();
+    const collection = await CollectionModel.find();
+
+    // Extract other query parameters
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const sort = req.query.sort || null;
     const categoryFilter = req.query.category || null;
     const collectionFilter = req.query.collection || null;
-    const category =  await CategoryCollection.find()
-    const collection = await CollectionModel.find()
-    
+    const searchQuery = req.query.query || null;
 
     // Prepare filter criteria
     const filter = { isListed: true };
+
     if (categoryFilter) {
       const catId = CategoryCollection.find(cat => cat.categoryName === categoryFilter)?._id;
       if (catId) {
         filter.categoryName = catId;
       }
     }
+
     if (collectionFilter) {
       const collId = CollectionModel.find(coll => coll.collectionName === collectionFilter)?._id;
       if (collId) {
         filter.collectionName = collId;
       }
+    }
+
+    // If search query is provided, add it to the filter criteria
+    if (searchQuery) {
+      filter.productName = { $regex: new RegExp(searchQuery, 'i') };
     }
 
     // Prepare sorting criteria
@@ -124,21 +143,21 @@ const getShoppingpage = async (req, res) => {
 
     // Render the page with the filtered, paginated, and sorted products
     res.render("./users/pages/shop", {
-      products: products,
+      products: products,      
       category: category,
       collection: collection,
       selectedCategory: categoryFilter,
       selectedCollection: collectionFilter,
       salePrice: 0, // Consider if you need to adjust this value
       currentPage: page,
-      totalPages: Math.ceil(products.length / limit) || 1, // Calculate total pages
+      totalPages: Math.ceil(products.length / limit) || 1,
     });
   } catch (error) {
     console.error(error);
-    // Handle errors appropriately
     res.status(500).send("Internal Server Error");
   }
 };
+
 
 
 const getproductpage = async (req, res) => {
@@ -198,10 +217,10 @@ const getproductpage = async (req, res) => {
       return res.status(404).render("./shop/pages/404");
     } else {
       res.render("./users/pages/product", {
-        products: products,
-        relatedProducts: relatedProducts,
+        products: products,        
         category: category,
         collection: collection,
+        relatedProducts:relatedProducts,     
         selectedCategory: req.query.category,
         selectedCollection: req.query.collection,
         salePrice: salePrice,
@@ -209,7 +228,7 @@ const getproductpage = async (req, res) => {
         highlightedIndex: 0,
       });
     }
-
+    console.log("category===",category)
     console.log("products", products);
   } catch (error) {
     console.error(error);
@@ -244,5 +263,5 @@ module.exports = {
   getproductpage,
   getShoppingpage,
   getVariantDetails,
-  search
+  searchRouter
 };

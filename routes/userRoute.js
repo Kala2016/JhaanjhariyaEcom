@@ -72,7 +72,8 @@ userRoute.post('/reSendOtp',signupController.verifyResendOTP)
 
 
 // product /shop page 
-// userRoute.get('/product',homeController.getproductpage)
+// userRoute.get('/product',homeController.getproductpage)r
+userRoute.get('/search',homeController.searchRouter)
 userRoute.get('/product/:id',homeController.getproductpage)
 userRoute.get('/shop',homeController.getShoppingpage)
 userRoute.get("/product/variants/:id",homeController.getVariantDetails)
@@ -119,10 +120,10 @@ userRoute.post('/checkoutPage', userValid, userLoggedIn, orderController.checkou
 userRoute.get('/checkCart',userValid,userLoggedIn,orderController.checkCart)
 userRoute.post('/placeOrder',userValid,userLoggedIn,orderController.placeOrder)
 userRoute.get('/orderPlacedPage',userValid,userLoggedIn,orderController.orderPlacedPage)
-userRoute.get('/orders',userLoggedIn,orderController.orders)
-userRoute.post('/viewOrder/:id',userLoggedIn,orderController.viewOrder);
-
-
+userRoute.get('/viewOrderPage/:id',userLoggedIn,orderController.orders)
+userRoute.get('/viewOrderList',userLoggedIn,orderController.viewOrderList)
+userRoute.post('/viewOrder/:id',userLoggedIn,orderController.viewOrder)
+userRoute.get('/orderStatus',userLoggedIn,orderController.orderStatus)
 
 
 

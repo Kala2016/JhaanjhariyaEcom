@@ -3,6 +3,7 @@ const productCollection = require("../../models/ProductSchema");
 const { calculateSubtotal } = require("../../utility/ordercalcalculation");
 const orderModel = require("../../models/orderSchema");
 const { checkCartItemsMatch } = require("../../helpers/checkCartHelper");
+const { getStatusClass } = require('../../helpers/getStatusHelper'); 
 
 const checkoutPage = async (req, res) => {
   try {
@@ -193,35 +194,62 @@ const orderPlacedPage = async (req, res) => {
 };
 
 const orders = async (req, res) => {
-  try {
-    const user = req.session.userId;
-    const orderItems = await orderModel
-      .find({ user: user })
-      .populate({
-        path: "items.product",
-        model: "Product",
-        populate: {
-          path: "images",
-        },
-      })
-      .populate("address")
-      .sort({ orderDate: -1 });
+    try {
+    const orderId = req.params.id
+    console.log('req.params',req.params);
+    console.log('orderId', orderId);
+    const findOrder = await orderModel.findOne({ _id: orderId })
+        .populate({
+            path: 'items.product',
+            model: 'productCollection',
+            populate: {
+                path: 'images',
+            },
+        })
+        .populate('address')
+        .populate('user')
 
-    res.render("users/pages/viewOrderPage", { orders: orderItems });
-  } catch (error) {
-    console.error(error);
-  }
+        console.log('findOrder', findOrder);
+    res.render('users/pages/viewOrderPage',{viewOrder:findOrder} )
+} catch (error) {
+    console.error(error)
+}
 };
+
+
+const viewOrderList = async(req,res)=>{
+  try {
+
+    const viewlistOrder =await orderModel.find().populate({
+      path:'items.product',
+      model:'productCollection'
+    })
+
+    .sort({orderDate:-1})
+
+    res.render('users/pages/viewOrderList',{title: 'Orders', orders: viewlistOrder, getStatusClass});
+    
+  } catch (error) {
+
+    console.error(error)
+    
+  }
+}
+
+
+
 
 const viewOrder = async (req, res) => {
   try {
       const orderId = req.params.id;
       const productId = req.body.productId
 
+      console.log('orderId',orderId)
+
       const order = await orderModel.findOne({ _id: orderId })
           .populate({
               path: 'items.product',
-              model: 'Product',
+              model: 'productCollection',
               populate: {
                   path: 'images',
               },
@@ -236,7 +264,7 @@ const viewOrder = async (req, res) => {
           const quantity = productItem.quantity
           const salePrice = productItem.salePrice
           const status = productItem.status
-          res.render('/users/pages/viewOrder', { order, product: matchedProduct, quantity, salePrice, status })
+          res.render('/users/pages/viewOrder', { order })
       } else {
           res.render('/users/pages/404')
       }
@@ -245,11 +273,83 @@ const viewOrder = async (req, res) => {
   }
 };
 
+
+const orderStatus = async(req,res)=>{
+  try {
+
+
+    res.render('users/pages/orderStatus')
+    
+  } catch (error) {
+
+    console.error(error)
+    
+  }
+}
+
+const cancelOrder = async (req, res) => {
+  try {
+      console.log('Request received for canceling order.');
+      
+      const orderId = req.params.id;
+      const productId = req.body.productId;
+      const newStatus = 'cancelled'; // Setting the new status directly to 'cancelled' for COD orders
+
+      const order = await orderModel.findOne({ _id: orderId })
+          .populate({
+              path: 'items.product',
+              model: 'productCollection'
+          });
+
+      const productItem = order.items.find(item => String(item.productId) === String(productId));
+
+      if (!productItem) {
+          return res.status(404).render('/users/pages/404');
+      }
+
+      if (productItem.status !== 'cancelled') {
+          // Increase the quantity and decrease sold
+          const incQuantity = productItem.quantity;
+          await productCollection.findByIdAndUpdate(productId, { $inc: { quantity: incQuantity, sold: -incQuantity } });
+
+          // Update the status of the item
+          productItem.status = newStatus;
+
+          // Save the order
+          await order.save();
+
+          // Redirect to orders page or any other appropriate action
+          return res.redirect(`/orders`);
+      } else {
+          // If the item is already cancelled, render a 404 page or handle appropriately
+          return res.render('users/pages/404');
+      }
+  } catch (error) {
+      // Handle errors appropriately
+      console.error('Error occurred during cancellation:', error);
+      return res.status(500).render('./shop/pages/500'); // Render a 500 page or handle the error response
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
 module.exports = {
   checkoutPage,
   orderPlacedPage,
   placeOrder,
   checkCart,
   orders,  
-  viewOrder
+  viewOrderList,
+  viewOrder,
+  orderStatus,
+  cancelOrder
+ 
 };
