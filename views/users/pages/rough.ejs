@@ -1,152 +1,273 @@
-<section class="checkout-section spad">
+
+
+
+
+
+<head>
+    <style>
+        /* Add your custom styles here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-primary:hover,
+        .btn-danger:hover {
+            background-color: #0056b3;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
+        }
+        table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align:left;
+
+}
+
+.order-info, .product-info {
+    width: 800px;
+    height: 500px; /* Adjust height as needed */
+}
+
+    </style>
+</head>
+
+<body>
+    <h2 class="text-center">Order Details</h2>
     <div class="container">
-        <form action="#" class="checkout-form">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="checkout-content">
-                        <input type="text" placeholder="Enter Your Coupon Code">
-                    </div>
-                    <div class="place-order">
-                        <h4>Your Order</h4>
-                        
-                        <div class="order-total">
-                            <table class="order-table">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% if (Array.isArray(cartItem) && cartItem.length > 0) { %>
-                                        <% let grandTotal = 0; %>
-                                        <% cartItem.forEach(function(cartItem) { %>
-                                            <tr>
-                                                <td><%= cartItem.product.productName %></td>
-                                                <td>x <%= cartItem.quantity %></td>
-                                                <td>
-                                                    <% if (cartItem.product && cartItem.product.salePrice !== undefined) { %>
-                                                        <%= (cartItem.product.salePrice * cartItem.quantity).toLocaleString() %>
-                                                    <% } else { %>
-                                                        N/A
-                                                    <% } %>
-                                                    
-                                                </td>
-                                            </tr>
-                                        <% }); %>
-                                    <% } else { %>
-                                        <tr>
-                                            <td colspan="3">No items in cart</td>
-                                        </tr>
-                                    <% } %>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td class="fw-normal" colspan="2">Subtotal</td>
-                                        <td><%= cartSubtotal.toLocaleString() %></td> <!-- Update this line -->
-                                    </tr>
-                                    <tr>
-                                        <td class="total-price" colspan="2">Total</td>
-                                        <td><%= grandTotal.toLocaleString() %></td>
-<%#  %>                                    </tr>
-                                </tfoot>
-                                
-                                </table>
-                            
-                            
-                                <div class="payment-check">                                   
-                                    
-                                    <div class="pc-item">
-                                        <label for="pc-cod"> <!-- Changed the ID to "pc-cod" -->
-                                            Cash on Delivery
-                                            <input type="checkbox" id="pc-cod"> <!-- Changed the ID to "pc-cod" -->
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="pc-item">
-                                        <label for="pc-paypal">
-                                            Paypal
-                                            <input type="checkbox" id="pc-paypal">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="pc-item">
-                                        <label for="pc-paypal">
-                                            Pay with Wallet
-                                            <input type="checkbox" id="pc-paypal">
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                            <div class="order-btn">
-                                <button type="submit" class="site-btn place-btn">Place Order</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="checkout-content">
-                        <a href="/add-address" class="content-btn">Add New Address</a>
-                    </div>
-                    
-                    <h4>Billing Details</h4>
-                    <div class="row">
-                        
-
-                        <% if(address.length>0) {%>
-                            <% address.forEach(address=> { %>
-
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="address"
-                                                value="<%= address._id %>" required>
-                                            <label class="form-check-label">
-                                                `<%= address.addressType %> %>`<br>
-                                                <%= address.address_name %> %><br>                                                
-                                                    <%= address.house_name %><br>
-                                                        <%= address.street_address %>, <%= address.city %> ,<%= address.state %> , <%=
-                                                                    address.pincode %><br>
-                                                                    Phone: <%= address.phone %>, Alt Phone: <%= address.alt_phone %>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <% }); %>
-                                    <% } else { %>
-                                        <div class="d-flex justify-content-between">
-                                            <h4 class="mb-4">No address found</h4>
-                                        </div>
-                                        <% } %>
-                        
-                    </div>
-                    <div class="col-lg-12">
-                        <div class="create-item">
-                            <label for="acc-create">
-                                Add New Address
-                                <input type="checkbox" id="acc-create">
-                                <span class="checkmark"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
+        <% if (viewOrder) { %>
+        <% viewOrder.items.forEach(item => { %>
+       
+        <table>
+            <!-- <tr>
+                <th colspan="2">Order Information</th>
+            </tr> -->
+            <tr>
+                <td>Order #</td>  
+                <td><%= viewOrder._id %></td>
+            </tr>
+            <tr>
+                <td>Customer Email:</td>
+                <td><%= viewOrder.user.email %></td>
+            </tr>
+            <tr>
+                <td>Shipping Address:</td>
+                <td>
+                    <%= viewOrder.address.address_name %>, <%= viewOrder.address.house_name %>,
+                    <%= viewOrder.address.street_name %>, <%= viewOrder.address.city %>,
+                    <%= viewOrder.address.state %>, <%= viewOrder.address.pincode %>,
+                    <%= viewOrder.address.phone %>, <%= viewOrder.address.alt_phone %>
+                </td>
+            </tr>
+            
+            
+        </table>
+        
+        <table>
+            <!-- <tr>
+                <th colspan="2">Order Summary</th>
+            </tr> -->
+            <tr>
+                <td rowspan="8" style="text-align: center;">
+                    <img src="<%= item.product.images[0].imageUrl %>" alt="Product Image" style="max-width: 100%; height: auto; margin: auto;" class="img-fluid" width="150px" height="150px">
+                </td>
+            </tr>       
+        
+            
+            
+            <td>Product Name:</td>
+                <td><%= item.product.productName %>
+                </td>
+            <tr>
+                <td>Quantity:</td>
+                <td><%= item.quantity %></td>
+            </tr>
+            <tr>
+                <td>Product Price:</td>
+                <td>₹<%= (item.product.salePrice).toLocaleString() %></td>
+            </tr>
+            <tr>
+                <td>Shipping Cost:</td>
+                <td>₹<%= viewOrder.processingFee %></td>
+            </tr>
+            <% if (viewOrder.discount) { %>
+            <tr>
+                <td>Discount Amount:</td>
+                <td>₹<%= viewOrder.discount %></td>
+            </tr>
+            <% } %>
+            <tr>
+                <td>Grand Total:</td>
+                <td>₹<%= (viewOrder.total).toLocaleString() %></td>
+            </tr>
+        </table>  
+        
+        
+        
+        <% }) %>
+        <% } else { %>
+        <h2 class="text-center">No Order found</h2>
+        <% } %>
+        
+        <div class="quickview-btn-cart mt-3">
+            <a class="btn btn-grey btn-hover-black mr-3" href="/shop">Continue Shopping</a>
+            <a class="btn btn-grey btn-hover-black" href="/orderStatus/<%=  %>">View Orders Status</a>
+        </div>
     </div>
-</section>
-<!-- Shopping Cart Section End -->
+    
+    <!-- login-area start -->
+
+<script>
+    const cancelButton = document.getElementById('cancel-button')
+    const cancelForm = document.getElementById('cancelForm')
+    // when clicking cancelButton show a confirmation alert
+    cancelButton.addEventListener('click', (e) => {
+        console.log('button');
+        e.preventDefault()
+        showConfirmation()
+    })
+
+    function showConfirmation() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you really want to cancel this product?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If the user clicks "Yes," cancel the product 
+                cancelForm.submit()
+            }
+        });
+    }
+
+</script>
+<script>
+    document.getElementById("invoiceBtn").addEventListener("click", function (orderId) {
+        var invoiceButton = this;
+        var invoiceId = this.getAttribute("data-invoice-id");
+
+        // Disable the button and change its text
+        invoiceButton.disabled = true;
+
+        fetch(`/download-invoice/${invoiceId}`)
+            .then((response) => {
+                if (response.ok) {
+                    return response.blob();
+                } else {
+                    console.error("Failed to download the invoice");
+                }
+            })
+            .then((blob) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "invoice.pdf";
+                a.click();
+                window.URL.revokeObjectURL(url);
+
+                // Re-enable the button and restore its original text
+                invoiceButton.disabled = false;
+            })
+            .catch((error) => {
+
+                // Re-enable the button and restore its original text
+                invoiceButton.disabled = false;
+
+                console.error("An error occurred:", error);
+            });
+    });
+
+
+</script>
+</body>
 
 <style>
-    .form-check-input {
-        transform: scale(0.3); /* Adjust the scale value to resize the radio button */
-    }
+    .quickview-btn-cart a {
+    display: inline-block;
+    margin-top: 20px;
+    margin-right: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #fff; /* Text color */
+    background-color: #ffc107; /* Primary button color */
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.quickview-btn-cart a:hover {
+    background-color: #6c757d; /* Hover color */
+}
 </style>
 
-<style>
-    td {
-        padding: 5px; /* Adjust the padding as needed */
-        border-bottom: 1px;color: gray;
-    }
-</style>
+</html>
+
+
+
+
+
+
+                

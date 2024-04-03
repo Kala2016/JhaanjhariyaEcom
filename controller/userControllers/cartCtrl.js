@@ -114,15 +114,21 @@ const addtoCart = async (req, res) => {
 
 const updateCart = async (req, res) => {
   try {
-    const  productId  = req.params.id;
+    const  productId  = req.params.id;  
     const newQuantity = parseInt(req.body.quantity);
-    const user = req.session.user._id
+    const user = req.session.user._id ;
+
     console.log('user56789',user);
     const userData = await userCollection.findOne({_id : user}).populate(
        "cart.productId")
     console.log('User Data>>>',userData);
 
     const cartItem = userData.cart.find(cartItem => cartItem._id.toString()===productId)
+
+    if (!userData) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    
 
 
     
@@ -131,6 +137,7 @@ const updateCart = async (req, res) => {
     if (!cartItem) {
       return res.status(404).json({ success: false, message: "Cart item not found" });
     }
+    
 
     const product = await productCollection.findById(cartItem.productId);
 

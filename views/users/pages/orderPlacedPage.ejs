@@ -1,66 +1,103 @@
-<%- include('../partials/header') %>
 
-<div class="checkout-area pt-5 pb-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12 col-md-12">
-                <div class="text-center">
-                    <h2 class="display-3 text-success mb-4">Success!</h2>
-                    <h4 class="display-3 text-success mb-4">Thank you for your Order</h4>
 
-                    <div class="order-details mt-4">
-                        <p class="lead"><strong class="text-success">Order Details:</strong></p>
-                        <table class="table table-striped table-left"> <!-- Added class "table-left" -->
-                            <tr>
-                                <th>Order ID:</th>
-                                <td><span class="text-primary"><%= order.orderId %></span></td>
-                            </tr>
-                            <tr>
-                                <th>Total Amount:</th>
-                                <td>Rs.<span class="text-primary"><%= (order.total).toLocaleString() %></span></td>
-                            </tr>
-                            <tr>
-                                <th>Delivery Address:</th>
-                                <td>
-                                    <% if (order.address) { %> <!-- Update this line -->
-                                        <span class="text-primary">
-                                            <%= order.address.address_name %>,
-                                            <%= order.addresshouse_name %>,
-                                            <%= order.address.street_address %>,
-                                            <%= order.address.city %>
-                                        </span>
-                                    <% } else { %>
-                                        <span>No delivery address found.</span>
-                                    <% } %>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Estimated Arrival Date:</th>
-                                <td>
-                                    <span class="text-primary">
-                                        <%= order.estimatedDelivery.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Payment Method:</th>
-                                <td><span class="text-primary"><%= order.paymentMethod %></span></td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    <div class="quickview-btn-cart mt-3">
-                        <a class="btn btn-warning btn-hover-black mr-3" href="/shop">Continue Shopping</a>
-                        <a class="btn btn-secondary btn-hover-black" href="/viewOrder">View Orders</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+<body>
+    <body>
+    <div class="card">
+    <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
+      <i class="checkmark">✓</i>
     </div>
-</div>
+      <h1>Success</h1> 
+      <p>We received your purchase request;<br/> we'll be in touch shortly!</p>
+      <br>
+      <p class="lead"><strong class="text-success">Order Details:</strong></p>
+      <p>
+          <strong>Order ID:</strong> <span class="text-primary"><%= order.orderId %></span>
+      </p>
+      <p>
+          <strong>Total Amount:</strong> Rs.<span class="text-primary"><%= (order.total).toLocaleString() %></span>
+      </p>
+      <p>
+          <strong>Delivery Address:</strong>
+          <% if (order.address) { %>
+              <span class="text-primary">
+                  <%= order.address.address_name %>,
+                  <%= order.address.house_name %>,
+                  <%= order.address.street_address %>,
+                  <%= order.address.city %>
+              </span>
+          <% } else { %>
+              <span>No delivery address found.</span>
+          <% } %>
+      </p>
+      <p>
+          <strong>Estimated Arrival Date:</strong>
+          <span class="text-primary">
+              <%= order.estimatedDelivery.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+          </span>
+      </p>
+      <p>
+          <strong>Payment Method:</strong> <span class="text-primary"><%= order.paymentMethod %></span>
+      </p>
+    </body>
+  
+    <div class="quickview-btn-cart mt-3">
+        <a class="btn btn-warning btn-hover-black mr-3" href="/shop">Continue Shopping</a>
+        <a class="btn btn-secondary btn-hover-black" href="/viewOrderPage/<%= order._id %>">View Orders</a>
+    </div>
+      
+  </div>
+  
+  
+                     
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+    </div>
+   
 
 
+<html>
+  <head>
+    <!-- <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,400i,700,900&display=swap" rel="stylesheet"> -->
+  </head>
+    <style>
+      body {
+        text-align: center;
+        padding: 40px 0;
+        background: #EBF0F5;
+      }
+        h1 {
+          color: #88B04B;
+          font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+          font-weight: 900;
+          font-size: 40px;
+          margin-bottom: 10px;
+        }
+        p {
+          color: #404F5E;
+          font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+          font-size:12px;
+          margin: 0;
+        }
+      i {
+        color: #9ABC66;
+        font-size: 100px;
+        line-height: 200px;
+        margin-left:-15px;
+      }
+      .card {
+        background: white;
+        padding: 60px;
+        border-radius: 4px;
+        box-shadow: 0 2px 3px #C8D0D8;
+        display: inline-block;
+        margin: 0 auto;
+      }
+    </style>
 
+</html>
 
 
 
@@ -123,4 +160,3 @@
 </style>
 
 
-<%- include('../partials/footer.ejs') %>
