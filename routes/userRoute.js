@@ -77,6 +77,12 @@ userRoute.get('/search',homeController.searchRouter)
 userRoute.get('/product/:id',homeController.getproductpage)
 userRoute.get('/shop',homeController.getShoppingpage)
 userRoute.get("/product/variants/:id",homeController.getVariantDetails)
+userRoute.get('/wishlist',userValid,userLoggedIn,homeController.wishlist)
+userRoute.get('/addTowishlist/:id', userValid,userLoggedIn,homeController.addTowishlist);
+userRoute.get('/removeWishlist/:id', userValid,userLoggedIn,homeController.removeItemfromWishlist);
+userRoute.get('/toggleWishlist',homeController.toggleWishlist)
+userRoute.post('/wishlist',userValid,userLoggedIn,homeController.addTowishlist)
+
 
 // shopping-cart
 userRoute.get('/shopping-cart',userValid,userLoggedIn,cartController.getCartPage)

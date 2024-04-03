@@ -45,6 +45,10 @@ const userSchema = new Schema({
     default:"1.png"
   },
   addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'address' }],addresses:[address.schema],
+
+  wishlist: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "productCollection" },
+  ],
   
   cart:[
     {

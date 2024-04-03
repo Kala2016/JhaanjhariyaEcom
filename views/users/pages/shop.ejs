@@ -108,7 +108,8 @@
                 
                                     <!-- Wishlist icon -->
                                     <div class="icon">
-                                        <i class="icon_heart_alt"></i>
+                                        <!-- Heart icon with inline onclick event to toggle color -->
+                                        <i class="icon_heart_alt" onclick="toggleWishlist('<%= product._id %>')" id="heart-icon-<%= product._id %>" style="font-size: 20px; cursor: pointer; color: <%= userWishlist && userWishlist.includes(product._id) ? 'red' : 'black' %>"></i>
                                     </div>
                                     
                                     <!-- Cart and View Product links -->
@@ -287,6 +288,61 @@ fetch(`/search?query=${query}`)
         // Handle errors
         console.error('Error during search:', error);
     });
+
+</script>
+
+<script>
+    function toggleWishlist(productId) {
+        console.log('Toggle wishlist function called');
+    const wishlistMessage = document.getElementById('wishlist-message');
+    const fixedDiv = document.getElementById('fixed-div');
+    const wishlist = document.getElementById('wishlist-' + productId);
+    const wishlistAnimate = document.querySelector('.icon-wishlist');
+    const heartIcon = document.getElementById('heart-icon-' + productId);
+
+    if (heartIcon.style.color === 'red') {
+            heartIcon.style.color = 'black'; // If red, change to black
+        } else {
+            heartIcon.style.color = 'red'; // If black, change to red
+            heartIcon.style.color = 'red'; // If black, change to red
+        }
+
+    function hide() {
+        fixedDiv.style.display = 'none';
+    }
+
+    fetch(`/addTowishlist/${productId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                fixedDiv.style.display = 'block';
+                fixedDiv.style.color = 'red';
+                fixedDiv.style.backgroundColor = 'green';
+                wishlistMessage.innerText = data.message;
+                wishlist.nextElementSibling.style.color = 'red';
+                wishlistAnimate.classList.toggle('added');
+                setTimeout(function () {
+                    hide();
+                    wishlistAnimate.classList.remove('added');
+                }, 3000);
+            } else {
+                fixedDiv.style.color = '';
+                fixedDiv.style.display = 'block';
+                fixedDiv.style.backgroundColor = 'red';
+                wishlistMessage.innerText = data.message;
+                wishlist.nextElementSibling.style.color = 'black';
+                setTimeout(hide, 3000);
+            }
+        })
+        .catch(error => {
+            console.error('Error in sending addtowishlist request:', error);
+        });
+}
 
 </script>
 

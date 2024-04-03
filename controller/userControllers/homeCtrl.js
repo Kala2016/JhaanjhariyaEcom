@@ -127,6 +127,17 @@ const getShoppingpage = async (req, res) => {
     } else if (sort === 'highToLow') {
       sortCriteria.salePrice = -1;
     }
+    // Now fetch the user's wishlist data
+    let userWishlist;
+    if (req.user) {
+      const userId = req.user._id; // Assuming req.user contains user data
+      userWishlist = await userCollection.findById(userId).populate({
+        path: 'wishlist',
+        populate: {
+          path: 'images',
+        },
+      });
+    }
 
     // Find products based on filter criteria, pagination, and sorting
     const products = await productCollection
@@ -151,6 +162,7 @@ const getShoppingpage = async (req, res) => {
       salePrice: 0, // Consider if you need to adjust this value
       currentPage: page,
       totalPages: Math.ceil(products.length / limit) || 1,
+      userWishlist: userWishlist?userWishlist.wishlist :[],
     });
   } catch (error) {
     console.error(error);
@@ -254,6 +266,81 @@ const getVariantDetails = async (req, res) => {
   }
 };
 
+const wishlist = async (req, res) => {
+  try {
+    const id = req.userId;
+    const userWishlist = await userCollection.findById({ _id: id }).populate({
+      path: 'wishlist',
+      populate: {
+        path: 'images',
+      },
+    });
+    res.render('./users/pages/wishlist', { wishlist: userWishlist.wishlist });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+const addTowishlist = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const productId = req.params.id;
+
+    const user = await userCollection.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (user.wishlist.includes(productId)) {
+      return res.json({ success: false, message: 'Product already in wishlist' });
+    }
+
+    await userCollection.findByIdAndUpdate(userId, { $push: { wishlist: productId } });
+    res.json({ success: true, message: 'Product added to wishlist' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+const removeItemfromWishlist = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const productId = req.params.id;
+
+    const user = await userCollection.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    await userCollection.findByIdAndUpdate(userId, { $pull: { wishlist: productId } });
+    res.json({ success: true, message: 'Product removed from wishlist' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+function toggleWishlist(productId) {
+  // Check if the product is already in the wishlist
+  fetch(`/toggleWishlist/${productId}`)
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          return response.json();
+      })
+      .then(data => {
+          // Update UI based on wishlist data
+          updateUIWithWishlistData(data.wishlist);
+      })
+      .catch(error => {
+          console.error('Error toggling wishlist:', error);
+      });
+}
+
+
 
 
 
@@ -263,5 +350,9 @@ module.exports = {
   getproductpage,
   getShoppingpage,
   getVariantDetails,
-  searchRouter
+  searchRouter,
+  wishlist,
+  removeItemfromWishlist,
+  addTowishlist,
+  toggleWishlist
 };
