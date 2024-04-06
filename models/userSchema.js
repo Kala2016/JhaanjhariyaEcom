@@ -1,4 +1,4 @@
-  const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const productCollection = require('../models/ProductSchema')
 const variant = require("../models/variantSchema")
@@ -49,6 +49,10 @@ const userSchema = new Schema({
   wishlist: [
     { type: mongoose.Schema.Types.ObjectId, ref: "productCollection" },
   ],
+
+  wallet: { type: mongoose.Schema.Types.ObjectId, ref: 'Wallet' },
+
+  coupons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Coupon' }],
   
   cart:[
     {
@@ -131,9 +135,12 @@ userSchema.methods.removeFromCart = function (productId) {
   return this.save();
 };
 
-const userCollection = mongoose.model("userCollection", userSchema);
+userSchema.methods.clearCart = function () {
+  // Clear the entire cart
+  this.cart = [];
+  return this.save();
+};  
 
 
-module.exports = userCollection;
 
-
+module.exports = mongoose.model('userCollection', userSchema);
