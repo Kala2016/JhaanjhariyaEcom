@@ -35,7 +35,7 @@
                           id="lname"
                           name="lname"
                           type="text"
-                          value="<%= userData.lname %>"
+                          value="<%= user.lname %>"
                         />
                       </div>
                       <div class="mb-3">
@@ -72,18 +72,16 @@
                         />
                       </div>
                       <div class="mb-3">
-                        <label class="form-label">Wallet</label>
-                        <button
-                          type="submit"
-                          class="form-control btn btn-grey"
-                        >
-                          Click here
-                        </button>
+                        <label class="form-label">My Wallet Balance</label>
+                        
+                        <a href="/wallet-history"  class="form-control btn btn-grey" >View wallet History ₹ <%= (walletBalance).toLocaleString() %> </a>
+                        
+                        
                         <br>
                         <br>                      
                         <div class="mb-3">
                           <label class="form-label">My Orders</label>
-                          <a href="/viewOrderList" class="form-control btn btn-grey">View Order History</a>
+                          <a href="/myorders" class="form-control btn btn-grey">My Orders</a>
                       </div> 
                       <div class="md-3">
                         <div class="Form Label">                  

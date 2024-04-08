@@ -1,9 +1,19 @@
 const userCollection = require("../../models/userSchema");
 const productCollection = require("../../models/ProductSchema");
-const { calculateSubtotal } = require("../../utility/ordercalcalculation");
 const orderModel = require("../../models/orderSchema");
+const Wallet = require("../../models/walletSchema");
+const Coupon=require('../../models/couponSchema');
+const { calculateSubtotal } = require("../../utility/ordercalcalculation");
 const { checkCartItemsMatch } = require("../../helpers/checkCartHelper");
-const { getStatusClass } = require('../../helpers/getStatusHelper'); 
+const { getStatusClass } = require("../../helpers/getStatusHelper");
+const { isValidCoupon,calculateCouponDiscount,walletAmount,changePaymentStatus} = require("../../helpers/placeOrderHelper");
+const { decreaseQuantity, updateWalletAmount, decreaseWalletAmount } = require("../../helpers/productReturnHelper");
+const { generateRazorPay,verifyingPayment } = require("../../config/razorpay");
+
+
+
+
+
 
 const checkoutPage = async (req, res) => {
   try {
@@ -36,6 +46,21 @@ const checkoutPage = async (req, res) => {
     // Destructure the totalArray for readability
     const [cartItem, cartSubtotal, processingFee, grandTotal] = totalArray;
 
+    let amount = false;
+    let minBalance = false;
+    let walletBalance = 0; 
+
+    const findWallet = await userCollection.findById(user).populate("wallet");
+    if (findWallet.wallet) {
+      walletBalance = findWallet.wallet.balance;
+      if (walletBalance > grandTotal) {
+        amount = true;
+      }
+      if (walletBalance > 0 && walletBalance < grandTotal) {
+        minBalance = true;
+      }
+    }
+
     // Render the checkout page with data
     res.render("users/pages/checkoutPage", {
       cartItem,
@@ -43,6 +68,9 @@ const checkoutPage = async (req, res) => {
       processingFee,
       grandTotal,
       address,
+      walletBalance,
+      amount,
+      minBalance,
     });
 
     console.log("cartItem---:", cartItem);
@@ -54,25 +82,132 @@ const checkoutPage = async (req, res) => {
   }
 };
 
+//checkCart
+
+const checkCart = async (req, res) => {
+  try {
+    console.log("req recieved in checkcart");
+    const user = req.session.userId;
+    console.log("user", user);
+    const cartItem = req.query.originalCartInput;
+    console.log("cart items :>> ", cartItem);
+
+    const userWithCart = await userCollection
+      .findById(user)
+      .populate("cart.product");
+
+    const cartProduct = userWithCart.cart.map((cartItem) => ({
+      product: cartItem.productId,
+      quantity: cartItem.quantity,
+    }));
+    // Compare the arrays
+    const cartItemsMatch = checkCartItemsMatch(cartItem, cartProduct);
+
+    if (cartItemsMatch) {
+      res.json({ success: true, message: "Cart items match" });
+    } else {
+      res.json({ success: false, message: "Cart items do not match" });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
+//update Wallet in Checkout
+
+const updateWalletInCheckout = async (req, res) => {
+  try {
+    const { total, couponCode } = req.query;
+    const user = req.userId;
+
+    const findWallet = await userCollection
+      .findById({ _id: user })
+      .populate("wallet");
+    const walletBalance = findWallet.wallet.balance;
+
+    if (walletBalance < total) {
+      let amountTopay = total - walletBalance;
+      if (couponCode) {
+        const findCoupon = await isValidCoupon(couponCode, user, total);
+        if (findCoupon.coupon) {
+          const grandTotal = calculateCouponDiscount(findCoupon.coupon, total);
+          const [discountTotal, discountAmount] = [...grandTotal];
+          amountTopay = discountTotal - walletBalance;
+        }
+      }
+      res.json({ success: true, amountTopay, walletBalance });
+    } else {
+      console.log("error:Wallet amount is greater than Total");
+      res.json({ error: 404 });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// apply Coupon
+
+const applyCoupon = async (req, res) => {
+  try {
+    const user = req.userId;
+    const { couponCode, total, walAmount } = req.body;
+    console.log()
+   
+    console.log("user",user)
+
+    const findCoupon = await isValidCoupon(couponCode, user, total);
+    console.log("couponCode",couponCode);
+
+    console.log('findCoupon',findCoupon);
+
+    if (findCoupon.coupon) {
+      const grandTotal = calculateCouponDiscount(findCoupon.coupon, total);
+      const [toatalAfterDiscount, discountAmount] = [...grandTotal];
+
+      let amountToPay = toatalAfterDiscount;
+
+      if (walAmount !== '') {
+        amountToPay = toatalAfterDiscount - Number(walAmount);
+      }
+
+      if (
+        total > findCoupon.coupon.minimumPurchase &&
+        total < findCoupon.coupon.maximumPurchase
+      ) {
+        res.json({
+          success: true,
+          amountToPay,
+          discountAmount,
+          message: findCoupon.message,
+        });
+      }
+    } else {
+      res.json({ success: false, message: findCoupon.message });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const placeOrder = async (req, res) => {
   try {
     const user = req.userId;
-    const { address, paymentMethod } = req.body;
+    
+    const { couponCode, address, paymentMethod,  } = req.body;
 
     // Retrieve user data with cart
-    // const userWithCart = await userCollection.findById(user);
-    const userWithCart= await userCollection
-      .findById(user)
+    const userWithCart = await userCollection.findById(user)
       .populate("cart.productId")
       .populate("cart.productId.salePrice");
 
-
     const findAddress = await userCollection.findOne(
-        { _id: user, 'addresses._id': address },
-        { 'addresses.$': 1 }
-    );  
-        const userAddress = findAddress.addresses[0]
-    // Check if userWithCart is null or undefined 
+      { _id: user, "addresses._id": address },
+      { "addresses.$": 1 }
+    );
+    const userAddress = findAddress.addresses[0];
+
+    // Check if userWithCart is null or undefined
     if (!userWithCart) {
       return res.status(404).json({ error: "User not found!" });
     }
@@ -108,60 +243,215 @@ const placeOrder = async (req, res) => {
       subtotal: cartSubtotal,
       processingFee: processingFee,
       total: grandTotal,
+      
     };
+    console.log("newOrder",newOrder)
+    if (paymentMethod === 'COD' || paymentMethod === 'Wallet') {
+      const createOrder = await orderModel.create(newOrder);
 
-    const createOrder = await orderModel.create(newOrder);
+      if (couponCode) {
+        const findCoupon = await isValidCoupon(couponCode, user, grandTotal);
+        if (findCoupon.coupon) {
+          const grandTotal = calculateCouponDiscount(findCoupon.coupon, createOrder.total);
+          const [amountToPay, discountAmount] = [...grandTotal];
+          createOrder.discount = discountAmount;
+          await createOrder.save();
+          await userCollection.findByIdAndUpdate(user, { coupons: findCoupon.coupon._id });
+        }
+      }
 
-    console.log("order created---->", createOrder._id);
+      if (createOrder) {
+        // Update product quantities
+        for (const item of orderItems) {
+          const orderQuantity = item.quantity;
+          await productCollection.findByIdAndUpdate(
+            item.productId,
+            { $inc: { quantity: -orderQuantity, sold: orderQuantity } }
+          );
+        }
 
-    // Update product quantities
-    for (const item of orderItems) {
-      const orderQuantity = item.quantity;
-      await productCollection.findByIdAndUpdate(
-        item.productId, // Corrected the field name
-        { $inc: { quantity: -orderQuantity, sold: orderQuantity } }
-      );
+                      
+        await userCollection.findByIdAndUpdate(user, { $set: { cart: [] } });
+        if (paymentMethod === "Wallet") {
+          if (couponCode) {
+            if (findCoupon.coupon) {
+              await orderModel.findByIdAndUpdate(
+                { _id: createOrder._id },
+                { paymentMethod: 'Paid', amountPaid, amountToPay, walletPayment: amountToPay }
+              );
+
+              const description = 'Product Purchase';
+              const type = 'debit';
+              await decreaseWalletAmount(user, description, type, amountToPay);
+            }
+          } else {
+            const walletpay = await orderModel.findByIdAndUpdate(
+              { _id: createOrder._id },
+              { paymentStatus: 'Paid', amountPaid: grandTotal, walletPayment: grandTotal },
+              { new: true }
+            );
+
+            const description = 'Product Purchase';
+            const type = 'debit';
+            await decreaseWalletAmount(user, grandTotal, description, type);
+          }
+
+          return res.json({ walletSuccess: true, orderId: createOrder._id, payment: 'Wallet' });
+        } else {
+          return res.redirect(`/orderPlacedPage?id=${createOrder._id}`);
+        }
+      }
+    } else if (paymentMethod == 'WalletWithRazorPay') {
+      const createOrder = await orderModel.create(newOrder);
+      if (couponCode) {
+        const findCoupon = await isValidCoupon(couponCode, user, grandTotal);
+        if (findCoupon.coupon) {
+          const grandTotal = calculateCouponDiscount(findCoupon.coupon, createOrder.total);
+          const [amountToPay, discountAmount] = [...grandTotal];
+          createOrder.discount = discountAmount;
+          await createOrder.save();
+          await userCollection.findByIdAndUpdate(user, { coupons: findCoupon.coupon._id });
+        }
+      }
+      const userdata = await userCollection.findById({ _id: user }).populate('wallet');
+      let totalAmountToPay = walletAmount(userdata, grandTotal);
+      if (findCoupon) {
+        totalAmountToPay = amountToPay;
+      }
+      if (createOrder) {
+        for (const item of orderItems) {
+          const orderQuantity = item.quantity;
+          await productCollection.findByIdAndUpdate(item.product, {
+            $inc: { stock: -orderQuantity, sold: -orderQuantity }
+          });
+        }
+      }
+      generateRazorPay(totalAmountToPay, createOrder._id)
+        .then((response) => {
+          return res.json({ status: 'success', response, userdata });
+        })
+        .catch((err) => { console.log(err) });
+    } else if (paymentMethod == 'RazorPay') { 
+      const createOrder = await orderModel.create(newOrder);
+
+      let totalAmountToPay = grandTotal;
+      if (couponCode) {
+        const findCoupon = await isValidCoupon(couponCode, user, grandTotal);
+        if (findCoupon.coupon) {
+          const grandTotal = calculateCouponDiscount(findCoupon.coupon, createOrder.total);
+          const [amountToPay, discountAmount] = [...grandTotal];
+          createOrder.discount = discountAmount;
+          await createOrder.save();
+          totalAmountToPay = amountToPay;
+          await userCollection.findByIdAndUpdate(user, { coupons: findCoupon.coupon._id });
+        }
+      }
+
+      if (createOrder) {
+        for (const item of orderItems) {
+          const orderQuantity = item.quantity;
+          await productCollection.findOneAndUpdate(item.product, {
+            $inc: { stock: orderQuantity, sold: -orderQuantity }
+          });
+        }
+
+        const userdata = await userCollection.findOne({ _id: user });
+        generateRazorPay(totalAmountToPay, createOrder._id)
+          .then((response) => {
+            return res.json({ status: 'success', response, userdata });
+          })
+          .catch((err) => { console.log(err) });
+      }
+    } else {
+      res.render('/users/pages/404');
     }
-
-    // Clear user's cart
-    await userCollection.findByIdAndUpdate(user, { $set: { cart: [] } });
-
-    // Redirect to order placed page
-    return res.redirect(`/orderPlacedPage?id=${createOrder._id}`); // Sending success response
   } catch (error) {
     console.error("Error occurred:", error);
-    return res.status(500).json({ error: "Internal server error!" }); // Sending error response
+    return res.status(500).json({ error: "Internal server error!" });
   }
 };
 
-const checkCart = async (req, res) => {
+//verify Payment
+
+const verifyPayment = async (req, res) => {
   try {
-    console.log("req recieved in checkcart");
-    const user = req.session.userId;
-    console.log("user", user);
-    const cartItem = req.query.originalCartInput;
-    console.log("cart items :>> ", cartItem);
+    const user = req.userId;
 
-    const userWithCart = await userCollection
-      .findById(user)
-      .populate("cart.product");
+    verifyingPayment(req.body)
+      .then(async (details) => { // Mark the function as async
+        console.log(details);
+        const orderId = details.order.response.receipt;
+        const amount = details.order.response.amount / 100;
 
-    const cartProduct = userWithCart.cart.map((cartItem) => ({
-      product: cartItem.productId,
-      quantity: cartItem.quantity,
-    }));
-    // Compare the arrays
-    const cartItemsMatch = checkCartItemsMatch(cartItem, cartProduct);
-
-    if (cartItemsMatch) {
-      res.json({ success: true, message: "Cart items match" });
-    } else {
-      res.json({ success: false, message: "Cart items do not match" });
-    }
+        // Clear the cart once the promise is resolved
+        await userCollection.findByIdAndUpdate(user, { $set: { cart: [] } });
+        changePaymentStatus(orderId, user, amount)
+          .then((changeStatus) => {
+            console.log('status updated', changeStatus);
+            console.log('Payment success');
+            return res.json({ status: true, orderID: `${changeStatus._id}` });
+          })
+          .catch((err) => {
+            console.log('Error in changing payment status:', err);
+            res.json({ status: false, errMsg: 'Error in changing payment status' });
+          });
+      })
+      .catch((err) => {
+        console.log('Error in payment verification', err);
+        res.json({ status: false, errMsg: 'Payment verification failed' });
+      });
   } catch (error) {
     console.error(error);
+    res.json({ status: false, errMsg: 'An error occurred' });
   }
 };
+
+
+
+
+//payment failed 
+
+const paymentFailed = async(req,res)=>{
+  try {
+
+    const order = req.body.order.response;
+        const orderId = order.receipt;
+
+        const findOrder = await orderModel.findById({ _id: orderId }).populate('items.product');
+
+        console.log("findOrder",findOrder)
+
+        if (findOrder) {
+            const orderItems = findOrder.items;
+
+            for (const item of orderItems) {
+                const orderQuantity = item.quantity;
+
+                const product = await productCollection.findById(item.product);
+                if (item.status !== 'Cancelled') {
+                    if (product) {
+                        item.status = 'Cancelled'; // Update the status of the item
+                        const proId = item.product._id
+
+                        await productCollection.findByIdAndUpdate(proId,
+                            { $inc: { quantity: orderQuantity, sold: -orderQuantity } }
+                        );
+                    }
+                }
+            }
+            await findOrder.save();
+        }
+
+        res.json({ status: true });
+
+    
+  } catch (error) {
+
+    console.error(error)
+    
+  }
+}
+
 
 // orderPlaced page
 const orderPlacedPage = async (req, res) => {
@@ -184,6 +474,7 @@ const orderPlacedPage = async (req, res) => {
     console.log(findOrder);
 
     res.render("users/pages/orderPlacedPage", {
+      orderId:orderId,
       order: findOrder,
       address: findOrder.address,
     });
@@ -194,11 +485,9 @@ const orderPlacedPage = async (req, res) => {
 };
 
 const orders = async (req, res) => {
-    try {
-    const orderId = req.params.id
-    console.log('req.params',req.params);
-    console.log('orderId', orderId);
-    const findOrder = await orderModel.findOne({ _id: orderId })
+  try {
+    const user = req.userId;
+    const orderItems = await orderModel.find({ user:user})
         .populate({
             path: 'items.product',
             model: 'productCollection',
@@ -207,136 +496,169 @@ const orders = async (req, res) => {
             },
         })
         .populate('address')
-        .populate('user')
+        .sort({ orderDate: -1 });
 
-        console.log('findOrder', findOrder);
-    res.render('users/pages/viewOrderPage',{viewOrder:findOrder} )
+    res.render('users/pages/orders', { orders: orderItems });
+
 } catch (error) {
-    console.error(error)
+    console.error(error);
 }
 };
 
-
-const viewOrderList = async(req,res)=>{
+const viewOrderList = async (req, res) => {
   try {
+    const user = req.userId
+    const viewlistOrder = await orderModel
+      .find({user:user.email})
+      .populate({
+        path: "items.product",
+        model: "productCollection",
+      })
 
-    const viewlistOrder =await orderModel.find().populate({
-      path:'items.product',
-      model:'productCollection'
-    })
+      .sort({ orderDate: -1 });
 
-    .sort({orderDate:-1})
-
-    res.render('users/pages/viewOrderList',{title: 'Orders', orders: viewlistOrder, getStatusClass});
-    
+    res.render("users/pages/viewOrderList", {
+      title: "Orders",
+      orders: viewlistOrder,
+      getStatusClass,
+    });
   } catch (error) {
-
-    console.error(error)
-    
+    console.error(error);
   }
-}
+};
 
-
-
-
-const viewOrder = async (req, res) => {
+const viewOrderPage = async (req, res) => {
   try {
+    const orderId = req.params.id;
+    const productId = req.body.productId;
+    
+
+    console.log("orderId",req.body, orderId);
+
+    const order = await orderModel
+      .findOne({ _id: orderId })
+      .populate({
+        path: "items.product",
+        model: "productCollection",
+        populate: {
+          path: "images",
+        },
+      })
+      .populate("address");
+
+    const productIdString = String(productId); //finding matching productId from orderDb
+    const productItem = order.items.find(item => String(item.product._id) === productIdString);
+    console.log('productItem',productItem);
+    console.log('productId',productId)
+
+    if (productItem) {
+      // if there is product
+      const matchedProduct = productItem.product;
+      const quantity = productItem.quantity;
+      const salePrice = productItem.salePrice;
+      const status = productItem.status;
+      res.render("users/pages/viewOrderPage", { order, product: matchedProduct, quantity, salePrice, status });
+    } 
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const orderStatus = async (req, res) => {
+  try {
+    res.render("users/pages/orderStatus");
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const cancelOrder = async (req, res) => {
+  try {
+      console.log('Request received for Cancelling Order');
+      const user = req.userId;
       const orderId = req.params.id;
       const productId = req.body.productId
-
-      console.log('orderId',orderId)
-
+      const newStatus = req.body.newStatus
       const order = await orderModel.findOne({ _id: orderId })
           .populate({
               path: 'items.product',
-              model: 'productCollection',
-              populate: {
-                  path: 'images',
-              },
+              model: 'productCollection'
           })
           .populate('address');
 
       const productIdString = String(productId); //finding matching productId from orderDb
-      const productItem = orderModel.items.find(item => String(item.productId) === productIdString);
+      const productItem = order.items.find(item => String(item.product._id) === productIdString);
 
-      if (productItem) { // if there is product 
-          const matchedProduct = productItem.product;
-          const quantity = productItem.quantity
-          const salePrice = productItem.salePrice
-          const status = productItem.status
-          res.render('/users/pages/viewOrder', { order })
+      if (!productItem) {
+          return res.status(404).render('users/pages/404');
       } else {
-          res.render('/users/pages/404')
+          if (productItem.status !== 'cancelled') {
+              if (order.paymentMethod == 'RazorPay' && order.paymentStatus == 'Paid'
+                  || (order.paymentMethod == 'WalletWithRazorpay' && order.paymentStatus == 'Paid' ||
+                      order.paymentMethod == 'Wallet'
+                  )) {
+
+                    let price = productItem.salePrice 
+
+                  
+                  if (order.discount > 0) {
+                      if (order.items.length > 1) {
+                          price = productItem.salePrice - (order.discount / order.items.length)
+                          console.log('inside  discount price', price);
+                      } else {
+                        price = productItem.salePrice - order.discount;
+                      }
+                  }
+                  const user = req.userId
+                  const description = 'Order Cancelled';
+                  const type = 'credit'
+                  const salePrice = await decreaseQuantity(orderId, productId); // Get the salePrice from decreaseQuantity
+                  await updateWalletAmount(user, salePrice, description, type)
+              } else {  
+                  console.log("wallet not updated")
+              }
+
+              productItem.status = newStatus
+              const incQuantity = productItem.quantity
+
+              await productCollection.findByIdAndUpdate(productId,
+                  { $inc: { quantity: incQuantity, sold: -incQuantity } });
+
+              await order.save();
+              return res.redirect(`/myorders`);
+          } else {
+              res.render('users/pages/404')
+          }
       }
+
   } catch (error) {
       console.error(error);
   }
 };
 
-
-const orderStatus = async(req,res)=>{
+// return request from user--
+const returnProduct = async (req, res) => {
   try {
-
-
-    res.render('users/pages/orderStatus')
-    
-  } catch (error) {
-
-    console.error(error)
-    
-  }
-}
-
-const cancelOrder = async (req, res) => {
-  try {
-      console.log('Request received for canceling order.');
-      
       const orderId = req.params.id;
       const productId = req.body.productId;
-      const newStatus = 'cancelled'; // Setting the new status directly to 'cancelled' for COD orders
+      const findOrder = await orderModel.findOne({ _id: orderId })
+      console.log(findOrder)
 
-      const order = await orderModel.findOne({ _id: orderId })
-          .populate({
-              path: 'items.product',
-              model: 'productCollection'
-          });
+      const productIdString = String(productId); //finding matching productId from orderDb
+      const productItem = findOrder.items.find(item => String(item.product._id) === productIdString);
 
-      const productItem = order.items.find(item => String(item.productId) === String(productId));
-
-      if (!productItem) {
-          return res.status(404).render('/users/pages/404');
-      }
-
-      if (productItem.status !== 'cancelled') {
-          // Increase the quantity and decrease sold
-          const incQuantity = productItem.quantity;
-          await productCollection.findByIdAndUpdate(productId, { $inc: { quantity: incQuantity, sold: -incQuantity } });
-
-          // Update the status of the item
-          productItem.status = newStatus;
-
-          // Save the order
-          await order.save();
-
-          // Redirect to orders page or any other appropriate action
-          return res.redirect(`/orders`);
+      if (productItem) {
+          productItem.status = 'Return requested';
+          productItem.returnDate = Date.now()
+          await findOrder.save();
+          res.redirect('/myorders')
       } else {
-          // If the item is already cancelled, render a 404 page or handle appropriately
-          return res.render('users/pages/404');
+          res.render('users/pages/404')
       }
   } catch (error) {
-      // Handle errors appropriately
-      console.error('Error occurred during cancellation:', error);
-      return res.status(500).render('./shop/pages/500'); // Render a 500 page or handle the error response
+      console.error(error);
   }
 };
-
-
-
-
-
-
-
 
 
 
@@ -346,10 +668,15 @@ module.exports = {
   orderPlacedPage,
   placeOrder,
   checkCart,
-  orders,  
+  orders,
   viewOrderList,
-  viewOrder,
+  viewOrderPage,
   orderStatus,
-  cancelOrder
- 
+  cancelOrder,
+  updateWalletInCheckout,
+  applyCoupon,
+  paymentFailed,
+  verifyPayment,
+  returnProduct
+
 };

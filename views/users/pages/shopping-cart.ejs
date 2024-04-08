@@ -101,21 +101,21 @@
                             <a href="/updateCart" class="primary-btn up-cart">Update cart</a>
                             <a href="/shop" class="primary-btn up-cart">Continue shopping</a>
                         </div>
-                        <div class="discount-coupon">
+                        <!-- <div class="discount-coupon">
                             <h6>Discount Codes</h6>
                             <form action="#" class="coupon-form">
                                 <input type="text" placeholder="Enter your codes">
                                 <button type="submit" class="site-btn coupon-btn">Apply</button>
                             </form>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="col-lg-4 offset-lg-4">
                         <div class="proceed-checkout">
                             <ul>
-                                <li class="subtotal" >Subtotal <span id="cart-total"><%= grandTotal.toLocaleString() %></span></li>
+                                <!-- <li class="subtotal" >Subtotal <span id="cart-total"><%= grandTotal.toLocaleString() %></span></li> -->
                                 
-                                <li class="discount">Discount <span>10%</span></li>
-                                <li class="cart-total" >Total <span id="grand-total"><%= (grandTotal * 0.9).toLocaleString() %></span></li>
+                                
+                                <li class="cart-total" >GRAND TOTAL <span id="grand-total"><%= (grandTotal).toLocaleString() %></span></li>
                             </ul>
                             <a href="/checkoutPage" class="proceed-btn">PROCEED TO CHECK OUT</a>
                         </div>
@@ -185,7 +185,7 @@
              const totalAmountElement = document.getElementById('cart-total');
               totalAmountElement.textContent = `₹${response.totalPrice.toLocaleString()}`;
                     const grandTotal = document.getElementById('grand-total')
-                    grandTotal.innerText =  `₹ ${Math.floor(response.totalPrice * 0.9)}`
+                    grandTotal.innerText =  `₹ ${Math.floor(response.totalPrice)}`
                 }
                 if (!response.success) {
                     console.log(response.message);

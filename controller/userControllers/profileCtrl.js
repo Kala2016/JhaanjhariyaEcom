@@ -1,24 +1,80 @@
 const userCollection = require("../../models/userSchema")
+const Wallet = require("../../models/walletSchema")
 const  bcrypt = require('bcrypt');
 
 
 
+// const getUserProfilePage = async (req, res) => {
+//     try {
+//         const user = req.session.user;
+//         const userData = await userCollection.findOne({ email: user.email });
+
+//         if (!userData) {
+//             return res.status(404).send("User not found");
+//         }
+//         console.log('user data', userData);
+//         res.render('users/pages/userProfile',  {userData} );
+//     } catch (error) {
+//         console.error(error.message);
+//         res.status(500).send("Internal Server Error");
+//     }
+// }
+
 const getUserProfilePage = async (req, res) => {
     try {
-        const user = req.session.user;
+        const user = req.userId;
         const userData = await userCollection.findOne({ email: user.email });
+        const findWallet = await userCollection.findById(user).populate('wallet');
+        let walletBalance = 0;
+        console.log(userData);
 
-        if (!userData) {
-            return res.status(404).send("User not found");
+        if (findWallet.wallet) {
+            const walletId = findWallet.wallet._id;
+            const wal = await Wallet.find(walletId).populate('transactions').exec();
+            walletBalance = findWallet.wallet.balance;
         }
-        console.log('user data', userData);
-        res.render('users/pages/userProfile',  {userData} );
+
+        res.render('users/pages/userProfile', {userData, walletBalance });
     } catch (error) {
-        console.error(error.message);
+        console.error(error);
         res.status(500).send("Internal Server Error");
     }
 }
 
+
+const viewWallethistory = async(req,res)=>{
+    try {
+
+        const user = req.session.user;
+        const findWallet = await userCollection.findById(user).populate('wallet')
+        let walletHistory = false;
+        if(findWallet.wallet){
+            const walletId = findWallet.wallet._id;
+            const walletTransaction = await Wallet.findById({_id:walletId}) 
+            .populate ({
+                path:'transactions',
+                options: {
+                    sort:{
+                        timestamp:-1
+                    }
+
+                }
+
+            })
+            walletHistory = walletTransaction.transactions
+        }
+
+        res.render('users/pages/walletHistory',{walletHistory})
+
+
+
+        
+    } catch (error) {
+
+        console.error(error)
+        
+    }
+}
 
     
 
@@ -145,6 +201,7 @@ module.exports ={
     geteditProfile,
     editProfile,
     changePasswordPage,
-    changePassword
+    changePassword,
+    viewWallethistory
 
 }

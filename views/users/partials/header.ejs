@@ -146,10 +146,10 @@
                                 <span></span>
                             </a>
                             </li>
-                            <li class="cart-icon"><a href="/shopping-cart">
+                            <li class="cart-icon"><a href="/shopping-cart" data-toggle="tooltip" data-placement="top">
                                 <i class="icon_bag_alt"></i>
-                                <span></span>
-                            </a>
+                                <span class="shop-count-furniture green" id="cartItemCount"></span>
+                            </a></li>
                             <!-- <div class="cart-hover">
                                 <div class="select-items">
                                     <table>
@@ -191,7 +191,7 @@
                                 </div>
                             </div> -->
                         </li>
-                            <li class="cart-price">0.00</li>
+                            <li class="cart-price"></li>
                         </ul>
                     </div>
                 </div>
@@ -238,8 +238,8 @@
                         <li><a href="#">PROFILE</a>
                             <ul class="dropdown">                                
                                 <li><a href="/shopping-cart">Shopping Cart</a></li>
-                                <!-- <li><a href="./check-out">Checkout</a></li> -->
-                                <li><a href="./faq.html">Faq</a></li>
+                                <li><a href="/myorders">My Orders</a></li>
+                                <!-- <li><a href="./faq.html">Faq</a></li> -->
                                 <li><a href="/user-signup">Register</a></li>
                                 <li><a href="/login">Login</a></li>
                                 <li><a href="/userProfile">Profile</a></li>
@@ -312,7 +312,150 @@
             });
         }
     </script>
+
+<style>
+    @media only screen and (max-width: 1024px) {
+        .header-cart-icon {
+            position: absolute;
+            top: 21px;
+            right: 63px;
+        }
+
+        .header-cart {
+            position: absolute;
+            top: 55px;
+            right: 73px;
+        }
+    }
+
+    @media screen and (min-width:768px) {
+        .header-cart-icon {
+            position: absolute;
+            top: 21px;
+            right: 94px;
+        }
+
+        .header-cart {
+            position: absolute;
+            top: 55px;
+            right: 73px;
+        }
+    }
+
+    @media screen and (min-width:1024px) {
+        .header-cart-icon {
+            position: absolute;
+            top: 10px;
+            right: 39px;
+        }
+
+        .header-cart {
+            position: absolute;
+            top: 45px;
+            right: 85px;
+        }
+    }
+
+    .icon-wishlist {
+        font-size: 26px;
+    }
+
+    .logo-img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+
+    #userDropdown:hover .dropdown-menu {
+        display: block;
+    }
+
+    #userDropdown {
+        color: #000000;
+        display: inline-block;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 50px 0 51px;
+        text-transform: capitalize;
+    }
+
+    .dropdown-toggle::after {
+        display: none;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.1);
+            opacity: 0.7;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes shake {
+        0% {
+            transform: translateX(0);
+            color: red;
+            /* Start color */
+        }
+
+        25% {
+            transform: translateX(-2px);
+            color: red;
+            /* Mid color */
+        }
+
+        50% {
+            transform: translateX(2px);
+            color: red;
+            /* End color */
+        }
+
+        75% {
+            transform: translateX(-2px);
+            color: red;
+            /* Mid color */
+        }
+
+        100% {
+            transform: translateX(2px);
+            color: red;
+            /* End color */
+        }
+    }
+
+    .icon-wishlist.added {
+        animation: shake 0.5s ease-in-out 3 alternate;
+    }
+</style>
     
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            updateCartItemCount();
+        });
     
+        function updateCartItemCount() {
+            $.ajax({
+                type: "GET",
+                url: "/getCartItemCount",
+                success: function (response) {
+                    // Update the cart items count in the navbar
+                    const cartItemCount = response.cartItemCount;
+                    $("#cartItemCount").text(cartItemCount);
+                },
+                error: function (error) {
+                    console.error("Error fetching cart items count: ", error);
+                }
+            });
+        }
+    </script>
 
     <!-- Header End -->

@@ -10,6 +10,7 @@ const adminCtrl = require("../controller/adminControllers/adminCtrl");
 const userCtrl = require("../controller/adminControllers/userCtrl");
 const collectionCtrl = require("../controller/adminControllers/collectionCtrl");
 const orderCtrl =require("../controller/adminControllers/orderCtrl");
+const couponCtrl =require("../controller/adminControllers/couponCtrl")
 
 // const variantCtrl = require("../controller/adminControllers/variantCtrl")
 
@@ -85,6 +86,13 @@ adminRoute.get("/orders",isAdminLoggedIn,orderCtrl.ordersPage);
 adminRoute.get('/editOrder/:id', isAdminLoggedIn,orderCtrl.editOrderPage)
 adminRoute.post('/editOrder/:id', isAdminLoggedIn, orderCtrl.updateOrder)
 
+//Coupon Management
+adminRoute.get("/coupons",isAdminLoggedIn,couponCtrl.listCoupons)
+adminRoute.get("/coupon/add-coupon",isAdminLoggedIn, couponCtrl.addCouponPage)
+adminRoute.post("/coupon/add-coupon",isAdminLoggedIn, couponCtrl.createCoupon)
+adminRoute.get("/coupons/edit-coupon/:id",isAdminLoggedIn, couponCtrl.editCouponPage)
+adminRoute.post("/coupons/edit-coupon/:id", isAdminLoggedIn,couponCtrl.editCoupon)
 
 
 module.exports = adminRoute;
+                                        

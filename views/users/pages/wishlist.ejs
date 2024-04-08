@@ -1,5 +1,10 @@
 <%- include('../partials/header.ejs') %>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/themify-icons@latest/css/themify-icons.css">
+<script src="https://kit.fontawesome.com/2e2bb0441a.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
 <!-- Breadcrumb Section Begin -->
 <div class="breacrumb-section">
     <div class="container">
@@ -32,17 +37,14 @@
                                     <th>Price</th>
                                     <th>Remove</th>
                                     <th>Add to Cart</th>
-
                                 </tr>
                             </thead>
-                            
                             <tbody>
                                 <% wishlist.forEach((item, index) => { %>
                                 <tr>
                                     <td class="product-thumbnail">
                                         <a href="/product/<%= item._id %>"><img src="<%= item.images[0].thumbnailUrl %>" alt="Product image" style="max-width: 100px;"></a>
                                     </td>
-                                    <br>
                                     <td class="product-name">
                                         <a href="/product/<%= item._id %>"><%= item.productName %></a>
                                     </td>
@@ -50,37 +52,30 @@
                                         <span class="amount">₹<%= item.salePrice %></span>
                                     </td>
                                     <td class="product-remove">
-                                        <a href="/removeWishlist/<%= item._id %>"><i class="ti-close" style="font-size: 29px;"></i></a>
+                                        <a href="/removeWishlist/<%= item._id %>">
+                                            <i class="ti-close" style="font-size: 29px;"></i>
+                                        </a>
                                     </td>
-                                        
-                                    <td class="cart-icon">
-                                        <% if (item.quantity > 0) { %>
-                                            <a href="/addtoCart/<%= item._id %>">
-                                                <i class="icon_bag_alt" style="font-size: 29px;"></i>
-                                            </a>
-                                        <% } else { %>
-                                            <form action="/addTowishlist/<%= item._id %>" method="get">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit">
-                                                    <i class="icon_bag_alt" style="font-size: 29px;"></i>
-                                                </button>
-                                            </form>
-                                        <% } %>
+                                    <td class="add-to-cart">
+                                      
+                                        <a href="/addtocart/<%= item._id %>">
+                                            <i class="ti-shopping-cart" style="font-size: 29px;" ></i>
+                                            <!-- https://icons8.com/icon/23169/add-shopping-cart -->
+                                        </a>
+                                       
                                     </td>
-                                    
-                                    
-                                </tr>   
+                                </tr>
                                 <% }); %>
-                                <% } else { %>
-                                    <div class="d-flex justify-content-center align-items-center">
-                                        <img src="" alt="">
-                                    </div>
-                                    <% } %>
                             </tbody>
                         </table>
                     </div>
-                    
+                    <% } else { %>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <img src="" alt="">
+                    </div>
+                    <% } %>
                 </form>
+                
             </div>
         </div>
     </div>
@@ -136,6 +131,13 @@
   color: #ff0000; /* Red color for the remove icon */
   cursor: pointer;
 }
+
+.add-to-cart i {
+    color: #0fa320; /* Red color for the remove icon */
+  cursor: pointer;
+
+}
+
 
 </style>
 

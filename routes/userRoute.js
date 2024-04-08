@@ -16,7 +16,8 @@ const loginController = require("../controller/userControllers/loginCtrl");
 const signupController = require("../controller/userControllers/signupCtrl");
 const profileController = require("../controller/userControllers/profileCtrl");
 const addressController = require("../controller/userControllers/addressCtrl");
-const orderController = require("../controller/userControllers/orderCtrl")
+const orderController = require("../controller/userControllers/orderCtrl");
+const { profile } = require("console");
 
 // Middleware to set views folder for admin
 userRoute.use((req, res, next) => {
@@ -90,7 +91,9 @@ userRoute.post('/shopping-cart',userValid,userLoggedIn,cartController.addtoCart)
 userRoute.post("/addtocart",userValid,userLoggedIn,cartController.addtoCart)
 userRoute.post('/updateCartItem/:id',userValid,userLoggedIn,cartController.updateCart)
 userRoute.get('/checkProductAvailability', userLoggedIn, cartController.checkProductAvailability);
-userRoute.get('/removeProduct/:id',userValid,userLoggedIn,cartController.removeProductfromCart)
+userRoute.get('/removeProduct/:id',userValid,userLoggedIn,cartController.removeProductfromCart);
+userRoute.get('/getCartItemCount',userLoggedIn,cartController.getCartCount);
+
 
 
 // forget-Password and reset password section 
@@ -106,6 +109,7 @@ userRoute.post('/editProfile',userValid,userLoggedIn,profileController.editProfi
 userRoute.post('/uploadDp',imageUpload.single("image"),userValid,userLoggedIn,profileController.uploadDp)
 userRoute.get('/changePassword',userValid,userLoggedIn,profileController.changePasswordPage)
 userRoute.post('/changePassword',userValid,userLoggedIn,profileController.changePassword)
+userRoute.get('/wallet-history',userLoggedIn,profileController.viewWallethistory);
 
 
 //addAddress
@@ -126,15 +130,29 @@ userRoute.post('/checkoutPage', userValid, userLoggedIn, orderController.checkou
 userRoute.get('/checkCart',userValid,userLoggedIn,orderController.checkCart)
 userRoute.post('/placeOrder',userValid,userLoggedIn,orderController.placeOrder)
 userRoute.get('/orderPlacedPage',userValid,userLoggedIn,orderController.orderPlacedPage)
-userRoute.get('/viewOrderPage/:id',userLoggedIn,orderController.orders)
+userRoute.get('/myorders',userLoggedIn,orderController.orders)
 userRoute.get('/viewOrderList',userLoggedIn,orderController.viewOrderList)
-userRoute.post('/viewOrder/:id',userLoggedIn,orderController.viewOrder)
+userRoute.post('/viewOrderPage/:id',userLoggedIn,orderController.viewOrderPage) 
 userRoute.get('/orderStatus',userLoggedIn,orderController.orderStatus)
+userRoute.put('/return-product/:id', userLoggedIn, orderController.returnProduct);
+userRoute.post('/cancelOrder/:id', userLoggedIn,orderController.cancelOrder);
 
 
 
+//apply Coupon 
+
+userRoute.post('/applyCoupon', userLoggedIn, orderController.applyCoupon);
+
+//Wallet Amount
+
+userRoute.get('/updateWalletAmount', userLoggedIn, orderController.updateWalletInCheckout);
 
 
+
+//Payment 
+
+userRoute.post('/verifyPayment', userLoggedIn, orderController.verifyPayment);
+userRoute.post('/payment-failed', userLoggedIn, orderController.paymentFailed);
 
 
 

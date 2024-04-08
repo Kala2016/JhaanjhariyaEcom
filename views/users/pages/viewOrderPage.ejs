@@ -2,7 +2,7 @@
 
 
 
-<head>
+    <title>Order Details</title>
     <style>
         /* Add your custom styles here */
         body {
@@ -68,201 +68,231 @@
             max-width: 100%;
             height: auto;
         }
-        table {
-    width: 100%;
-    border-collapse: collapse;
-}
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align:left;
+        .quickview-btn-cart a {
+            display: inline-block;
+            margin-top: 20px;
+            margin-right: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #fff; /* Text color */
+            background-color: #ffc107; /* Primary button color */
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
 
-}
-
-.order-info, .product-info {
-    width: 800px;
-    height: 500px; /* Adjust height as needed */
-}
-
+        .quickview-btn-cart a:hover {
+            background-color: #6c757d; /* Hover color */
+        }
     </style>
-</head>
 
 <body>
-    <h2 class="text-center">Order Details</h2>
-    <div class="container">
-        <% if (viewOrder) { %>
-        <% viewOrder.items.forEach(item => { %>
-       
-        <table>
-            <!-- <tr>
-                <th colspan="2">Order Information</th>
-            </tr> -->
-            <tr>
-                <td>Order #</td>  
-                <td><%= viewOrder._id %></td>
-            </tr>
-            <tr>
-                <td>Customer Email:</td>
-                <td><%= viewOrder.user.email %></td>
-            </tr>
-            <tr>
-                <td>Shipping Address:</td>
-                <td>
-                    <%= viewOrder.address.address_name %>, <%= viewOrder.address.house_name %>,
-                    <%= viewOrder.address.street_name %>, <%= viewOrder.address.city %>,
-                    <%= viewOrder.address.state %>, <%= viewOrder.address.pincode %>,
-                    <%= viewOrder.address.phone %>, <%= viewOrder.address.alt_phone %>
-                </td>
-            </tr>
-            
-            
-        </table>
-        
-        <table>
-            <!-- <tr>
-                <th colspan="2">Order Summary</th>
-            </tr> -->
-            <tr>
-                <td rowspan="8" style="text-align: center;">
-                    <img src="<%= item.product.images[0].imageUrl %>" alt="Product Image" style="max-width: 100%; height: auto; margin: auto;" class="img-fluid" width="150px" height="150px">
-                </td>
-            </tr>       
-        
-            
-            
-            <td>Product Name:</td>
-                <td><%= item.product.productName %>
-                </td>
-            <tr>
-                <td>Quantity:</td>
-                <td><%= item.quantity %></td>
-            </tr>
-            <tr>
-                <td>Product Price:</td>
-                <td>₹<%= (item.product.salePrice).toLocaleString() %></td>
-            </tr>
-            <tr>
-                <td>Shipping Cost:</td>
-                <td>₹<%= viewOrder.processingFee %></td>
-            </tr>
-            <% if (viewOrder.discount) { %>
-            <tr>
-                <td>Discount Amount:</td>
-                <td>₹<%= viewOrder.discount %></td>
-            </tr>
-            <% } %>
-            <tr>
-                <td>Grand Total:</td>
-                <td>₹<%= (viewOrder.total).toLocaleString() %></td>
-            </tr>
-        </table>  
-        
-        
-        
-        <% }) %>
-        <% } else { %>
-        <h2 class="text-center">No Order found</h2>
-        <% } %>
-        
-        <div class="quickview-btn-cart mt-3">
-            <a class="btn btn-grey btn-hover-black mr-3" href="/shop">Continue Shopping</a>
-            <a class="btn btn-grey btn-hover-black" href="/orderStatus/<%=  %>">View Orders Status</a>
-        </div>
-    </div>
     
-    <!-- login-area start -->
+    <div class="container">
+        <h2 class="text-center">Order Details</h2>
+        <% if (order) { %>
+            <% order.items.forEach(item => { %>
+                <table>
+                    <tr>
+                        <td>Order #</td>  
+                        <td><%= order._id %></td>
+                    </tr>
+                    <tr>
+                        <td>Customer Email:</td>
+                        <td><%= order.user.email %></td>
+                    </tr>
+                    <tr>
+                        <td>Shipping Address:</td>
+                        <td>
+                            <%= order.address.address_name %>, <%= order.address.house_name %>,
+                            <%= order.address.street_address %>, <%= order.address.city %>,
+                            <%= order.address.state %>, <%= order.address.pincode %>,
+                            <%= order.address.phone %>, <%= order.address.alt_phone %>
+                        </td>
+                    </tr>
+                </table>
 
-<script>
-    const cancelButton = document.getElementById('cancel-button')
-    const cancelForm = document.getElementById('cancelForm')
-    // when clicking cancelButton show a confirmation alert
-    cancelButton.addEventListener('click', (e) => {
-        console.log('button');
-        e.preventDefault()
-        showConfirmation()
-    })
+                <table>
+                    <tr>
+                        <td rowspan="8" style="text-align: center;">
+                            <img src="<%= item.product.images[0].imageUrl %>" alt="Product Image" style="max-width: 100%; height: auto; margin: auto;" class="img-fluid" width="150px" height="150px">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Product Name:</td>
+                        <td><%= item.product.productName %></td>
+                    </tr>
+                    <tr>
+                        <td>Quantity:</td>
+                        <td><%= item.quantity %></td>
+                    </tr>
+                    <tr>
+                        <td>Order Status:</td>
+                        <td>
+                            <strong class="<%= item.status === 'Pending' ? 'text-warning' :
+                                (item.status === 'Shipped' ? 'text-primary' :
+                                (item.status === 'Cancelled' ? 'text-danger' :
+                                (item.status === 'Delivered' ? 'text-success' :
+                                (item.status === 'Returned' ? 'text-info' :
+                                (item.status === 'Refunded' ? 'text-success' : '' ))))) %>">
+                                <%= item.status %>
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Product Price:</td>
+                        <td>₹<%= (item.product.salePrice).toLocaleString() %></td>
+                    </tr>
+                    <tr>
+                        <td>Shipping Cost:</td>
+                        <td>₹<%= order.processingFee %></td>
+                    </tr>
+                    <% if (order.discount) { %>
+                        <tr>
+                            <td>Discount Amount:</td>
+                            <td>₹<%= order.discount %></td>
+                        </tr>
+                    <% } %>
+                    <tr>
+                        <td>Grand Total:</td>
+                        <td>₹<%= (order.total).toLocaleString() %></td>
+                    </tr>
+                </table>
 
-    function showConfirmation() {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'Do you really want to cancel this product?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // If the user clicks "Yes," cancel the product 
-                cancelForm.submit()
-            }
+                <p class="card-text">
+                    <strong>Payment Method: </strong>
+                    <%= order.paymentMethod %>
+                </p>
+
+                <% if (order.paymentStatus !== 'Refunded') { %>
+                    <p class="card-text">
+                        <strong>Payment Status:</strong>
+                        <strong class="<%= order.paymentStatus === 'Pending' ? 'text-warning' :
+                            (order.paymentStatus === 'Paid' ? 'text-success' : '') %>">
+                            <%= order.paymentStatus %>
+                        </strong>
+                    </p>
+                <% } %>
+
+                <% if (item.status === 'Delivered') { %>
+                    <p class="card-text text-muted">
+                        <span>Didn't like the product? You can return it within 7 days.</span>
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form action="/return-product/<%= order._id %>?_method=PUT" method="POST">
+                                <input type="hidden" name="productId" value="<%= item.product._id %>">
+                                <button type="submit" class="btn btn-success" style="height: 40px;">Return Product</button>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-info" id="invoiceBtn" data-invoice-id="<%= order._id %>" style="height: 40px; font-size: 10px;">Download Invoice</button>
+                        </div>
+                    </div>
+                <% } else if (item.status === 'Return requested') { %>
+                    <p class="card-text text-muted">
+                        <span>Return request sent. Once the request is confirmed, the amount will be credited to the wallet (excluding processingFee).</span>
+                    </p>
+                <% } else if (item.status === 'Refunded') { %>
+                    <p class="card-text text-muted">
+                        <span>Your return request has been confirmed. The amount has been credited to the wallet.</span>
+                    </p>
+                <% } else { %>
+                    <% if (item.status !== 'Cancelled') { %>
+                        <form action="/cancelOrder/<%= order._id %>?_method=PUT" method="POST" id="cancelForm">
+                            <input type="hidden" name="productId" value="<%= item.product._id %>">
+                            <input type="hidden" name="newStatus" value="Cancelled">
+                            <button type="submit" id="cancel-button" class="btn btn-danger h-auto">Cancel Order</button>
+                        </form>
+                    <% } else { %>
+                        <p class="card-text text-danger">
+                            <strong>Order Cancelled</strong>
+                        </p>
+                    <% } %>
+                <% } %>
+            <% }); %>
+        <% } %>
+
+        
+    </div>
+
+    <script>
+    //     const cancelButton = document.getElementById('cancel-button');
+    //     const cancelForm = document.getElementById('cancelForm');
+
+    // // Attach event listener to the cancel button
+    // cancelButton.addEventListener('click', (e) => {
+    //     console.log('Cancel button clicked'); // Debugging
+    //     e.preventDefault();
+    //     console.log('as;lkfjosdfoh')
+    //     // showConfirmation();
+    // });
+
+    // // Function to show confirmation alert
+    //     function showConfirmation() {
+    //     console.log('Showing confirmation alert'); // Debugging
+    //     Swal.fire({
+    //         title: 'Are you sure?',
+    //         text: 'Do you really want to cancel this product?',
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#3085d6',
+    //         cancelButtonColor: '#d33',
+    //         confirmButtonText: 'Yes'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             // If the user clicks "Yes," submit the cancel form
+    //             cancelForm.submit();
+    //         }
+    //     });
+    // }
+
+
+    </script>
+
+
+    <script>
+        document.getElementById("invoiceBtn").addEventListener("click", function (orderId) {
+            var invoiceButton = this;
+            var invoiceId = this.getAttribute("data-invoice-id");
+
+            // Disable the button and change its text
+            invoiceButton.disabled = true;
+
+            fetch(`/download-invoice/${invoiceId}`)
+                .then((response) => {
+                    if (response.ok) {
+                        return response.blob();
+                    } else {
+                        console.error("Failed to download the invoice");
+                    }
+                })
+                .then((blob) => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "invoice.pdf";
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+
+                    // Re-enable the button and restore its original text
+                    invoiceButton.disabled = false;
+                })
+                .catch((error) => {
+
+                    // Re-enable the button and restore its original text
+                    invoiceButton.disabled = false;
+
+                    console.error("An error occurred:", error);
+                });
         });
-    }
-
-</script>
-<script>
-    document.getElementById("invoiceBtn").addEventListener("click", function (orderId) {
-        var invoiceButton = this;
-        var invoiceId = this.getAttribute("data-invoice-id");
-
-        // Disable the button and change its text
-        invoiceButton.disabled = true;
-
-        fetch(`/download-invoice/${invoiceId}`)
-            .then((response) => {
-                if (response.ok) {
-                    return response.blob();
-                } else {
-                    console.error("Failed to download the invoice");
-                }
-            })
-            .then((blob) => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "invoice.pdf";
-                a.click();
-                window.URL.revokeObjectURL(url);
-
-                // Re-enable the button and restore its original text
-                invoiceButton.disabled = false;
-            })
-            .catch((error) => {
-
-                // Re-enable the button and restore its original text
-                invoiceButton.disabled = false;
-
-                console.error("An error occurred:", error);
-            });
-    });
 
 
-</script>
+    </script>
 </body>
-
-<style>
-    .quickview-btn-cart a {
-    display: inline-block;
-    margin-top: 20px;
-    margin-right: 10px;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    text-transform: uppercase;
-    color: #fff; /* Text color */
-    background-color: #ffc107; /* Primary button color */
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-.quickview-btn-cart a:hover {
-    background-color: #6c757d; /* Hover color */
-}
-</style>
-
-</html>
 
 
 
