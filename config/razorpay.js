@@ -31,17 +31,18 @@ const generateRazorPay = (total, orderId) => {
 // verifyingPayment--
 const verifyingPayment = (details) => {
     return new Promise((resolve, reject) => {
-        let hmac = crypto.createHmac('sha256', 'RbOcBnNtwY9o1x8Zp6lf98lt')
-        hmac.update(details.payment.razorpay_order_id + '|' + details.payment.razorpay_payment_id)
-        hmac = hmac.digest('hex')
-        if(hmac==details.payment.razorpay_signature){
-            resolve()
-        }else{
-            reject(err)
+        let hmac = crypto.createHmac('sha256',process.env.KEY_SECRET);
+        hmac.update(details.payment.razorpay_order_id + '|' + details.payment.razorpay_payment_id);
+        hmac= hmac.digest('hex');
+        if (hmac === details.payment.razorpay_signature) {
+            resolve(details);
+        } else {
+            reject("Signature verification failed");
         }
-
-    })
+    });
 }
+
+
 
 
 module.exports = { generateRazorPay, verifyingPayment }

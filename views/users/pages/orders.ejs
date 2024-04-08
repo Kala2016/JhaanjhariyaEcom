@@ -3,11 +3,10 @@
 <div class="container mt-4 mb-4">
     <h2>My Orders</h2>
     <ul class="list-group mt-5">
-        <% if (orders.length>0) { %>
+        <% if (orders && orders.length > 0) { %>
 
-            <% orders.forEach(order=> { %>
-                <% orders.items.forEach(item=> { %>
-
+            <% orders.forEach(order => { %>
+                <% order.items.forEach(item => { %> <!-- Changed from orders.items to order.items -->
                     <li class="list-group-item">
                         <div class="row">
                             <div class="col-md-3 aspect-ratio aspect-ratio-1x1">
@@ -39,27 +38,28 @@
                                                     <%= item.status %>
                                                 </strong>
                                             </p>
+                                            
                                             <p class="card-text">Product Name: <%= item.product.productName %><strong
                                                         class="text-danger"></strong></p>
 
-                                            <form action="/viewOrder/<%= ordersId%>" method="post">
-                                                <input type="hidden" name="productId" value="<%= item.productId  %>">
+                                            <form action="/viewOrderPage/<%= order._id %>" method="post">
+                                                <input type="hidden" name="productId" value="<%= item.product._id %>">
                                                 <button type="submit" class="btn btn-dark h-auto">View Order</button>
                                             </form>
                                 </div>
                             </div>
                         </div>
                     </li>
-                    <% }) %>
-                        <% }) %>
-                            <% } else { %>
-                                <div class="container text-center">
-                                    <h3 class="text-muted"> No Orders Found</h3>
-                                    <a href="/shop" class="btn btn-success mt-3" style="border-radius: 10px;">
-                                        <i class="ti-shopping-cart"></i> Start Shopping
-                                    </a>
-                                </div>
-                                <% } %>
+                <% }) %>
+            <% }) %>
+        <% } else { %>
+            <div class="container text-center">
+                <h3 class="text-muted"> No Orders Found</h3>
+                <a href="/shopping-cart" class="btn btn-success mt-3" style="border-radius: 10px;">
+                    <i class="ti-shopping-cart"></i> Start Shopping
+                </a>
+            </div>
+        <% } %>
     </ul>
 </div>
 

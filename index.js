@@ -6,16 +6,15 @@ const nocache = require("nocache");
 const { v4: uuidv4 } = require("uuid");
 const dotenv = require("dotenv").config();
 const logger = require("morgan");
-const mongoose = require('mongoose')
-const connectFlash = require('connect-flash')
-const cookieParcer = require('cookie-parser')
-
+const mongoose = require("mongoose");
+const connectFlash = require("connect-flash");
+const cookieParcer = require("cookie-parser");
 
 const PORT = process.env.PORT || 4000;
 
 const userRoute = require("./routes/userRoute");
 const adminRoute = require("./routes/adminRoute");
-const { notFound, errorHandler } = require('./middlewares/errorHandlers');
+const { notFound, errorHandler } = require("./middlewares/errorHandlers");
 
 // dbConnect();
 const dbConnect = require("./config/dbConnect");
@@ -31,46 +30,43 @@ app.use("/uploads", express.static("uploads"));
 
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
-// app.set("views", [ 
+// app.set("views", [
 //   path.join(__dirname, "views/user"),
 //   path.join(__dirname, "views")
 // ]);
 app.set("views", path.join(__dirname, "views"));
-// app.set('views', path.join(__dirname, "/views/admin/pages/")), 
+// app.set('views', path.join(__dirname, "/views/admin/pages/")),
 // app.set('views', path.join(__dirname, "/views/users/pages/"));
 // for user session activity checking
 
 app.use(
-  session({ 
+  session({
     secret: uuidv4(),
     resave: false,
+    rolling: false,
     saveUninitialized: true,
+    maxAge: Date.now() + 30 * 86400 * 1000,
   })
-  );
-  app.use((req, res, next) => {
-    res.locals.user = req.session.user;
-    next()
-  })
+);
+app.use((req, res, next) => {
+  res.locals.user = req.session.user;
+  next();
+});
 
-  // app.use('/search',searchRouter);
+// app.use('/search',searchRouter);
 
-
-
-  // using for sending message to ejs
+// using for sending message to ejs
 app.use(connectFlash());
 app.use((req, res, next) => {
-    res.locals.messages = req.flash()
-    next();
-})
-
-   
+  res.locals.messages = req.flash();
+  next();
+});
 
 //for user Routes
 app.use("/", userRoute);
 
 //for admin Route
 app.use("/admin", adminRoute);
-
 
 // app.use('*', (req, res) => { res.render('users/pages/404') })
 

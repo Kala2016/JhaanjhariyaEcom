@@ -11,22 +11,27 @@ async function decreaseQuantity(orderId, productId) {
     const order = await orderModel.findOne({ _id: orderId })
         .populate({
             path: 'items.product',
-            model: 'Product'
+            model: 'productCollection'
         })
 
     const productIdString = String(productId); //finding matching productId from orderDb
     const productItem = order.items.find(item => String(item.product._id) === productIdString);
 
     const incQuantity = productItem.quantity
+    const salePrice = productItem.product.salePrice; // Get the salePrice from the productItem
     await productCollection.findByIdAndUpdate(productId,
         { $inc: { quantity: incQuantity, sold: -incQuantity } });
-    return productItem.price;
+    return salePrice;
+    console.log('productItem', productItem);    
 }
 
 
 // increasing the wallet amount when user cancels the product that is paid by online payment--
-async function updateWalletAmount(userId, productPrice, description, type) {
-    console.log('price in update wallet function', productPrice);
+async function updateWalletAmount(userId, salePrice, description, type) {
+    console.log('userId in update wallet function', userId);
+    console.log('price in update wallet function', salePrice);
+    console.log('description in update wallet function', description);
+    console.log('type in update wallet function', type);
     //if user has wallet add amount to it else create a wallet and credit the amount.
     let userWallet = await Wallet.findOne({ user: userId });
 
@@ -40,12 +45,12 @@ async function updateWalletAmount(userId, productPrice, description, type) {
 
     const updateWallet = await Wallet.findByIdAndUpdate(walletId,
         {
-            $inc: { balance: productPrice }
+            $inc: { balance: salePrice }
         })
 
     const transaction = new Transaction({
         wallet: updateWallet._id,
-        amount: productPrice,
+        amount: salePrice,
         type: `${type}`,
         description: `${description}`,
     });

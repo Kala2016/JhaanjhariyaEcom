@@ -14,8 +14,9 @@ function walletAmount(userdata, grandTotal) {
 
 // checking for valid Coupon
 async function isValidCoupon(couponCode, user, total) {
+   
     const currentDate = new Date(); 
-    const findCoupon = await Coupon.findOne({ code: couponCode });
+    const findCoupon = await Coupon.findOne({ code: couponCode });    
 
     if (findCoupon) {
         if (findCoupon.expirationDate && currentDate > findCoupon.expirationDate) {
@@ -65,7 +66,7 @@ const changePaymentStatus = async (orderId, user, amount) => {
         { paymentStatus: 'Paid', amountPaid: amount });
 
     if (orderUpdated.paymentMethod == 'WalletWithRazorpay') {
-        const findWallet = await userCollection.findById({ _id: user._id }).populate('wallet')
+        const findWallet = await userCollection.findById({ _id: userId }).populate('wallet')
         const walletBalance = findWallet.wallet.balance
 
         const description = 'Wallet with Razorpay';
@@ -84,7 +85,7 @@ const generateInvoice = async (orderId) => {
 
     const orderData = await Order.findById(orderId)
         .populate('items.product')
-        .populate('billingAddress')
+        .populate('address')
 
     const docDefinition = {
         content: [

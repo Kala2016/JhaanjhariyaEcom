@@ -2,6 +2,7 @@ const userCollection = require("../../models/userSchema");
 const productCollection = require("../../models/ProductSchema");
 const Variant = require("../../models/variantSchema");
 const { ObjectId } = require("mongodb");
+
 const { userLoggedIn } = require("../../middlewares/userAuth");
 const { calculateSubtotal } = require("../../utility/ordercalcalculation");
 
@@ -183,7 +184,7 @@ console.log(req.userId,'ddddddddddddd')
       
     
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
       res.status(500).json('Internal Server Error')
   }
 };
@@ -191,18 +192,37 @@ console.log(req.userId,'ddddddddddddd')
 
 const checkProductAvailability = async (req, res) => {
   try {
-      const userId = req.user.id;
+      const userId = req.userId;
       const user = await userCollection.findById(userId).populate('cart.productId').populate('cart.variantId').exec(); // Populate the product details
       const cartItems = user.cart;
 
       res.json({ cartItems });
   } catch (error) {
-      console.error(error.message)
+      console.error(error)
   }
 };
 
 
+// counting cart items--
+const getCartCount = async (req, res) => {
+    try {
+        if (req.user) {
+            // Get the user's cart items count from your user model
+            const Id = req.session.user._id;
+            const user = await userCollection.findById(Id).exec();
+            const cartItemCount = user.cart.length;     
 
+            console.log("cartItemCount",cartItemCount);
+            console.log("userId",userId)
+            res.json({ cartItemCount }); // Use the correct property name
+        } else {
+            // User is not authenticated
+            res.json({ cartItemCount: 0 }); // Return 0 if the user is not logged in
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
 
 
 
@@ -215,5 +235,6 @@ module.exports = {
   updateCart,
   removeProductfromCart,
   checkProductAvailability,
+  getCartCount
 
 };

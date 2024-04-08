@@ -21,6 +21,25 @@
 <div class="checkout-area ptb-100">
     <div class="container">
         <br>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="coupon-accordion">
+                    <!-- ACCORDION START -->
+                    <h6>Have a coupon? <span id="showcoupon">Click here to enter your code</span></h6><br>
+                        <div id="checkout_coupon" class="coupon-checkout-content">
+                            <div class="coupon-info">
+                                <p class="checkout-coupon">
+                                    <input type="text" id="couponCode" placeholder="Coupon code" name="coupon" />
+                                    <input type="button" onclick="applyCouponAjax('<%= grandTotal %>','<%= walletBalance %>')" id="couponButton" value="Apply Coupon" />
+                                </p>
+                                <p id="coupon-details"></p>
+                            </div>
+                        </div>
+                    <!-- ACCORDION END -->
+                </div>  
+               
+            </div>
+        </div>
         
         <form action="/placeOrder" method="POST" id="checkout-form">
             <div class="row">
@@ -126,32 +145,12 @@
                             </table>
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h5>Wallet</h5><p>Available Balance: ₹<span id="walletBalanceAmount"></span></p>
+                                    <h5>Wallet Available Balance: ₹<span id="walletBalanceAmount"><%= (walletBalance).toLocaleString() %></span></h5>
                                     
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="coupon-accordion">
-                                    <!-- ACCORDION START -->
-                                    <h6>Have a coupon? <span id="showcoupon">Click here to enter your code</span></h6><br>
-                                    <form action="/applyCoupon" method="POST" id="couponForm">
-                                        <div id="checkout_coupon" class="coupon-checkout-content">
-                                            <div class="coupon-info">
-                                                <p class="checkout-coupon">
-                                                    <input type="text" id="couponCode" placeholder="Coupon code" name="coupon" />
-                                                    <input type="submit" id="couponButton" value="Apply Coupon" />
-                                                </p>
-                                                <p id="coupon-details"></p>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <!-- ACCORDION END -->
-                                </div>  
-                               
-                            </div>
-                        </div>
+                        
                         <br>
                         
                         <div class="payment-method">
@@ -191,7 +190,7 @@
                                                                     id="walletWithRazorpay" name="paymentMethod"
                                                                     required>
                                                                 <label class="form-check-label" for="razorPay">
-                                                                    Pay wallet with Razorpay
+                                                                    Pay with Wallet
                                                                 </label>
                                                             </div>
 
@@ -216,7 +215,7 @@
                     </div>
                     <% if (address.length > 0) { %>
                         <div class="order-button-payment">
-                            <button type="submit" id="submitButton">Place order</button>
+                            <button type="button" onclick="placeOrder()" id="submitButton">Place order</button>
                         </div>
                         
                     <% } else { %>
@@ -322,46 +321,13 @@
 </script> -->
 
 <script>
-
-$(document).ready(function () {
-        // wallet discounting row 
-        const cod = document.getElementById('COD')
-        const razorPay = document.getElementById('razorPay')
-        const payWithWallet = document.getElementById('payWithWallet')
-        const walletBalanceElement = document.getElementById("walletBalanceAmount");
-        const orderTotalElement = document.getElementById("orderTotal");
-        const deductedWalletRow = document.querySelector(".deductedWalletAmount");
-        const couponDetails = document.getElementById("coupon-details");
-        // coupon discount table row
-        const couponRow = document.querySelector(".coupon-applied");
-
-
-
-        const currentWallet = walletBalanceElement.textContent.trim().replace('₹', '');
-        const walBalance = parseFloat(currentWallet);
-
-        const orderTotalValue = orderTotalElement.textContent.trim().replace('₹', '');
-        const total = parseFloat(orderTotalValue);
-        const totalAmount = total
-        const walletWithRazorpay = document.getElementById("walletWithRazorpay");
-
-        // when coupon applied
-        $('#couponForm').submit(function (e) {
-            e.preventDefault();
-            var couponCode = $('#couponCode').val();
-            let walAmount = null;
-            if (walletWithRazorpay && walletWithRazorpay.checked) {
-                walAmount = walBalance
-            }
-            applyCouponAjax(couponCode, total, walAmount)
-        });
-
-        function applyCouponAjax(couponCode, total, walAmount) {
+    function applyCouponAjax(total, walAmount) {
+        alert(total)
             $.ajax({
                 type: 'POST',
                 url: '/applyCoupon',
                 data: {
-                    couponCode,
+                    couponCode:document.getElementById('couponCode').value,
                     total,
                     walAmount
                 },
@@ -401,6 +367,47 @@ $(document).ready(function () {
                 }
             });
         }
+</script>
+
+<script>
+    
+        // wallet discounting row 
+        const cod = document.getElementById('COD')
+        const razorPay = document.getElementById('razorPay')
+        const payWithWallet = document.getElementById('payWithWallet')
+        const walletBalanceElement = document.getElementById("walletBalanceAmount");
+        const orderTotalElement = document.getElementById("orderTotal");
+        const deductedWalletRow = document.querySelector(".deductedWalletAmount");
+        const couponDetails = document.getElementById("coupon-details");
+        // coupon discount table row
+        const couponRow = document.querySelector(".coupon-applied");
+
+
+
+        const currentWallet = walletBalanceElement.textContent.trim().replace('₹', '');
+        const walBalance = parseFloat(currentWallet);
+
+        const orderTotalValue = orderTotalElement.textContent.trim().replace('₹', '');
+        const total = parseFloat(orderTotalValue);
+        const totalAmount = total
+        const walletWithRazorpay = document.getElementById("walletWithRazorpay");
+
+        // $('submitButton').click(function(){
+        //     alert('vannu')
+        //     placeOrder()
+        // })
+        // when coupon applied
+        // $('#couponForm').submit(function (e) {
+        //     e.preventDefault();
+        //     var couponCode = $('#couponCode').val();
+        //     let walAmount = null;
+        //     if (walletWithRazorpay && walletWithRazorpay.checked) {
+        //         walAmount = walBalance
+        //     }
+        //     applyCouponAjax(couponCode, total, walAmount)
+        // });
+
+        
 
         // setTimeoUt for coupon details p tag--
         function hideCouponDetails() {
@@ -520,8 +527,8 @@ $(document).ready(function () {
 
             // place the order after checking the cart--
             function placeOrder() {
-                var couponCode = $('#couponCode').val();
                 var formData = $('#checkout-form').serialize();
+                formData += '&couponCode=' + $('#couponCode').val(); // Capture coupon code here
 
                 formData += '&couponCode=' + couponCode;
                 $.ajax({
@@ -533,7 +540,7 @@ $(document).ready(function () {
                             outofStockAlert();
                         }
                         if (response.codSuccess || response.walletSuccess) {
-                            window.location.href = `/orderPlaced?id=${response.orderID}`;
+                            window.location.href = `/orderPlacedPage?id=${response.orderID}`;
                         } else {
                             console.log(response);
                             razorpayPayment(response);
@@ -545,7 +552,6 @@ $(document).ready(function () {
                 });
             }
 
-        })
 
         // paymentm model--
         function razorpayPayment(order) {
@@ -580,7 +586,7 @@ $(document).ready(function () {
             };
             var rzp1 = new Razorpay(options);
             rzp1.on('payment.failed', function (response) {
-                console.log('response in failure', order)
+                console.log('response in failure', order)   
                 cancelOrder(order)
             });
             rzp1.open();
@@ -598,7 +604,7 @@ $(document).ready(function () {
                 },
                 success: (response) => {
                     if (response.status) {
-                        window.location.href = `/orderPlaced?id=${response.orderID}`;
+                        window.location.href = `/orderPlacedPage?id=${response.orderID}`;
                     } else {
                         console.log('inside the error');
                         console.log(response);

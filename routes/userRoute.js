@@ -91,7 +91,9 @@ userRoute.post('/shopping-cart',userValid,userLoggedIn,cartController.addtoCart)
 userRoute.post("/addtocart",userValid,userLoggedIn,cartController.addtoCart)
 userRoute.post('/updateCartItem/:id',userValid,userLoggedIn,cartController.updateCart)
 userRoute.get('/checkProductAvailability', userLoggedIn, cartController.checkProductAvailability);
-userRoute.get('/removeProduct/:id',userValid,userLoggedIn,cartController.removeProductfromCart)
+userRoute.get('/removeProduct/:id',userValid,userLoggedIn,cartController.removeProductfromCart);
+userRoute.get('/getCartItemCount',userLoggedIn,cartController.getCartCount);
+
 
 
 // forget-Password and reset password section 
@@ -128,12 +130,12 @@ userRoute.post('/checkoutPage', userValid, userLoggedIn, orderController.checkou
 userRoute.get('/checkCart',userValid,userLoggedIn,orderController.checkCart)
 userRoute.post('/placeOrder',userValid,userLoggedIn,orderController.placeOrder)
 userRoute.get('/orderPlacedPage',userValid,userLoggedIn,orderController.orderPlacedPage)
-userRoute.get('/viewOrderPage/:id',userLoggedIn,orderController.orders)
+userRoute.get('/myorders',userLoggedIn,orderController.orders)
 userRoute.get('/viewOrderList',userLoggedIn,orderController.viewOrderList)
-userRoute.post('/viewOrder/:id',userLoggedIn,orderController.viewOrder)
+userRoute.post('/viewOrderPage/:id',userLoggedIn,orderController.viewOrderPage) 
 userRoute.get('/orderStatus',userLoggedIn,orderController.orderStatus)
-// userRoute.put('/return-product/:id', userLoggedIn, orderController.returnProduct);
-userRoute.put('/cancelOrder/:id', userLoggedIn,orderController.cancelOrder);
+userRoute.put('/return-product/:id', userLoggedIn, orderController.returnProduct);
+userRoute.post('/cancelOrder/:id', userLoggedIn,orderController.cancelOrder);
 
 
 

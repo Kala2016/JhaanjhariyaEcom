@@ -51,7 +51,7 @@ const updateOrder = async (req, res) => {
       const orderId = req.params.id;
       const status = req.body.status;
       const productId = req.body.productId;
-      console.log('status when admin update order', status);
+      console.log('When Admin update Status', status);
 
       const update = await orderModel.findOneAndUpdate(
           { _id: orderId, 'items.product': productId }, // Match the order and the product
@@ -72,9 +72,11 @@ const updateOrder = async (req, res) => {
       } else { }
 
       if (update) { //if update is success            
-          console.log('inside if updated ');
+          console.log(' If updated Succsessfully');
           if (status == 'Cancelled' && update.paymentMethod == 'COD') { //if the admin updates the status to cancelled ,increase the quantity.
               decreaseQuantity(orderId, productId)
+
+              
 
           } else if (status == 'Cancelled' && (update.paymentMethod == 'RazorPay'
               || update.paymentMethod == 'Wallet' || update.paymentMethod == 'WalletWithRazorpay')) {
@@ -83,6 +85,8 @@ const updateOrder = async (req, res) => {
               const userId = update.user;
               const description = 'Order Cancelled';
               const type = 'credit'
+
+              console.log('productPrice : ', productPrice)
 
               if (update.discount > 0) {
                   if (update.items.length > 1) {
@@ -114,9 +118,7 @@ const updateOrder = async (req, res) => {
           }
 
           res.redirect('/admin/orders')
-      } else {
-          res.status(404).render('./admin/404');
-      }
+      } 
 
   } catch (error) {
       console.error(error)
@@ -128,6 +130,7 @@ module.exports = {
   ordersPage,
   editOrderPage,
   updateOrder
+
 
 
 }
