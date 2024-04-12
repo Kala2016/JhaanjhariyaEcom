@@ -4,6 +4,7 @@ const userCollection =require('../models/userSchema')
 const {decreaseWalletAmount}=require("../helpers/productReturnHelper")
 
 
+
 // calculating total by decreasing the wallet amount 
 function walletAmount(userdata, grandTotal) {
     const wallet = userdata.wallet
@@ -13,7 +14,7 @@ function walletAmount(userdata, grandTotal) {
 }
 
 // checking for valid Coupon
-async function isValidCoupon(couponCode, user, total) {
+async function  isValidCoupon(couponCode, user, total) {
    
     const currentDate = new Date(); 
     const findCoupon = await Coupon.findOne({ code: couponCode });    
@@ -65,8 +66,8 @@ const changePaymentStatus = async (orderId, user, amount) => {
         { _id: orderId },
         { paymentStatus: 'Paid', amountPaid: amount });
 
-    if (orderUpdated.paymentMethod == 'WalletWithRazorpay') {
-        const findWallet = await userCollection.findById({ _id: userId }).populate('wallet')
+    if (orderUpdated.paymentMethod == 'PaywithWallet') {
+        const findWallet = await userCollection.findById({ _id: user }).populate('wallet')
         const walletBalance = findWallet.wallet.balance
 
         const description = 'Wallet with Razorpay';
@@ -83,9 +84,11 @@ const changePaymentStatus = async (orderId, user, amount) => {
 // Generating invoice structure
 const generateInvoice = async (orderId) => {
 
-    const orderData = await Order.findById(orderId)
+    const orderData = await orderModel.findById(orderId)
         .populate('items.product')
         .populate('address')
+
+        console.log('orderData' ,orderData)
 
     const docDefinition = {
         content: [
@@ -119,12 +122,14 @@ const generateInvoice = async (orderId) => {
                             { text: 'Billing Address:', style: 'subheader' },
                             {
                                 text: [
-                                    orderData.billingAddress.name,
-                                    orderData.billingAddress.address,
-                                    orderData.billingAddress.town,
-                                    orderData.billingAddress.state,
-                                    orderData.billingAddress.postCode,
-                                    orderData.billingAddress.phone,
+                                    orderData.address.address_name,
+                                    orderData.address.house_name,
+                                    orderData.address.street_address,
+                                    orderData.address.city,
+                                    orderData.address.state,
+                                    orderData.address.pincode,
+                                    orderData.address.phone,
+                                
                                 ].join('\n'),
                                 style: 'address',
                             },

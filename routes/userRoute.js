@@ -136,7 +136,7 @@ userRoute.post('/viewOrderPage/:id',userLoggedIn,orderController.viewOrderPage)
 userRoute.get('/orderStatus',userLoggedIn,orderController.orderStatus)
 userRoute.put('/return-product/:id', userLoggedIn, orderController.returnProduct);
 userRoute.post('/cancelOrder/:id', userLoggedIn,orderController.cancelOrder);
-
+userRoute.get('/download-invoice/:id', userLoggedIn, orderController.downloadInvoice);
 
 
 //apply Coupon 

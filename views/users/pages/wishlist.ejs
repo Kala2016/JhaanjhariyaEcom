@@ -1,8 +1,6 @@
 <%- include('../partials/header.ejs') %>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/themify-icons@latest/css/themify-icons.css">
-<script src="https://kit.fontawesome.com/2e2bb0441a.js" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 
 
 <!-- Breadcrumb Section Begin -->
@@ -35,8 +33,8 @@
                                     <th>Images</th>
                                     <th>Product</th>
                                     <th>Price</th>
-                                    <th>Remove</th>
-                                    <th>Add to Cart</th>
+                                    <th>Remove/Addto Cart</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -52,28 +50,28 @@
                                         <span class="amount">₹<%= item.salePrice %></span>
                                     </td>
                                     <td class="product-remove">
-                                        <a href="/removeWishlist/<%= item._id %>">
-                                            <i class="ti-close" style="font-size: 29px;"></i>
-                                        </a>
-                                    </td>
-                                    <td class="add-to-cart">
-                                      
-                                        <a href="/addtocart/<%= item._id %>">
-                                            <i class="ti-shopping-cart" style="font-size: 29px;" ></i>
-                                            <!-- https://icons8.com/icon/23169/add-shopping-cart -->
-                                        </a>
-                                       
+                                        <% if (item.quantity> 0) { %>
+                                            <a href="/addtoCart/<%= item._id %>">
+                                                <i class="ti-shopping-cart" style="font-size: 29px;" ></i>
+                                                <!-- https://icons8.com/icon/23169/add-shopping-cart -->
+                                            </a>
+                                            <% } %>
+                                                <a href="/removeWishlist/<%= item._id %>">
+                                                    <i class="ti-close" style="font-size: 25px;"></i>
+                                                </a>
                                     </td>
                                 </tr>
                                 <% }); %>
-                            </tbody>
+                                    <% } else { %>
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <img src="/assets/img/no-wish-list.png" alt="">
+                                        </div>
+                                        <% } %>
+
+                        </tbody>
                         </table>
                     </div>
-                    <% } else { %>
-                    <div class="d-flex justify-content-center align-items-center">
-                        <img src="" alt="">
-                    </div>
-                    <% } %>
+                    
                 </form>
                 
             </div>
@@ -138,8 +136,72 @@
 
 }
 
+.table-content table td.product-remove i {
+    color: #919191;
+    /* display: inline-block; */
+    font-size: 35px;
+   
+}
+.table-content table .product-price .amount {
+    color: #555;
+    font-size: 15px;
+}
+.table-content table td.product-remove i:hover {
+    color: #050035;
+}
+.table-content table td.product-quantity {
+    width: 180px;
+}
+
+
+
 
 </style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+
+function showConfirmation(productId) {
+
+    alert(productId);
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You are about to remove this item from your wishlist.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, remove it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // If the user clicks "Yes," redirect to the removeProduct endpoint
+            fetch(`/removeWishlist/${productId}`, { method: 'GET' })
+              .then(response => {
+                if (response.ok) {
+                  // Redirect to wishlist page
+                  window.location.href = '/wishlist';
+                  // Show toast message
+                  Toast.fire({
+                    icon: 'success',
+                    title: 'Product removed from wishlist'
+                  });
+                } else {
+                  throw new Error('Failed to remove product from wishlist');
+                }
+              })
+              .catch(error => {
+                console.error(error);
+                // Show toast message for error
+                Toast.fire({
+                  icon: 'error',
+                  title: 'Failed to remove product from wishlist'
+                });
+              });
+        }
+    });
+}
+</script>
+
+</script>
 
 
 <%- include('../partials/footer.ejs') %>

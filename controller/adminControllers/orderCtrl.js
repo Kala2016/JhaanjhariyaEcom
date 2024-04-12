@@ -2,6 +2,8 @@ const orderModel = require("../../models/orderSchema");
 const { order: orderStatus, order } = require("../../config/enum");
 const productCollection = require("../../models/ProductSchema");
 const userCollection = require("../../models/userSchema");
+const { decreaseQuantity, updateWalletAmount, decreaseWalletAmount } = require('../../helpers/productReturnHelper')
+
 
 
 
@@ -54,9 +56,10 @@ const updateOrder = async (req, res) => {
       console.log('When Admin update Status', status);
 
       const update = await orderModel.findOneAndUpdate(
-          { _id: orderId, 'items.product': productId }, // Match the order and the product
-          { $set: { 'items.$.status': status } } // Update the status of the matched product
-      );
+        { _id: orderId, 'items.product': productId },
+        { $set: { 'items.$.status': status } },
+        { new: true } // Ensure to return the updated document
+    );
       if (status == 'Shipped') { // Update shippedDate date
 
           await orderModel.findOneAndUpdate(
@@ -79,7 +82,7 @@ const updateOrder = async (req, res) => {
               
 
           } else if (status == 'Cancelled' && (update.paymentMethod == 'RazorPay'
-              || update.paymentMethod == 'Wallet' || update.paymentMethod == 'WalletWithRazorpay')) {
+              || update.paymentMethod == 'Wallet' || update.paymentMethod == 'PaywithWallet')) {
 
               let productPrice = await decreaseQuantity(orderId, productId);
               const userId = update.user;

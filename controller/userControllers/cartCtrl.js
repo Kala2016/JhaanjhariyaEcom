@@ -20,7 +20,7 @@ const getCartPage = async (req, res) => {
       })
       .populate("cart.variantId");
 
-    if (cart.cart.length === 0) {
+      if (!cart || !cart.cart || cart.cart.length === 0) {
       // When user has an empty cart
       return res.render("./users/pages/shopping-cart", { cart: [], subtotal: 0, grandTotal: 0});
     }

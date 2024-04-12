@@ -2,7 +2,6 @@ const userCollection = require("../../models/userSchema");
 const productCollection = require("../../models/ProductSchema");
 const CategoryCollection = require("../../models/categorySchema");
 const CollectionModel = require("../../models/collectionSchema");
-// const Cart = require("../../models/cartSchema");
 const { ObjectId } = require("mongodb");
 const variant= require("../../models/variantSchema");
 const express = require('express')
@@ -92,41 +91,48 @@ const getShoppingpage = async (req, res) => {
 
     // Extract other query parameters
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 9;
     const sort = req.query.sort || null;
     const categoryFilter = req.query.category || null;
     const collectionFilter = req.query.collection || null;
     const searchQuery = req.query.query || null;
-
     // Prepare filter criteria
     const filter = { isListed: true };
 
     if (categoryFilter) {
-      const catId = CategoryCollection.find(cat => cat.categoryName === categoryFilter)?._id;
-      if (catId) {
-        filter.categoryName = catId;
+      const cat = await CategoryCollection.findOne({categoryName: categoryFilter});
+      if (cat) {
+        filter.categoryName = cat._id;
       }
     }
 
     if (collectionFilter) {
-      const collId = CollectionModel.find(coll => coll.collectionName === collectionFilter)?._id;
-      if (collId) {
-        filter.collectionName = collId;
+      const coll = await CollectionModel.findOne({collectionName : collectionFilter})
+      if (coll) {
+        filter.collectionName = coll._id
       }
-    }
+    } 
 
-    // If search query is provided, add it to the filter criteria
-    if (searchQuery) {
-      filter.productName = { $regex: new RegExp(searchQuery, 'i') };
-    }
+    // Check if a search query is provided
+    if (req.query.search) {
+      filter.$or = [
+          { productName: { $regex: req.query.search, $options: 'i' } },
+          { description: { $regex:   req.query.search, $options: 'i' } },
+      ];
+  }
 
-    // Prepare sorting criteria
     let sortCriteria = {};
-    if (sort === 'lowToHigh') {
-      sortCriteria.salePrice = 1;
-    } else if (sort === 'highToLow') {
-      sortCriteria.salePrice = -1;
+
+    // Check for price sorting
+    if (req.query.sort === 'lowtoHigh') {
+        sortCriteria.salePrice = 1;
+    } else if (req.query.sort === 'highToLow') {
+        sortCriteria.salePrice = -1;
     }
+    console.log(req.query)
+    
+
+
     // Now fetch the user's wishlist data
     let userWishlist;
     if (req.user) {
@@ -138,6 +144,11 @@ const getShoppingpage = async (req, res) => {
         },
       });
     }
+
+    // Count the total number of matching products
+    const count = await productCollection.find(filter).countDocuments();
+        
+    let selectedCategory = filter.categoryName ? [filter.categoryName] : [];
 
     // Find products based on filter criteria, pagination, and sorting
     const products = await productCollection
@@ -152,6 +163,8 @@ const getShoppingpage = async (req, res) => {
       .limit(limit)
       .sort(sortCriteria);
 
+      // console.log(products);
+
     // Render the page with the filtered, paginated, and sorted products
     res.render("./users/pages/shop", {
       products: products,      
@@ -163,6 +176,8 @@ const getShoppingpage = async (req, res) => {
       currentPage: page,
       totalPages: Math.ceil(products.length / limit) || 1,
       userWishlist: userWishlist?userWishlist.wishlist :[],
+      selectedCategory,
+      search:req.query.search ? req.query.search : ''
     });
   } catch (error) {
     console.error(error);
@@ -177,7 +192,7 @@ const getproductpage = async (req, res) => {
     const id = req.params.id;
     const user = req.user;
 
-    const category = await CategoryCollection.find({ isListed: true });
+    const category = await CategoryCollection.find({ isListed: true })
     const collection = await CollectionModel.find();
     const cart = await productCollection.findOne({
       user_id: req.session.userId,
