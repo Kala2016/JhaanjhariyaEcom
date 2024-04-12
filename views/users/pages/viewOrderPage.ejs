@@ -1,97 +1,13 @@
 
+<%- include('../partials/header.ejs') %>
 
 
-
-    <title>Order Details</title>
-    <style>
-        /* Add your custom styles here */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #212529;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th,
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #dee2e6;
-            text-align: left;
-        }
-
-        th {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 8px 16px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-        }
-
-        .btn-primary:hover,
-        .btn-danger:hover {
-            background-color: #0056b3;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .img-fluid {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .quickview-btn-cart a {
-            display: inline-block;
-            margin-top: 20px;
-            margin-right: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: #fff; /* Text color */
-            background-color: #ffc107; /* Primary button color */
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .quickview-btn-cart a:hover {
-            background-color: #6c757d; /* Hover color */
-        }
-    </style>
+    
+        
 
 <body>
     
-    <div class="container">
+    <div class="ordercontainer">
         <h2 class="text-center">Order Details</h2>
         <% if (order) { %>
             <% order.items.forEach(item => { %>
@@ -170,26 +86,26 @@
                 <% if (order.paymentStatus !== 'Refunded') { %>
                     <p class="card-text">
                         <strong>Payment Status:</strong>
-                        <strong class="<%= order.paymentStatus === 'Pending' ? 'text-warning' :
+                        <strong class="<%= order.paymentStatus === 'Delivered' ? 'text-warning' :
                             (order.paymentStatus === 'Paid' ? 'text-success' : '') %>">
                             <%= order.paymentStatus %>
                         </strong>
                     </p>
                 <% } %>
 
-                <% if (item.status === 'Delivered') { %>
+                <% if (item.status == 'Delivered') { %>
                     <p class="card-text text-muted">
                         <span>Didn't like the product? You can return it within 7 days.</span>
                     </p>
                     <div class="row">
                         <div class="col-md-6">
-                            <form action="/return-product/<%= order._id %>?_method=PUT" method="POST">
+                            <form action="/return-product/<%= order._id %>?_method=PUT" method="Post">
                                 <input type="hidden" name="productId" value="<%= item.product._id %>">
-                                <button type="submit" class="btn btn-success" style="height: 40px;">Return Product</button>
+                                <button type="submit" class="btn btn-success" style="height: 40px;">Return Product</button> 
                             </form>
                         </div>
                         <div class="col-md-6">
-                            <button type="button" class="btn btn-info" id="invoiceBtn" data-invoice-id="<%= order._id %>" style="height: 40px; font-size: 10px;">Download Invoice</button>
+                            <button type="button" class="btn btn-success" id="invoiceBtn" data-invoice-id="<%= order._id %>" style="height: 40px;;">Download Invoice</button>
                         </div>
                     </div>
                 <% } else if (item.status === 'Return requested') { %>
@@ -215,6 +131,10 @@
                 <% } %>
             <% }); %>
         <% } %>
+
+        <br>
+        <br>
+        <br>
 
         
     </div>
@@ -267,7 +187,7 @@
                     if (response.ok) {
                         return response.blob();
                     } else {
-                        console.error("Failed to download the invoice");
+                        console.error("Failed to download the invoice") ;
                     }
                 })
                 .then((blob) => {
@@ -294,6 +214,94 @@
     </script>
 </body>
 
+<style>
+    /* Add your custom styles here */
+    /* body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #212529;
+        margin: 0;
+        padding: 0;
+    } */
+
+    .ordercontainer {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        border-bottom: 1px solid #dee2e6;
+        text-align: left;
+    }
+
+    th {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+    }
+
+    .btn-primary:hover,
+    .btn-danger:hover {
+        background-color: #0056b3;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .quickview-btn-cart a {
+        display: inline-block;
+        margin-top: 20px;
+        margin-right: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #fff; /* Text color */
+        background-color: #ffc107; /* Primary button color */
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .quickview-btn-cart a:hover {
+        background-color: #6c757d; /* Hover color */
+    }
+</style>
+
+
+<%- include('../partials/footer.ejs') %>
 
 
 

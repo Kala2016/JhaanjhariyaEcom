@@ -12,6 +12,8 @@ const collectionCtrl = require("../controller/adminControllers/collectionCtrl");
 const orderCtrl =require("../controller/adminControllers/orderCtrl");
 const couponCtrl =require("../controller/adminControllers/couponCtrl")
 
+
+
 // const variantCtrl = require("../controller/adminControllers/variantCtrl")
 
 
@@ -28,6 +30,8 @@ adminRoute.post('/', adminCtrl.verifyAdmin);
 adminRoute.get('/admin', isAdminLoggedIn, adminCtrl.logout)
 adminRoute.get('/dashboard', isAdminLoggedIn, adminCtrl.loadDashboard)
 adminRoute.get('/adminProfile',adminCtrl.adminProfile)
+adminRoute.get('/dashboard/sales-report', isAdminLoggedIn, adminCtrl.salesReportPage)
+adminRoute.post('/dashboard/sales-report', isAdminLoggedIn, adminCtrl.generateSalesReport)
 
 
 

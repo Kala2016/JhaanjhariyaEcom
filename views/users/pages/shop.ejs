@@ -42,23 +42,40 @@
                 </div>
                
 
-                <div class="filter-widget">
-                    <h4 class="fw-title">Price</h4>
+                <!-- <div class="filter-widget">
+                    <h4 class="fw-title">Filter by Price</h4>
                     <div class="filter-range-wrap">
                         <div class="range-slider">
                             <div class="price-input">
-                                <input type="text" id="minamount">
-                                <input type="text" id="maxamount">
+                                <input type="text" id="lowToHigh">
+                                <input type="text" id="highToLow">
                             </div>
                         </div>
                         <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
-                            data-min="0" data-max="10000">
+                            lowToHigh="0" highToLow="10000">
                             <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
                             <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
                             <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
                         </div>
                     </div>
                     <a href="#" class="filter-btn">Filter</a>
+                </div> -->
+                <div class="sidebar-widget mb-20">
+                    <h5 style="font-style:25px" class="fw-title">Filter by Price</h5>
+                    
+                    <br>
+                    
+                    <div class="sidebar-categories">
+                        <ul>
+                            
+                            <li><span style="color: blue; cursor: pointer;" onclick='handleSort("lowtoHigh")' id="lowToHigh">
+                                    Low to High
+                            </span></li>
+                            <li><span onclick="handleSort('highToLow')" style="color: blue; cursor: pointer;" id="highToLow">
+                                    High to low
+                            </span></li>
+                        </ul>
+                    </div>
                 </div>
                 
                 <!-- ... (existing code) ... -->
@@ -67,22 +84,27 @@
                 
                 
                 <!-- Your filter options go here -->
-            </div>
+            </div>  
             <div class="col-lg-9 order-1 order-lg-2">
                 <div class="product-show-option">
                     <div class="row">
                         <div class="col-lg-7 col-md-7">
                             <div class="select-option">
-                                <select class="sorting">
-                                    <option value="">Default Sorting</option>
-                                </select>
+                               
+                                   
+                                    <a href="/shop">Default Sorting</a>
                             </div>
                         </div>
 
-                        <form action="/search" method="GET">
-                            <input type="text" name="query" placeholder="Search products...">
-                            <button type="submit">Search</button>
-                          </form>
+                        <div class="sidebar-widget mb-50">
+                            <h6 class="sidebar-title"></h6>
+                            <div class="sidebar-search">
+                                <form>
+                                    <input id="searchInput" value="<%= search %>" placeholder="Search Products..." type="text" name="search">
+                                    <button id="searchButton"><i class="ti-search"></i></button>
+                                </form>
+                            </div>
+                        </div>
                           
                         <div class="col-lg-5 col-md-5 text-right">
                             <!-- Additional options if needed -->
@@ -201,10 +223,18 @@
 
 
 
-  
+<!-- <script>
+    console.log("Categories:", <%= JSON.stringify(category) %>);
+</script> -->
+
   <script>
+
+    const handleSort = (value) =>{
+        const search = document.getElementById('searchInput').value
+        window.location.href = `${window.location.pathname}?sort=${value}&&search=${search}`
+    }
     // Assuming you have the total pages and current page information available from the backend
-    const totalPages = 4;
+    const totalPages = 2;
     const currentPage = 1;
   
     const paginationContainer = document.getElementById("pagination");
@@ -247,12 +277,12 @@
 
 <!-- filter -->
 
-<script>
+<!-- <script>
     document.addEventListener("DOMContentLoaded", function () {
     const filterBtn = document.querySelector('.filter-btn');
     filterBtn.addEventListener('click', function (event) {
         event.preventDefault();
-        const low = 0; // Set your minPrice here
+        const minPrice = 0; // Set your minPrice here
         const maxPrice = 10000; // Set your maxPrice here
         const url = '/shop'; // Replace with your actual backend API URL
         const params = new URLSearchParams({ minPrice: minPrice, maxPrice: maxPrice });
@@ -274,9 +304,9 @@
     });
 });
 
-</script>
+</script> -->
 
-<script>
+<!-- <script>
     const query = document.querySelector('input[name="query"]').value;
 fetch(`/search?query=${query}`)
     .then(response => response.json())
@@ -289,7 +319,7 @@ fetch(`/search?query=${query}`)
         console.error('Error during search:', error);
     });
 
-</script>
+</script> -->
 
 <script>
     function toggleWishlist(productId) {

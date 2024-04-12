@@ -64,8 +64,8 @@ async function updateWalletAmount(userId, salePrice, description, type) {
 }
 
 // Decrease the users wallet amount
-async function decreaseWalletAmount(userId, grandTotal, description, type) {
-    console.log('price in  decrease function', grandTotal);
+async function decreaseWalletAmount(userId, total, description, type) {
+    console.log('price in  decrease function', total);
     //if user has wallet reduce amount 
     const userWallet = await Wallet.findOne({ user: userId });
 
@@ -73,12 +73,12 @@ async function decreaseWalletAmount(userId, grandTotal, description, type) {
 
     const updateWallet = await Wallet.findByIdAndUpdate(walletId,
         {
-            $inc: { balance: -grandTotal }
+            $inc: { balance: -total }
         })
 
     const transaction = new Transaction({
         wallet: updateWallet._id,
-        amount: grandTotal,
+        amount: total,
         type: `${type}`,
         description: `${description}`,
     });

@@ -5,7 +5,7 @@ function calculateSubtotal(userWithCart) {
         quantity: cartItem.quantity,
         salePrice: cartItem.productId.salePrice,
     }));
-
+    console.log(cartItem,"cart item")
     // checking if any of the cart quantity is greater than product quantity it will return true
     const checkingQuantity = cartItem.some(item => item.product && parseFloat(item.product.quantity) < item.quantity);
     if (checkingQuantity) {

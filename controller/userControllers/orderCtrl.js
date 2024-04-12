@@ -6,7 +6,7 @@ const Coupon=require('../../models/couponSchema');
 const { calculateSubtotal } = require("../../utility/ordercalcalculation");
 const { checkCartItemsMatch } = require("../../helpers/checkCartHelper");
 const { getStatusClass } = require("../../helpers/getStatusHelper");
-const { isValidCoupon,calculateCouponDiscount,walletAmount,changePaymentStatus} = require("../../helpers/placeOrderHelper");
+const { isValidCoupon,calculateCouponDiscount,walletAmount,changePaymentStatus,generateInvoice} = require("../../helpers/placeOrderHelper");
 const { decreaseQuantity, updateWalletAmount, decreaseWalletAmount } = require("../../helpers/productReturnHelper");
 const { generateRazorPay,verifyingPayment } = require("../../config/razorpay");
 
@@ -269,9 +269,11 @@ const placeOrder = async (req, res) => {
             { $inc: { quantity: -orderQuantity, sold: orderQuantity } }
           );
         }
+        console.log('createOrder',createOrder)
 
                       
-        await userCollection.findByIdAndUpdate(user, { $set: { cart: [] } });
+        // await userCollection.findByIdAndUpdate(user, { $set: { cart: [] } });
+
         if (paymentMethod === "Wallet") {
           if (couponCode) {
             if (findCoupon.coupon) {
@@ -363,7 +365,7 @@ const placeOrder = async (req, res) => {
           .catch((err) => { console.log(err) });
       }
     } else {
-      res.render('/users/pages/404');
+      res.render('users/pages/404');
     }
   } catch (error) {
     console.error("Error occurred:", error);
@@ -544,7 +546,8 @@ const viewOrderPage = async (req, res) => {
           path: "images",
         },
       })
-      .populate("address");
+      .populate("address")
+      .populate("user")
 
     const productIdString = String(productId); //finding matching productId from orderDb
     const productItem = order.items.find(item => String(item.product._id) === productIdString);
@@ -594,7 +597,7 @@ const cancelOrder = async (req, res) => {
       } else {
           if (productItem.status !== 'cancelled') {
               if (order.paymentMethod == 'RazorPay' && order.paymentStatus == 'Paid'
-                  || (order.paymentMethod == 'WalletWithRazorpay' && order.paymentStatus == 'Paid' ||
+                  || (order.paymentMethod == 'PaywithWallet' && order.paymentStatus == 'Paid' ||
                       order.paymentMethod == 'Wallet'
                   )) {
 
@@ -661,7 +664,33 @@ const returnProduct = async (req, res) => {
 };
 
 
+//download Invoice 
 
+const downloadInvoice = async (req, res) => {
+  try {
+      const orderId = req.params.id;
+
+      const docDefinition = await generateInvoice(orderId)
+      const pdfMake = require('pdfmake/build/pdfmake');
+      const vfsFonts = require('pdfmake/build/vfs_fonts');
+      pdfMake.vfs = vfsFonts.pdfMake.vfs;
+
+      // Create a PDF document
+      const pdfDoc = pdfMake.createPdf(docDefinition);
+      // Generate the PDF and send it as a response
+      pdfDoc.getBuffer((buffer) => {
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename=invoice-${orderId}.pdf`);
+
+          res.end(buffer);
+      });
+
+
+
+  } catch (error) {
+      console.error(error);
+  }
+};
 
 module.exports = {
   checkoutPage,
@@ -673,10 +702,11 @@ module.exports = {
   viewOrderPage,
   orderStatus,
   cancelOrder,
-  updateWalletInCheckout,
+  updateWalletInCheckout, 
   applyCoupon,
   paymentFailed,
   verifyPayment,
-  returnProduct
+  returnProduct,
+  downloadInvoice
 
 };

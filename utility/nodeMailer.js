@@ -6,7 +6,7 @@ function generateOTP() {
     return Math.floor(Math.random() * (max - min) + min);
 }
  const sendOtp=async(email, otp, fname) =>{
-    console.log(email,otp);
+    console.log(email,otp,fname);
     const htmlMessage = `
       <html>
         <head>

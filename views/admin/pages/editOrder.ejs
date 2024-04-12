@@ -1,194 +1,259 @@
 
+<%- include('../partials/header.ejs') %>
 
-<!DOCTYPE html>
-<html lang="en">
+<style>
+    /* Add your custom styles here */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #212529;
+        margin: 0;
+        padding: 0;
+    }
 
-<head>
-    <style>
-        /* Add your custom styles here */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #212529;
-            margin: 0;
-            padding: 0;
-        }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+    th,
+    td {
+        padding: 10px;
+        border-bottom: 1px solid #dee2e6;
+        text-align: left;
+    }
 
-        th,
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #dee2e6;
-            text-align: left;
-        }
+    th {
+        background-color: #007bff;
+        color: #fff;
+    }
 
-        th {
-            background-color: #007bff;
-            color: #fff;
-        }
+    .btn {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+    }
 
-        .btn {
-            display: inline-block;
-            padding: 8px 16px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-        }
+    .btn-danger {
+        background-color: #dc3545;
+    }
 
-        .btn-danger {
-            background-color: #dc3545;
-        }
+    .btn-primary:hover,
+    .btn-danger:hover {
+        background-color: #0056b3;
+    }
 
-        .btn-primary:hover,
-        .btn-danger:hover {
-            background-color: #0056b3;
-        }
+    .text-center {
+        text-align: center;
+    }
 
-        .text-center {
-            text-align: center;
-        }
-
-        .img-fluid {
-            max-width: 100%;
-            height: auto;
-        }
-        table {
-    width: 100%;
-    border-collapse: collapse;
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+    }
+    table {
+width: 100%;
+border-collapse: collapse;
 }
 
 th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align:left;
+border: 1px solid #ddd;
+padding: 8px;
+text-align:left;
 
 }
 
 .order-info, .product-info {
-    width: 800px;
-    height: 500px; /* Adjust height as needed */
+width: 800px;
+height: 500px; /* Adjust height as needed */
 }
 
-    </style>
-</head>
+</style>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<% if (viewOrder) { %>
+    <% viewOrder.items.forEach(item=> { %>
 
-<body>
-    <div class="container">
-        <% if (viewOrder) { %>
-        <% viewOrder.items.forEach(item => { %>
-        <h2 class="text-center">Edit Order</h2>
-        <table>
-            <tr>
-                <th colspan="2">Order Information</th>
-            </tr>
-            <tr>
-                <td>Order ID:</td>
-                <td><%= viewOrder.orderId %></td>
-            </tr>
-            <tr>
-                <td>Customer Email:</td>
-                <td><%= viewOrder.user.email %></td>
-            </tr>
-            <tr>
-                <td>Customer Address:</td>
-                <td>
-                    <%= viewOrder.address.address_name %>, <%= viewOrder.address.house_name %>,
-                    <%= viewOrder.address.street_name %>, <%= viewOrder.address.city %>,
-                    <%= viewOrder.address.state %>, <%= viewOrder.address.pincode %>,
-                    <%= viewOrder.address.phone %>, <%= viewOrder.address.alt_phone %>
-                </td>
-            </tr>
-            <tr>
-                <td>Order Status:</td>
-                <td>
-                    <% if (item.status == 'Return requested' || item.status == 'Refunded') { %>
-                    <span class="font-weight-bold"><%= item.status %></span>
-                    <% } else { %>
-                    <select name="status" class="form-control">
-                        <% if (item.status !== 'Refunded') { %>
-                        <option value="<%= item.status %>"><%= item.status %></option>
-                        <% } %>
-                        <% if (item.status !== 'Cancelled' && item.status !== 'Delivered') { %>
-                        <option value="Pending">Pending</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
-                        <% } %>
-                    </select>
-                    <% } %>
-                </td>
-            </tr>
-        </table>
-        
-        <table>
-            <tr>
-                <td rowspan="8"><img src="<%= item.product.images[0].imageUrl %>" alt="Product Image"
-                        class="img-fluid" width="150px" height="150px" a></td>
-                
-            </tr>
-        
-            <tr>
-                <th colspan="2">Product Details</th>
-            </tr>
-            
-            <td>Product Name:</td>
-                <td><%= item.product.productName %></td>
-            <tr>
-                <td>Quantity:</td>
-                <td><%= item.quantity %></td>
-            </tr>
-            <tr>
-                <td>Price:</td>
-                <td>₹<%= (item.product.salePrice).toLocaleString() %></td>
-            </tr>
-            <tr>
-                <td>Processing Fee:</td>
-                <td>₹<%= viewOrder.processingFee %></td>
-            </tr>
-            <% if (viewOrder.discount) { %>
-            <tr>
-                <td>Status:</td>
-                <td>₹<%= viewOrder.status %></td>
-            </tr>
-            <% } %>
-            <tr>
-                <td>Total Amount:</td>
-                <td>₹<%= (viewOrder.total).toLocaleString() %></td>
-            </tr>
-        </table>
-        
-        <div class="text-center">
-            <form action="/admin/editOrder/<%= viewOrder._id %>" method="post">
-                <!-- Form fields for updating the order status -->
-                <input type="hidden" name="productId" value="<%= item.product._id %>">
-                <input type="hidden" name="status" value="Shipped"> <!-- Example status value -->
-                <button type="submit" class="btn btn-primary">Update Status</button>
-            </form>
-            
+        <div class="row justify-content-center mt-3">
+            <div class="col-lg-8">
+                <form action="/admin/editOrder/<%= viewOrder._id %>" method="post">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0"></h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="mb-3">Order ID:
+
+                                    </h5>
+                                    <p class="font-weight-bold">
+                                        <%= viewOrder.orderId %>
+                                    </p>
+                                    <h5 class="mb-2">Customer Email:</h5>
+                                    <p>
+                                        <%=viewOrder.user.email %>
+                                    </p>
+                                    <h5 class="mb-2">Customer Address:</h5>
+                                    <td>
+                                        <%= viewOrder.address.address_name %>, <%= viewOrder.address.house_name %>,
+                                        <%= viewOrder.address.street_name %>, <%= viewOrder.address.city %>,
+                                        <%= viewOrder.address.state %>, <%= viewOrder.address.pincode %>,
+                                        <%= viewOrder.address.phone %>, <%= viewOrder.address.alt_phone %>
+                                    </td>
+
+                                    <h5 class="mb-1">Order Status:</h5>
+                                    <% if (item.status=='Return requested' || item.status=='Refunded' ) { %>
+                                        <p class="font-weight-bold my-0">
+                                            <%= item.status %>
+                                        </p>
+                                        <% } else { %>
+                                            <select name="status" class="form-control mb-3">
+                                                <% if (item.status !=='Refunded' ) { %>
+                                                    <option value="<%= item.status %>">
+                                                        <%= item.status %>
+                                                    </option>
+
+                                                    <% } %>
+                                                        <% if (item.status!=='Cancelled' &&
+                                                            item.status!=='Delivered' ) { %>
+
+                                                            <option value="Pending">Pending</option>
+                                                            <option value="Shipped">Shipped</option>
+                                                            <option value="Delivered">Delivered</option>
+                                                            <option value="Cancelled">Cancelled</option>
+                                                            <% } %>
+                                            </select>
+                                            <% } %>
+
+                                                <% if(item.status=='Return requested' ){ %>
+                                                    <input type="hidden" name="productId"
+                                                        value="<%= item.product._id  %>">
+                                                    <input type="hidden" name="status" value="Refunded">
+                                                    <button type="submit" class="btn btn-danger h-auto my-3">
+                                                        Confirm Return
+                                                    </button>
+                                                    <% }%>
+
+                                                        <h5 class="my-2">Product Details:</h5>
+                                                        <p>
+                                                            <%= item.product.title %>
+                                                        </p>
+                                                        <div class="row d-flex justify-content-between">
+                                                            <div class="col-md-6 ">
+                                                                <div
+                                                                    class="mb-2 d-flex flex-column justify-content-between align-middle">
+                                                                    <h6>Quantity:</h6>
+                                                                    <p>
+                                                                        <%= item.quantity %>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6 ">
+                                                                <div
+                                                                    class="mb-2 d-flex flex-column justify-content-between align-middle">
+                                                                    <h6>Price:</h6>
+                                                                    <p>
+                                                                        ₹<%= (item.product.salePrice).toLocaleString()%>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6 ">
+                                                                <div
+                                                                    class="mb-2 d-flex flex-column justify-content-between align-middle">
+                                                                    <h6>Processing Fee:</h6>
+                                                                    <p>
+                                                                        ₹<%= viewOrder.processingFee%>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <% if (viewOrder.discount) { %>
+                                                                <div class="col-md-6 ">
+                                                                    <div
+                                                                        class="mb-2 d-flex flex-column justify-content-between align-middle">
+                                                                        <h6>Dicount Amount:</h6>
+                                                                        <p>
+                                                                            ₹<%= viewOrder.discount%>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <% } %>
+                                                                    <div class="col-md-6 mb-2">
+                                                                        <div
+                                                                            class="d-flex flex-column justify-content-between align-middle mb-2">
+                                                                            <h6>Total Amount:</h6>
+                                                                            <p class="font-weight-bold">₹<%=
+                                                                                    (viewOrder.total).toLocaleString()
+                                                                                    %>
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                        </div>
+                                                        <div class="row d-flex justify-content-between">
+                                                            <div class="col-md-6">
+                                                                <div
+                                                                    class="d-flex flex-column justify-content-around mb-3">
+                                                                    <h6>Payment Method:</h6>
+                                                                    <p>
+                                                                        <%= viewOrder.paymentMethod %>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div
+                                                                    class="d-flex flex-column justify-content-between mb-3">
+                                                                    <h6>Ordered Date:</h6>
+                                                                    <p>
+                                                                        <%= viewOrder.orderDate.toLocaleDateString('en-IN',
+                                                                            { year: 'numeric' , month: 'numeric' ,
+                                                                            day: 'numeric' }) %>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <img src="<%= item.product.images[0].imageUrl %>" alt="Product Image"
+                                        class="img-fluid rounded" />
+                                </div>
+                            </div>
+                            <% if(item.status=='Return requested' || item.status=='Refunded' ) { %>
+                                <% } else { %>
+                                    <div class="col">
+                                        <input type="hidden" name="productId" value="<%= item.product._id %>">
+                                        <button type="submit" class="btn btn-primary">Update Status</button>
+                                    </div>
+                                    <% } %>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
         <% }) %>
-        <% } else { %>
-        <h2 class="text-center">No Order found</h2>
-        <% } %>
-    </div>
-</body>
+            <% } else { %>
+                <h2 class="col-md-6">No Order found</h2>
+                <% } %>
+
+
 
 </html>
 

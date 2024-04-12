@@ -23,9 +23,9 @@
                 
                 <div class="register-form">
                     <h2>Register</h2>
-                    <form id="registrationForm" action="" method="post" onsubmit="return registerForm()">
+                    <form id="registrationForm" action="/user-signup" method="post" onsubmit="return registerForm()">
                         <div class="group-input">
-                            <label for="fname">First Name *</label>
+                            <label for="fname">First Name *</label>                                             
                             <input type="text" id="fname" name="fname">
                             <span id="fnameError" class="error-message"></span>
                         </div>
@@ -73,9 +73,11 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var registerForm = document.querySelector('form');
+        var registerForm = document.querySelector('registrationForm');
 
-        registerForm.addEventListener('submit', function (event) {
+        registrationForm.addEventListener('submit', function (event) {
+            // event.preventDefault()
+            console.log("in validation");
             // Validate first name
             var firstNameInput = document.getElementById('fname');
             if (firstNameInput.value.trim() === '') {
@@ -173,11 +175,16 @@
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            })
+            })  
             .then((response) => {
-                if(response.ok) {
-                    window.open('/login')
-                }
+                if (data.success) {
+                    alert('OTP Verification Succesfull')
+                window.open('/login');
+            } else {
+                // If success is false, OTP is invalid
+                // Display an error message to the user using SweetAlert
+                alert('Invalid OTP.Please try again !');
+            }   
             })
             .catch((error) => console.log(error))
         })
@@ -186,7 +193,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        var registerForm = document.querySelector('form');
+        var  registerForm = document.querySelector('form');
 
         registerForm.addEventListener('submit', function (event) {
             // ... (your existing form validation logic)

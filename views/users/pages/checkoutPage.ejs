@@ -186,8 +186,8 @@
 
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="radio"
-                                                                    value="WalletWithRazorpay"
-                                                                    id="walletWithRazorpay" name="paymentMethod"
+                                                                    value="PaywithWallet"
+                                                                    id="PaywithWallet" name="paymentMethod"
                                                                     required>
                                                                 <label class="form-check-label" for="razorPay">
                                                                     Pay with Wallet
@@ -289,7 +289,7 @@
 </style>
 
 <!-- Script Section -->
-<!-- <script>
+<script>
     $('#checkout-form').submit(function (e) {
             e.preventDefault();
             const submitButton = document.getElementById('submitButton');
@@ -318,7 +318,7 @@
                 }
             });
         });
-</script> -->
+</script>
 
 <script>
     function applyCouponAjax(total, walAmount) {
@@ -390,7 +390,65 @@
         const orderTotalValue = orderTotalElement.textContent.trim().replace('₹', '');
         const total = parseFloat(orderTotalValue);
         const totalAmount = total
-        const walletWithRazorpay = document.getElementById("walletWithRazorpay");
+        const PaywithWallet = document.getElementById("paywithWallet");
+
+        if (PaywithWallet) {
+            // checking walletamount and totalamount to pay
+            PaywithWallet.addEventListener("change", function () {
+                var couponCode = $('#couponCode').val();
+                if (PaywithWallet.checked) {
+                    $.ajax({
+                        url: '/updateWalletAmount',
+                        method: 'GET',
+                        data: {
+                            total,
+                            couponCode
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                console.log(response)
+
+                                walletBalanceElement.innerText = 0;
+
+                                // Update the order total element
+                                deductedWalletRow.style.display = 'table-row';
+                                orderTotalElement.innerText = `${response.amountTopay}`;
+                                deductedAmount.innerText = `-${response.walletBalance}`;
+                                deductedAmount.style.color = 'red';
+
+
+                            } else {
+                                console.log('inside error log');
+                            }
+
+                        },
+                        error: function (err) {
+                            console.error(err);
+                        }
+                    });
+                }
+            });
+
+            cod.addEventListener("change", function () {
+                if (cod.checked) {
+
+                    deductedWalletRow.style.display = 'none';
+                    orderTotalElement.innerText = total;
+                    walletBalanceElement.innerText = walBalance;
+                    // deductedWalletRow.style.display = 'none';
+                }
+            });
+            razorPay.addEventListener("change", function () {
+                if (razorPay.checked) {
+
+                    deductedWalletRow.style.display = 'none';
+                        Element.innerText = total;
+                    walletBalanceElement.innerText = walBalance;
+                    // deductedWalletRow.style.display = 'none';
+                }
+            });
+        }
+
 
         // $('submitButton').click(function(){
         //     alert('vannu')
@@ -438,92 +496,8 @@
 
 
 
-        if (walletWithRazorpay) {
-            // checking walletamount and totalamount to pay
-            walletWithRazorpay.addEventListener("change", function () {
-                var couponCode = $('#couponCode').val();
-                if (walletWithRazorpay.checked) {
-                    $.ajax({
-                        url: '/updateWalletAmount',
-                        method: 'GET',
-                        data: {
-                            total,
-                            couponCode
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                console.log(response)
-
-                                walletBalanceElement.innerText = 0;
-
-                                // Update the order total element
-                                deductedWalletRow.style.display = 'table-row';
-                                orderTotalElement.innerText = `${response.amountTopay}`;
-                                deductedAmount.innerText = `-${response.walletBalance}`;
-                                deductedAmount.style.color = 'red';
-
-
-                            } else {
-                                console.log('inside error log');
-                            }
-
-                        },
-                        error: function (err) {
-                            console.error(err);
-                        }
-                    });
-                }
-            });
-            cod.addEventListener("change", function () {
-                if (cod.checked) {
-
-                    deductedWalletRow.style.display = 'none';
-                    orderTotalElement.innerText = total;
-                    walletBalanceElement.innerText = walBalance;
-                    // deductedWalletRow.style.display = 'none';
-                }
-            });
-            razorPay.addEventListener("change", function () {
-                if (razorPay.checked) {
-
-                    deductedWalletRow.style.display = 'none';
-                        Element.innerText = total;
-                    walletBalanceElement.innerText = walBalance;
-                    // deductedWalletRow.style.display = 'none';
-                }
-            });
-        }
-
-            // const originalCartInput = JSON.parse(document.getElementById("originalCartData").value);
-
-            // $('#checkout-form').submit(function (e) {
-            //     e.preventDefault();
-            //     const submitButton = document.getElementById('submitButton');
-            //     submitButton.disabled = true; // Disables the submit button
-
-            //     // checking the cartItems if there is any changes--
-            //     $.ajax({
-            //         url: '/checkCart',
-            //         method: 'GET',
-            //         data: {
-            //             originalCartInput
-            //         },
-            //         success: function (response) {
-            //             if (response.success) {
-            //                 console.log(response);
-            //                 placeOrder()  //if no change in cart place the order else refresh
-            //                 submitButton.disabled = false
-            //             } else {
-            //               changeInCartAlert()
-            //               submitButton.disabled = false
-            //             }
-
-            //         },
-            //         error: function (err) {
-            //             console.error(err);
-            //         }
-            //     });
-
+        
+            
 
             // place the order after checking the cart--
             function placeOrder() {

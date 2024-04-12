@@ -1,7 +1,9 @@
 const express = require("express");
+const methodOverride = require("method-override")
 const path = require("path");
 const app = express();
 const session = require("express-session");
+// Require passport as we've configured
 const nocache = require("nocache");
 const { v4: uuidv4 } = require("uuid");
 const dotenv = require("dotenv").config();
@@ -52,6 +54,8 @@ app.use((req, res, next) => {
   res.locals.user = req.session.user;
   next();
 });
+
+app.use(methodOverride('_method'));
 
 // app.use('/search',searchRouter);
 
