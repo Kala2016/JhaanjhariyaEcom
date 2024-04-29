@@ -1,5 +1,5 @@
 <%-include('../partials/header.ejs') %>
-      <style>
+      <!-- <style>
         .fa-list-alt,
         .fa-gift,
         .fa-tag,
@@ -26,7 +26,7 @@
             max-width: 100px;
             max-height: 100px;
         }
-    </style>
+    </style> -->
     
     
       <!--  Header End -->
@@ -35,10 +35,10 @@
             <div class="col-9">
                 <div class="content-header">
                     <h4 class="content-title"></h4>
-                    <div>
+                    <!-- <div>
                         <button class="btn btn-light rounded font-sm mr-5 text-body hover-up"></button>
                         <button class="btn btn-md rounded font-sm hover-up"></button>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             
@@ -100,7 +100,7 @@
                                   <td>
                                     <% if(v.length) { %>
                                       <% for(let i=0; i < v.length; i++) { %>
-                                        <h6><span class="text-success">V<%= i %> : </span></h6>
+                                        <span class="text-success">V<%= i %> : </span>
                                         <div class="col border ms-2" style="max-width: 20px; height: 20px; background-color:<%= productData.variants[i].color %>"></div>
                                       <% } %>
                                     <% } %>
@@ -108,14 +108,14 @@
                                   <td>
                                     <% if(v.length) { %>
                                       <% for(let i=0; i < v.length; i++) { %>
-                                        <h6><span class="text-success">V<%= i+1 %> : </span><%= productData.variants[i].stock %></h6>
+                                        <span class="text-success">V<%= i+1 %> : </span><%= productData.variants[i].stock %>
                                       <% } %>
                                     <% } %>
                                   </td>
                                   <td>
                                     <% if(v.length) { %>
                                       <% for(let i=0; i < v.length; i++) { %>
-                                        <h6><span class="text-success">V<%= i+1 %> : </span>&#8377;<%= productData.variants[i].price %></h6>
+                                        <span class="text-success">V<%= i+1 %> : </span>&#8377;<%= productData.variants[i].price %>
                                       <% } %>
                                     <% } %>
                                   </td>
@@ -145,6 +145,12 @@
                     </div>
             
                 </section>
+
+                <script src="../adminassets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="../adminassets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../adminassets/js/sidebarmenu.js"></script>
+  <script src="../adminassets/js/app.min.js"></script>
+  <script src="../adminassets/libs/simplebar/dist/simplebar.js"></script>
                 
                 
                         

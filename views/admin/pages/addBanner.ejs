@@ -1,0 +1,89 @@
+<%- include('../partials/header.ejs') %>
+<!-- <style>
+    .fa-list-alt,
+    .fa-gift,
+    .fa-tag,
+    .fa-image {
+        color: #adb5bd;
+    }
+
+    .text {
+        color: black;
+        font-weight: 400;
+    }
+
+    .menu-item {
+        text-decoration: none;
+    }
+
+    a {
+        /* Your CSS styles here */
+        text-decoration: none !important;
+
+    }
+
+    .logo-img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+</style> -->
+
+
+<br>
+<br>
+<br>
+
+    
+    
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css"
+        integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
+
+    <div class="container">
+        <h2 class="text-center my-4">Add New Banner</h2>
+        <form id="banner-form" action="/admin/banner/add-banner" method="POST" enctype="multipart/form-data">
+            <div class="form-group col-md-6">
+                <label for="title">Title:</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="description">Description:</label>
+                <input class="form-control" id="description" name="description" rows="4" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="link">Product Url:</label>
+                <select id="select-state" placeholder="Pick a Product*" class="mb-3" name="productUrl" required>
+                    <option value="">Select a Product...</option>
+                    <% Products.forEach(element=> { %>
+                        <option value="viewProduct/<%= element._id %>">
+                            <%= element.productName %>
+                        </option>
+                        <% }) %>
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="image">Banner Image:</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="image" name="bannerImage" accept="image/*"
+                        required>
+                    <label class="custom-file-label" for="image">Choose file</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <!-- <script>
+        $(document).ready(function () {
+            $('select').selectize({
+                sortField: 'text'
+            });
+        });
+    </script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js"
+        integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+        <script src="../adminassets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="../adminassets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../adminassets/js/sidebarmenu.js"></script>
+  <script src="../adminassets/js/app.min.js"></script>
+  <script src="../adminassets/libs/simplebar/dist/simplebar.js"></script>

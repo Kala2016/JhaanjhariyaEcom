@@ -70,6 +70,10 @@
                 document.getElementById('digit4').value;
 
             console.log('Verifying OTP:', otp);
+
+            if (otp.length !== 4) {
+            alert('Please enter a valid OTP to complete the registration.');
+            return;}
             document.getElementById('otpField').value = otp;
             document.getElementById('otpForm').submit(); 
 

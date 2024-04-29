@@ -3,6 +3,7 @@ const orderModel = require("../../models/orderSchema");
 const userCollection = require("../../models/userSchema");
 const CategoryCollection =require("../../models/categorySchema")
 const graphHelper = require('../../helpers/graphHelper')
+const Banner = require('../../models/bannerSchema')
 
 
 
@@ -51,8 +52,8 @@ const loadDashboard = async (req, res) => {
         const products = await productCollection.find({ isListed: true }).count()
         const category = await CategoryCollection.find({ isListed: true }).count()
         const orders = await orderModel.find().count()
-        const latestOrders = await orderModel.find().populate('address').limit(5)
-        const newUsers = await userCollection.find({ isBlock: false }).sort({ createdAt: -1 }).limit(3)
+        const latestOrders = await orderModel.find().populate('address').limit(10)
+        const newUsers = await userCollection.find().limit(3)
 
         const [totalRevenue, slice] = await graphHelper.calculateRevenue();
 
@@ -60,10 +61,13 @@ const loadDashboard = async (req, res) => {
         const usersData = await graphHelper.countUsers()
         const productSold = await graphHelper.calculateProductSold()
         
+        console.log('totalRevenue',totalRevenue)
+        console.log('newUsers',newUsers)
+
         res.render("./admin/pages/dashboard", 
           {
             title: 'Dashboard',
-            products,
+            products, 
             category,
             orders,
             totalRevenue,
@@ -111,42 +115,47 @@ const salesReportPage = async (req, res) => {
 // Post method of sales report page
 const generateSalesReport = async (req, res) => {
   try {
-      console.log('body', req.body);
+      const { reportType, fromDate, toDate } = req.body;
 
-      const fromDate = new Date(req.body.fromDate);
-      const toDate = new Date(req.body.toDate);
+      let dateFilter = {};
+      if (reportType === 'daily') {
+          dateFilter = { orderDate: { $gte: new Date(fromDate), $lte: new Date(toDate) } };
+      } else if (reportType === 'monthly') {
+          const startOfMonth = new Date(fromDate);
+          startOfMonth.setDate(1);
+          const endOfMonth = new Date(toDate);
+          endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+          endOfMonth.setDate(0);
+          dateFilter = { orderDate: { $gte: startOfMonth, $lte: endOfMonth } };
+      } else {
+          dateFilter = { orderDate: { $gte: new Date(fromDate), $lte: new Date(toDate) } };
+      }
+
       const matchedOrders = await orderModel.aggregate([
-          {
-              $match: {
-                  orderDate: { $gte: fromDate, $lte: toDate },
-              },
-          },
-          {
-              $lookup: {
-                  from: 'users',
-                  localField: 'user',
-                  foreignField: '_id',
-                  as: 'userData',
-              },
-          },
-          {
-              $unwind: '$userData',
-          },
-          {
-              $addFields: {
-                  fname: '$userData.fname',
-              },
-          },
-      ])
+          { $match: dateFilter },
+          // Additional aggregation stages based on report type
+          { $group: { _id: "$product", totalQuantity: { $sum: "$quantity" } } },
+          { $sort: { totalQuantity: -1 } },
+          { $limit: 10 } // Example: Get top 10 products by quantity sold
+      ]);
+
+      // Calculate total sales
+      // Calculate total sales
       const total = matchedOrders.reduce((prev, curr) => {
-          return prev + curr.total;
+        return prev + curr.totalQuantity; // Use totalQuantity instead of total
       }, 0);
 
-      res.json({ matchedOrders: matchedOrders, salesTotal: total })
+      
+
+      res.json({ matchedOrders: matchedOrders, salesTotal: total });
   } catch (error) {
-      console.error(error)
+      console.error(error);
+      res.status(500).json({ message: "Internal server error", success: false });
   }
-}
+};
+
+module.exports = { generateSalesReport };
+
 
 
 

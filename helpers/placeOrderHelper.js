@@ -70,7 +70,7 @@ const changePaymentStatus = async (orderId, user, amount) => {
         const findWallet = await userCollection.findById({ _id: user }).populate('wallet')
         const walletBalance = findWallet.wallet.balance
 
-        const description = 'Wallet with Razorpay';
+        const description = 'payWithWallet';
         const type = 'debit'
         decreaseWalletAmount(user, walletBalance, description, type)
         await orderModel.findByIdAndUpdate(

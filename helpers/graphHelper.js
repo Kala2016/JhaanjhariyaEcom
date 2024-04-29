@@ -1,14 +1,9 @@
 const userCollection = require('../models/userSchema')
-const productCollection = require('../models/ProductSchema')
-const orderModel = require('../models/orderSchema')
-const CategoryCollection= require('../models/categorySchema')
-
-
-
+const productCollection =require('../models/ProductSchema')
+const orderModel = require("../models/orderSchema")
 // calculate total revenue and monthly revenu 
 async function calculateRevenue() {
     const total = await orderModel.aggregate([
-        
         {
             $unwind: '$items' // Deconstruct the items array
         },
@@ -24,13 +19,14 @@ async function calculateRevenue() {
                     month: { $month: '$orderDate' }
                 },
                 revenue: {
-                    $sum: '$items.price'
+                    $sum: '$total'
                 },
                 processingFee: {
-                    $sum: '$items.processingFee'
+                    $sum: '$processingFee'  
                 }
             }
         },
+        
         {
             $project: {
                 _id: 0,
@@ -56,20 +52,24 @@ async function calculateRevenue() {
                 }
             }
         }
-    ])
+    ]);
 
-    if (total.length === 0) {
-        // Handle case where total is empty
-        return [0, 0]; // or any default values you want to return
-    }
-
-    console.log ( "calculating the total amount of sales",total )
     
+
+    console.log('Result after aggregation:', total);
+
     const monthlyRevenue = total[0].monthlyRevenue;
-    const slice = monthlyRevenue.slice(-1)[0].totalRevenue
+    console.log('Monthly revenue:', monthlyRevenue);
+
+    const slice = monthlyRevenue.slice(-1)[0].totalRevenue;
+    console.log('Revenue for the last month:', slice);
+
     const totalRevenue = total[0].totalRevenue;
-    return [totalRevenue, slice]
+    console.log('Total revenue:', totalRevenue);
+
+    return [totalRevenue, slice];
 }
+
 
 
 // calculte salesData 
@@ -90,7 +90,7 @@ async function calculateSalesData() {
                     month: { $month: '$orderDate' }
                 },
                 count: {
-                    $sum: '$items.price'
+                    $sum: '$total'
                 }
             }
         },
@@ -103,6 +103,7 @@ async function calculateSalesData() {
             }
         }
     ])
+    console.log('sale',sale)
     return sale
 }
 
@@ -132,7 +133,9 @@ async function countUsers() {
                 count: 1
             }
         }
+
     ])
+    console.log('usersCount', usersCount)
     return usersCount
 }
 
