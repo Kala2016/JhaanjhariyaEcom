@@ -99,7 +99,8 @@ const addtoCart = async (req, res) => {
     console.log("Cart Updated:", cartUpdated);
 
     if (cartUpdated) {
-      return res.status(200).redirect("/shopping-cart");
+      
+      return res.status(200).json({ message: "Product added to cart" });
     } else {
       return res
         .status(400)
@@ -122,7 +123,7 @@ const updateCart = async (req, res) => {
     console.log('user56789',user);
     const userData = await userCollection.findOne({_id : user}).populate(
        "cart.productId")
-    console.log('User Data>>>',userData);
+    console.log('User Data>',userData);
 
     const cartItem = userData.cart.find(cartItem => cartItem._id.toString()===productId)
 

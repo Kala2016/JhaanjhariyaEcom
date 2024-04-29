@@ -83,6 +83,7 @@ userRoute.get('/addTowishlist/:id', userValid,userLoggedIn,homeController.addTow
 userRoute.get('/removeWishlist/:id', userValid,userLoggedIn,homeController.removeItemfromWishlist);
 userRoute.get('/toggleWishlist',homeController.toggleWishlist)
 userRoute.post('/wishlist',userValid,userLoggedIn,homeController.addTowishlist)
+userRoute.post('/additemsfrmWishlisttoCart',userValid,userLoggedIn,homeController.additemsfrmWishlisttoCart)
 
 
 // shopping-cart
@@ -100,7 +101,7 @@ userRoute.get('/getCartItemCount',userLoggedIn,cartController.getCartCount);
 userRoute.get('/forgetPassword', loginController.forgotPasswordpage);
 userRoute.post('/forgetPassword', loginController.sendResetLink);
 userRoute.get('/resetPassword/:token', loginController.resetPassPage);
-userRoute.post('/resetPassword/:token',loginController.resetPassword);
+userRoute.put('/resetPassword/:token',loginController.resetPassword);
 
 //userProfile
 
@@ -135,13 +136,14 @@ userRoute.get('/viewOrderList',userLoggedIn,orderController.viewOrderList)
 userRoute.post('/viewOrderPage/:id',userLoggedIn,orderController.viewOrderPage) 
 userRoute.get('/orderStatus',userLoggedIn,orderController.orderStatus)
 userRoute.put('/return-product/:id', userLoggedIn, orderController.returnProduct);
-userRoute.post('/cancelOrder/:id', userLoggedIn,orderController.cancelOrder);
+userRoute.put('/cancelOrder/:id', userLoggedIn,orderController.cancelOrder);
 userRoute.get('/download-invoice/:id', userLoggedIn, orderController.downloadInvoice);
 
 
 //apply Coupon 
 
 userRoute.post('/applyCoupon', userLoggedIn, orderController.applyCoupon);
+userRoute.get('/couponDetails',userLoggedIn,orderController.couponDetails)
 
 //Wallet Amount
 

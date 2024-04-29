@@ -2,35 +2,39 @@
 
 <%- include('../../admin/partials/header.ejs') %>
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
 
     <div class="report-form-container mt-3 mb-0">
         <h1>Sales Report</h1>
         <form action="/admin/dashboard/sales-report" method="POST">
             <div class="form-group">
+                
+                <button id="dailyBtn" class="reportTypeBtn">Daily</button>
+                <button id="monthlyBtn" class="reportTypeBtn">Monthly</button>
+                <button id="customBtn" class="reportTypeBtn">Custom</button>
+            </div>
+            
+            <div class="form-group" id="dateFields" style="display: none;">
                 <label for="fromDate">From Date</label>
                 <input type="date" id="fromDate" name="fromDate" required>
-            </div>
-            <div class="form-group">
                 <label for="toDate">To Date</label>
                 <input type="date" id="toDate" name="toDate" required>
             </div>
+            
+            
             <div class="form-group text-center">
                 <button type="submit">Generate Report</button>
             </div>
+
+            <button type="button" class="btn-secondary" data-toggle="modal"
+            data-target="#exampleModalCenter">
+            Export
+        </button>
+            
     </div>
 
     </div>
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary col-md-2 btn-sm float-right mx-3 mb-2" data-toggle="modal"
-        data-target="#exampleModalCenter">
-        Export
-    </button>
+   
 
     <div id="table-container">
         <!-- The table will be inserted here after the AJAX response -->
@@ -389,4 +393,117 @@
             margin-bottom: 20px;
 
         }
+    </style>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const reportType = document.getElementById('reportType').value;
+    const fromDate = document.getElementById('fromDate').value;
+    const toDate = document.getElementById('toDate').value;
+
+    try {
+        const response = await fetch('/admin/dashboard/sales-report', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ reportType, fromDate, toDate }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch data');
+        }
+
+        const responseData = await response.json();
+        const data = responseData.matchedOrders;
+        const salesTotal = responseData.salesTotal;
+
+        if (!data.length) {
+            alert('No data in the selected date range');
+            return;
+        }
+
+        createTable(data, salesTotal);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});// Get buttons and date fields
+const dailyBtn = document.getElementById('dailyBtn');
+const monthlyBtn = document.getElementById('monthlyBtn');
+const customBtn = document.getElementById('customBtn');
+const dateFields = document.getElementById('dateFields');
+
+// Add event listeners to buttons
+dailyBtn.addEventListener('click', () => {
+    generateSalesReport('daily');
+    toggleDateFields(false);
+});
+
+monthlyBtn.addEventListener('click', () => {
+    generateSalesReport('monthly');
+    toggleDateFields(false);
+});
+
+customBtn.addEventListener('click', () => {
+    toggleDateFields(true);
+});
+
+// Function to toggle visibility of date fields
+function toggleDateFields(show) {
+    dateFields.style.display = show ? 'block' : 'none';
+}
+
+// Function to generate sales report based on report type
+async function generateSalesReport(reportType) {
+    let fromDate, toDate;
+
+    if (reportType === 'custom') {
+        fromDate = document.getElementById('fromDate').value;
+        toDate = document.getElementById('toDate').value;
+    }
+
+    try {
+        const response = await fetch('/admin/dashboard/sales-report', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ reportType, fromDate, toDate }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch data');
+        }
+
+        const responseData = await response.json();
+        const data = responseData.matchedOrders;
+        const salesTotal = responseData.salesTotal;
+
+        if (!data.length) {
+            alert('No data in the selected date range');
+            return;
+        }
+
+        createTable(data, salesTotal);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+
+
+    </script>
+
+    <style>
+        .reportTypeBtn {
+
+            width: 140px; 
+               
+    padding: 5px 10px; /* Adjust padding as needed */
+    font-size: 14px; /* Adjust font size as needed */
+    margin-right: 10px; /* Adjust margin between buttons as needed */
+}
+
     </style>

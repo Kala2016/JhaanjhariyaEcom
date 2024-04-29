@@ -3,38 +3,66 @@
 <%- include('../partials/header.ejs' )%>
 
     <!-- Hero Section Begin -->
+
     <section class="hero-section">
         <div class="hero-items owl-carousel">
-            <div class="single-hero-items set-bg" data-setbg="assets/img/Home-Pics/Pic-2.jpg">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <span style="color: #ffffff;">Jewelry</span>
-                            <h1 style="color: #e7ab3c;">Jhaanjhariya Specials</h1>
-                            <p style="color: #060202;">Jhaanjhariya’s collection is a reflection of the richness and variety of Indian culture, with pieces handpicked from all over the country. Our personally handpicked selections are sure to make you feel truly special.</p>
-                            <a href="./shop" class="primary-btn">Shop Now</a>
+            <% if (banners && banners.length > 0) { %>
+                <% banners.forEach(banner => { %>
+                    <div class="single-hero-items set-bg" data-setbg=<%=banner.imgUrl %>>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-5">
+                                    <span style="color: #ffffff;">Jewelry</span>
+                                    <h1 style="color: #e7ab3c;"><%= banner._doc.title %></h1>
+                                    <p style="color: #060202;"><%= banner._doc.description %></p>
+                                    <a href="./shop" class="primary-btn">Shop Now</a>
+                                </div>
+                            </div>
+                            <div class="off-card">
+                                <h2>Sale <span>50%</span></h2>
+                            </div>
                         </div>
                     </div>
-                    <div class="off-card">
-                        <h2>Sale <span>50%</span></h2>
-                    </div>
-                </div>
-            </div>
-            <div class="single-hero-items set-bg" data-setbg="assets/img/Home-Pics/Pic-3.jpg">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <span style="color: #ffffff;">Jewelry</span>
-                            <h1 style="color: #e7ab3c;">Handcrafted Jewelry</h1>
-                            <p style="color: #e3d5d5;">Discover the ideal jewelry for every occasion at Jhaanjhariya, making each event truly memorable.</p>
-                            <a href="./shop" class="primary-btn">Shop Now</a>
+                <% }); %>
+            <% } else { %>
+                <div class="single-hero-items set-bg" data-setbg="assets/img/Home-Pics/Pic-2.jpg">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <span style="color: #ffffff;">Jewelry</span>
+                                <h1 style="color: #e7ab3c;">Jhaanjhariya Specials</h1>
+                                <p style="color: #060202;">Jhaanjhariya’s collection is a reflection of the richness and variety of Indian culture, with pieces handpicked from all over the country. Our personally handpicked selections are sure to make you feel truly special.</p>
+                                <a href="./shop" class="primary-btn">Shop Now</a>
+                            </div>
+                        </div>
+                        <div class="off-card">
+                            <h2>Sale <span>50%</span></h2>
                         </div>
                     </div>
-                    <div class="off-card">
-                        <h2>Sale <span>50%</span></h2>
-                    </div>
                 </div>
-            </div>
+                <div class="single-hero-items set-bg" data-setbg="assets/img/Home-Pics/Pic-3.jpg">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <span style="color: #ffffff;">Jewelry</span>
+                                <h1 style="color: #e7ab3c;">Handcrafted Jewelry</h1>
+                                <p style="color: #e3d5d5;">Discover the ideal jewelry for every occasion at Jhaanjhariya, making each event truly memorable.</p>
+                                <a href="./shop" class="primary-btn">Shop Now</a>
+                            </div>
+                        </div>
+                        <div class="off-card">
+                            <h2>Sale <span>50%</span></h2>
+                        </div>
+                    </div>
+                </div>      
+            <% } %>
+        </div>
+    </section>
+    
+                 
+
+
+
         </div>
     </section>
     <!-- Hero Section End -->

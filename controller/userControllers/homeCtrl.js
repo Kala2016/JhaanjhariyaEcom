@@ -2,6 +2,7 @@ const userCollection = require("../../models/userSchema");
 const productCollection = require("../../models/ProductSchema");
 const CategoryCollection = require("../../models/categorySchema");
 const CollectionModel = require("../../models/collectionSchema");
+const Banner = require("../../models/bannerSchema")
 const { ObjectId } = require("mongodb");
 const variant= require("../../models/variantSchema");
 const express = require('express')
@@ -47,6 +48,14 @@ const getUserRoute = async (req, res) => {
     const user = req.session.user;
     const loggedIn = req.session.loggedIn;
     const category = await CategoryCollection.find();
+    const banners = await Banner.find({isActive:true})
+    // Assuming 'banners' is an array of banner objects
+const listBanners = banners.map(banner => ({
+  ...banner,
+  imgUrl: banner.bannerImage.replace(/\\/g, '/')
+}));
+
+    console.log('list bzannerrrr',listBanners);
     const cart = await userCollection.find();
     const products = await productCollection
       .find()
@@ -56,18 +65,18 @@ const getUserRoute = async (req, res) => {
       .populate("categoryName")
       .populate("collectionName");
 
-    console.log(user, "sdfgsdfg");
-    console.log(products, "ijnoknknn");
-    console.log(cart, "cart data");
 
     res.render("./users/pages/home", {
       products: products,
       cart: cart,
+      banners: listBanners
     });
   } catch (error) {
     console.error(error);
   }
 };
+
+
 
 // logout
 const getLogout = async (req, res) => {
@@ -309,7 +318,7 @@ const addTowishlist = async (req, res) => {
 
     if (user.wishlist.includes(productId)) {
       return res.json({ success: false, message: 'Product already in wishlist' });
-    }
+    } 
 
     await userCollection.findByIdAndUpdate(userId, { $push: { wishlist: productId } });
     res.json({ success: true, message: 'Product added to wishlist' });
@@ -336,6 +345,68 @@ const removeItemfromWishlist = async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
+
+
+const additemsfrmWishlisttoCart = async (req, res) => {
+  try {
+    const { productId, variantId } = req.body;
+    const { quantity = 1 } = req.query;
+    const userID = req.session.user._id;
+
+    const variantData = await variant.findById(variantId);
+    const variantExists = await variant.exists({ _id: variantId });
+
+    if (!variantId) {
+      return res.status(400).json({ message: "Variant ID is required" });
+    }
+
+    if (!variantExists) {
+      return res.status(404).json({ message: "Variant not found" });
+    }
+
+    const alreadyIn = await userCollection.findOne({
+      _id: userID,
+      "cart.variantId": variantId,
+    });
+
+    if (alreadyIn) {
+      return res.status(409).json({ message: "Item already in Cart" });
+    }
+
+    const cartUpdated = await userCollection.findByIdAndUpdate(
+      userID,
+      {
+        $push: {
+          cart: {
+            productId,
+            variantId,
+            quantity,
+          },
+        },
+      },
+      { new: true }
+    );
+
+    if (!cartUpdated) {
+      return res.status(400).json({ message: "Couldn't update Cart", success: false });
+    }
+
+    // Clear wishlist for the user
+    const updatedUser = await userCollection.findByIdAndUpdate(
+      userID,
+      { wishlist: [] },
+      { new: true }
+    );
+
+    console.log("Wishlist cleared for user:", updatedUser);
+
+    return res.status(200).redirect("/shopping-cart");
+  } catch (error) {
+    console.error("Error in Cart", error);
+    return res.status(500).send({ message: "Internal Server Error" });
+  }
+};
+
 
 function toggleWishlist(productId) {
   // Check if the product is already in the wishlist
@@ -369,5 +440,6 @@ module.exports = {
   wishlist,
   removeItemfromWishlist,
   addTowishlist,
-  toggleWishlist
+  toggleWishlist,
+  additemsfrmWishlisttoCart
 };

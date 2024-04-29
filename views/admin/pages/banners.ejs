@@ -1,0 +1,118 @@
+<%- include('../partials/header.ejs') %>
+
+
+
+<style>
+    .container {
+
+margin-left: -250px;
+
+
+
+}
+</style>
+    
+<!-- <style>
+    
+
+
+
+    .fa-list-alt,
+    .fa-gift,
+    .fa-tag,
+    .fa-image {
+        color: #adb5bd;
+    }
+
+    .text {
+        color: black;
+        font-weight: 400;
+    }
+
+    .menu-item {
+        text-decoration: none;
+    }
+
+    a {
+        /* Your CSS styles here */
+        text-decoration: none !important;
+
+    }
+
+    .logo-img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+</style> -->
+<main class="main-wrap">
+    
+    
+    <div class="container mt-4">
+        <a href="/admin/banner/add-banner"><button class="btn btn-primary float-right">Add Banner</button></a>
+        <h1>Banner Management</h1>
+        <% if (banners.length> 0 ) { %>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Banner Image</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tbody>
+                    <% banners.forEach(banner=> { %>
+                        
+                            <tr>
+                                <td><img src="<%= banner?.bannerImage %>" alt="<%= banner.title %>"
+                                        class="img-thumbnail" style="max-width: 100px;"></td>
+                                <td>
+                                    <%= banner.title %>
+                                </td>
+                                <td>
+                                    <%= banner.description %>
+                                </td>
+                                <td>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input banner-toggle"
+                                            id="status<%= banner._id %>" <% if (banner.isActive) { %>checked<% } %>
+                                            data-banner-id="<%= banner._id %>">
+                                                <label class="custom-control-label"
+                                                    for="status<%= banner._id %>"></label>
+                                    </div>
+                                </td>
+
+                            </tr>
+                            <% }); %>
+                                
+
+                </tbody>
+            </table>
+            <% } else { %>
+                Nothing Available Currently!     
+                <% } %>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('.banner-toggle').change(function () {
+                const bannerId = $(this).data('banner-id');
+                const isActive = this.checked;
+
+                // Send a request to the server to update the banner status
+                $.ajax({
+                    url: `/admin/banner/updateBannerStatus/${bannerId}`,
+                    method: 'POST', // Change to your preferred HTTP method
+                    data: { isActive: isActive },
+                    success: function (response) {
+                        if (response) {
+                            console.log('Status updated');
+                        }
+                    },
+                    error: function (error) {
+                        // Handle errors here
+                    }
+                });
+            });
+        });
+    </script>

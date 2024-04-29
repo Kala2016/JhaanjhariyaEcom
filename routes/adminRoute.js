@@ -11,6 +11,7 @@ const userCtrl = require("../controller/adminControllers/userCtrl");
 const collectionCtrl = require("../controller/adminControllers/collectionCtrl");
 const orderCtrl =require("../controller/adminControllers/orderCtrl");
 const couponCtrl =require("../controller/adminControllers/couponCtrl")
+const bannerCtrl = require("../controller/adminControllers/bannerCtrl")
 
 
 
@@ -96,6 +97,13 @@ adminRoute.get("/coupon/add-coupon",isAdminLoggedIn, couponCtrl.addCouponPage)
 adminRoute.post("/coupon/add-coupon",isAdminLoggedIn, couponCtrl.createCoupon)
 adminRoute.get("/coupons/edit-coupon/:id",isAdminLoggedIn, couponCtrl.editCouponPage)
 adminRoute.post("/coupons/edit-coupon/:id", isAdminLoggedIn,couponCtrl.editCoupon)
+
+
+// Banner management --
+adminRoute.get('/banners', isAdminLoggedIn, bannerCtrl.listBanners)
+adminRoute.get('/banner/add-banner', isAdminLoggedIn, bannerCtrl.addBannerPage)
+adminRoute.post('/banner/add-banner', upload.single("bannerImage"), isAdminLoggedIn, bannerCtrl.createBanner)
+adminRoute.post('/banner/updateBannerStatus/:id', adminValidateID, isAdminLoggedIn, bannerCtrl.updateBannerStatus)
 
 
 module.exports = adminRoute;

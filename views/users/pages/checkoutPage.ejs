@@ -24,22 +24,59 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="coupon-accordion">
+
                     <!-- ACCORDION START -->
-                    <h6>Have a coupon? <span id="showcoupon">Click here to enter your code</span></h6><br>
+                    
+                    
+                    <h6><span id="showcoupon">Click here to view your available coupons</span></h6><br>
+                    <div id="couponModal" class="modal">
+                        
+                        
+                        
+
+                        <!-- Modal content -->
+
+                        <div class="modal-content">
+                          <span class="close">&times;</span>
+                          <h2>Available Coupons</h2>
+                          <p>Here are your available coupons.Copy the coupon Code and paste to apply Coupon</p>
+                          <!-- <p><strong>Coupon Code:</strong> <span id="couponList"></span></p> -->
+                          <table class="table table-bordered" id="couponTable">
+                            <thead>
+                                <tr>
+                                    <th>Coupon Code</th>
+                                    <th>Description</th>
+                                    
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Copy</th>
+                                </tr>
+                            </thead>    
+                            <tbody id="couponBody">
+                                <!-- Coupons will be dynamically added here -->
+                            </tbody>
+                        </table>
+                        
+                        </div>
+                      </div>
                         <div id="checkout_coupon" class="coupon-checkout-content">
                             <div class="coupon-info">
                                 <p class="checkout-coupon">
+                                    
                                     <input type="text" id="couponCode" placeholder="Coupon code" name="coupon" />
                                     <input type="button" onclick="applyCouponAjax('<%= grandTotal %>','<%= walletBalance %>')" id="couponButton" value="Apply Coupon" />
                                 </p>
                                 <p id="coupon-details"></p>
                             </div>
                         </div>
+                        
                     <!-- ACCORDION END -->
                 </div>  
                
             </div>
         </div>
+        <br>
+        
         
         <form action="/placeOrder" method="POST" id="checkout-form">
             <div class="row">
@@ -186,10 +223,10 @@
 
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="radio"
-                                                                    value="PaywithWallet"
-                                                                    id="PaywithWallet" name="paymentMethod"
+                                                                    value="payWithWallet"
+                                                                    id="payWithWallet" name="paymentMethod"
                                                                     required>
-                                                                <label class="form-check-label" for="razorPay">
+                                                                <label class="form-check-label" for="payWithWallet">
                                                                     Pay with Wallet
                                                                 </label>
                                                             </div>
@@ -514,7 +551,7 @@
                             outofStockAlert();
                         }
                         if (response.codSuccess || response.walletSuccess) {
-                            window.location.href = `/orderPlacedPage?id=${response.orderID}`;
+                            window.location.href = `/orderPlacedPage?id=${response.orderId}`;
                         } else {
                             console.log(response);
                             razorpayPayment(response);
@@ -656,6 +693,136 @@
     
 
 
+</script>
+
+<style>
+    /* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+/* Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+</style>
+
+<script>
+    // Get the modal
+var modal = document.getElementById("couponModal");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on the button, open the modal
+document.getElementById("showcoupon").onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+
+
+</script>
+
+<script>
+    // Function to copy coupon code
+    function copyCoupon(code) {
+    var input = document.createElement('input');
+    input.setAttribute('value', code);
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    alert("Coupon code copied!");
+}
+
+    
+    // Function to populate table with coupons
+    function populateTable(coupons) {
+        const couponBody = document.getElementById('couponBody');
+        couponBody.innerHTML = '';
+        
+        if (coupons.length > 0) {
+            coupons.forEach(coupon => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${coupon.code}</td>
+                    <td>${coupon.description}</td>
+                    
+                    <td>${new Date(coupon.timestamp).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
+                    <td>${new Date(coupon.expirationDate).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
+                    <td>
+                        <button onclick="copyCoupon('${coupon.code}')">Copy</button>
+                    </td>
+                `;
+                couponBody.appendChild(tr);
+            });
+        } else {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td colspan="6">No Coupons!</td>';
+            couponBody.appendChild(tr);
+        }
+    }
+
+    // Function to fetch and display coupons
+    async function fetchCoupons() {
+        try {
+            const response = await fetch('/couponDetails'); // Replace '/api/coupons' with your API endpoint
+            const data = await response.json();
+            populateTable(data.coupons);
+        } catch (error) {
+            console.error('Error fetching coupons:', error);
+        }
+    }
+
+    // Get the modal
+    var modal = document.getElementById("couponModal");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on the button, open the modal and fetch coupons
+    document.getElementById("showcoupon").onclick = function() {
+        modal.style.display = "block";
+        fetchCoupons();
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
 </script>
 
 <%- include('../partials/footer.ejs')%>

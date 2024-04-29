@@ -112,11 +112,10 @@ const insertProduct = async (req, res) => {
         });
       }
       console.log("imageUrls", imageUrls);
-      let imageId;
+      
       if (imageUrls.length > 0){
       const image = await Images.create(imageUrls);
-      const imageId = image.map((image) => image._id).reverse()};
-
+      const imageId = image.map((image) => image._id).reverse()}
 
       const newProduct = await productCollection.create({
         productName: req.body.productName,
@@ -124,7 +123,9 @@ const insertProduct = async (req, res) => {
         description: req.body.description,
         categoryName: req.body.categoryName,
         salePrice: req.body.salePrice,
-        images: imageId,
+        images:imageId
+        
+        
       });
       const productData = await newProduct.save();
       let variantsId = [];

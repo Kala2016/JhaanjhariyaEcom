@@ -15,72 +15,101 @@ const { generateRazorPay,verifyingPayment } = require("../../config/razorpay");
 
 
 
-const checkoutPage = async (req, res) => {
-  try {
-    // Retrieve user data with cart and addresses
-    const user = req.userId;
-    console.log("UserID----", user);
-    const userWithCart = await userCollection
-      .findById(user)
-      .populate("cart.productId")
-      .populate("cart.productId.salePrice");
-    const userWithAddress = await userCollection
-      .findById(user)
-      .populate({ path: "addresses", model: "address" });
-    const address = userWithAddress.addresses;
+  const checkoutPage = async (req, res) => {
+    try {
+      // Retrieve user data with cart and addresses
+      const user = req.userId;
+      console.log("UserID----", user);
+      const userWithCart = await userCollection
+        .findById(user)
+        .populate("cart.productId")
+        .populate("cart.productId.salePrice");
+      const userWithAddress = await userCollection
+        .findById(user)
+        .populate({ path: "addresses", model: "address" });
+      const address = userWithAddress.addresses;
 
-    console.log("userWithAddress", userWithAddress);
+      console.log("userWithAddress", userWithAddress);
 
-    // Check if the cart is empty
-    if (!userWithCart.cart.length) {
-      return res.redirect("/shopping-cart");
-    }
-
-    // Calculate subtotal and check for out of stock items
-    const totalArray = calculateSubtotal(userWithCart);
-    if (!totalArray) {
-      req.flash("warning", "OOPS!, Out of Stock");
-      return res.redirect("/shopping-cart");
-    }
-
-    // Destructure the totalArray for readability
-    const [cartItem, cartSubtotal, processingFee, grandTotal] = totalArray;
-
-    let amount = false;
-    let minBalance = false;
-    let walletBalance = 0; 
-
-    const findWallet = await userCollection.findById(user).populate("wallet");
-    if (findWallet.wallet) {
-      walletBalance = findWallet.wallet.balance;
-      if (walletBalance > grandTotal) {
-        amount = true;
+      // Check if the cart is empty
+      if (!userWithCart.cart.length) {
+        return res.redirect("/shopping-cart");
       }
-      if (walletBalance > 0 && walletBalance < grandTotal) {
-        minBalance = true;
+
+      // Calculate subtotal and check for out of stock items
+      const totalArray = calculateSubtotal(userWithCart);
+      if (!totalArray) {
+        req.flash("warning", "OOPS!, Out of Stock");
+        return res.redirect("/shopping-cart");
       }
+
+      // Destructure the totalArray for readability
+      const [cartItem, cartSubtotal, processingFee, grandTotal] = totalArray;
+
+      // Assuming couponCode is obtained from request parameters
+      const couponCode = req.params.couponCode; // Adjust as per your route setup
+      const total = grandTotal; // Adjust this based on your calculation logic
+
+
+      const coupons = await isValidCoupon(couponCode, user, total);
+      
+
+      let amount = false;
+      let minBalance = false;
+      let walletBalance = 0; 
+
+      const findWallet = await userCollection.findById(user).populate("wallet");
+      if (findWallet.wallet) {
+        walletBalance = findWallet.wallet.balance;
+        if (walletBalance > grandTotal) {
+          amount = true;
+        }
+        if (walletBalance > 0 && walletBalance < grandTotal) {
+          minBalance = true;
+        }
+      }
+
+      // Render the checkout page with data
+      res.render("users/pages/checkoutPage", {
+        cartItem,
+        cartSubtotal,
+        processingFee,
+        grandTotal,
+        address,
+        walletBalance,
+        amount,
+        minBalance,
+        coupons
+
+      });
+
+      console.log("cartItem---:", cartItem);
+      console.log("grandTotal---:", grandTotal);
+      console.log("cartSubtotal---", cartSubtotal);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
     }
+  };
 
-    // Render the checkout page with data
-    res.render("users/pages/checkoutPage", {
-      cartItem,
-      cartSubtotal,
-      processingFee,
-      grandTotal,
-      address,
-      walletBalance,
-      amount,
-      minBalance,
-    });
+  const couponDetails = async(req,res)=>{
+    try {
 
-    console.log("cartItem---:", cartItem);
-    console.log("grandTotal---:", grandTotal);
-    console.log("cartSubtotal---", cartSubtotal);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-};
+        const listCoupons = await Coupon.find()
+
+        
+        res.json({title:'Coupons',coupons:listCoupons})
+
+        console.log('coupons',listCoupons)
+
+        
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+
+
 
 //checkCart
 
@@ -272,7 +301,7 @@ const placeOrder = async (req, res) => {
         console.log('createOrder',createOrder)
 
                       
-        // await userCollection.findByIdAndUpdate(user, { $set: { cart: [] } });
+        await userCollection.findByIdAndUpdate(user, { $set: { cart: [] } });
 
         if (paymentMethod === "Wallet") {
           if (couponCode) {
@@ -300,10 +329,10 @@ const placeOrder = async (req, res) => {
 
           return res.json({ walletSuccess: true, orderId: createOrder._id, payment: 'Wallet' });
         } else {
-          return res.redirect(`/orderPlacedPage?id=${createOrder._id}`);
+          return res.json({ codSuccess: true, orderId: createOrder._id, payment: 'COD' });
         }
       }
-    } else if (paymentMethod == 'WalletWithRazorPay') {
+    } else if (paymentMethod == 'payWithWallet') {
       const createOrder = await orderModel.create(newOrder);
       if (couponCode) {
         const findCoupon = await isValidCoupon(couponCode, user, grandTotal);
@@ -707,6 +736,7 @@ module.exports = {
   paymentFailed,
   verifyPayment,
   returnProduct,
-  downloadInvoice
+  downloadInvoice,
+  couponDetails
 
 };

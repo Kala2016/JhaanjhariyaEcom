@@ -197,9 +197,9 @@
                             <div class="pd-share">
 
                                 <div class="pd-social">
-                                    <a href="#"><i class="ti-facebook"></i></a>
-                                    <a href="#"><i class="ti-twitter-alt"></i></a>
-                                    <a href="#"><i class="ti-linkedin"></i></a>
+                                    <a href="https://www.facebook.com/"><i class="ti-facebook"></i></a>
+                                    <a href="https://twitter.com"><i class="ti-twitter-alt"></i></a>
+                                    <a href="https://www.instagram.com/"><i class="ti-instagram"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -250,7 +250,7 @@
                                         <tr>
                                             <td class="p-catagory">Customer Rating</td>
                                             <td>
-                                                <div class="pd-rating">
+                                                <div class="pd-rating" data-rating="4">
                                                     <i class="fa fa-star"></i>
                                                     <i class="fa fa-star"></i>
                                                     <i class="fa fa-star"></i>
@@ -545,6 +545,69 @@ function fetchVariantDetails(variantId) {
 // });
 
 </script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('form').submit(function(event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      var form = $(this);
+      var url = form.attr('action');
+
+      // Submit the form using AJAX
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: form.serialize(), // Serialize form data
+        success: function(response) {
+          // Display a message to the user
+          alert(response.message);
+        },
+        error: function(xhr, status, error) {
+          console.error(error);
+          alert('An error occurred while adding the product to the cart.');
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const ratingStars = document.querySelectorAll(".pd-rating i");
+    const ratingValue = document.querySelector(".pd-rating span");
+    const initialRating = parseInt(document.querySelector(".pd-rating").getAttribute("data-rating"));
+
+    // Set initial rating
+    setRating(initialRating);
+
+    // Add click event listeners to stars
+    ratingStars.forEach((star, index) => {
+        star.addEventListener("click", function() {
+            const rating = index + 1;
+            setRating(rating);
+        });
+    });
+
+    // Function to set rating
+    function setRating(rating) {
+        ratingStars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove("fa-star-o");
+                star.classList.add("fa-star");
+            } else {
+                star.classList.remove("fa-star");
+                star.classList.add("fa-star-o");
+            }
+        });
+        ratingValue.textContent = `(${rating})`;
+    }
+});
+
+</script>
+
   
 
 
