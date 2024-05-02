@@ -182,6 +182,7 @@
                                     
                                     <!-- Submit button to add product to cart -->
                                     <button type="submit" class="primary-btn pd-cart">Add To Cart</button>
+                                    <div id="flashMessage" style="display: none;"></div>
                                 </form>
                                 
                                 </div>
@@ -549,29 +550,37 @@ function fetchVariantDetails(variantId) {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  $(document).ready(function() {
-    $('form').submit(function(event) {
-      event.preventDefault(); // Prevent the default form submission
+ $(document).ready(function() {
+  $('form').submit(function(event) {
+    event.preventDefault(); // Prevent the default form submission
 
-      var form = $(this);
-      var url = form.attr('action');
+    var form = $(this);
+    var url = form.attr('action');
 
-      // Submit the form using AJAX
-      $.ajax({
-        type: 'POST',
-        url: url,
-        data: form.serialize(), // Serialize form data
-        success: function(response) {
-          // Display a message to the user
-          alert(response.message);
-        },
-        error: function(xhr, status, error) {
-          console.error(error);
-          alert('An error occurred while adding the product to the cart.');
+    // Submit the form using AJAX
+    $.ajax({
+      type: 'POST',
+      url: url,
+      data: form.serialize(), // Serialize form data
+      success: function(response) {
+        if (response.message) {
+          // Display success toast message
+          toastr.success(response.message);
+        } else {
+          // Display error toast message
+          toastr.error('Product alreay in cart.');
         }
-      });
+      },
+      error: function(xhr, status, error) {
+        console.error(error);
+        // Display error toast message
+        toastr.error('Product already in cart.');
+      }
     });
   });
+});
+
+
 </script>
 
 <script>
@@ -608,7 +617,20 @@ function fetchVariantDetails(variantId) {
 
 </script>
 
-  
+<style>
+    .success {
+  color: green;
+}
+
+.error {
+  color: red;
+}
+
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+
 
 
 

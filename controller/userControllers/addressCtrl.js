@@ -68,7 +68,7 @@ const insertAddress = async (req, res) => {
   }
 };
 
-const editAddressPage = async (req, res) => {
+const editAddress = async (req, res) => {
   try {
     const userId = req.session.user._id;
     const addressId = req.params.addressId;
@@ -103,7 +103,7 @@ const updateAddress = async (req, res) => {
     // Update the address details in the database
     await userCollection.updateOne({ "_id": id }, { $set: { name, address, town, state, postCode, phone, altPhone } });
     // Redirect or send response as needed
-    res.redirect('/userProfile');
+    res.redirect('/addAddressPage');
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Internal server error" });
@@ -123,15 +123,20 @@ const deleteAddress = async (req, res) => {
     );
 
     if (updatedUser) {
-      res.status(200).json({ message: "Address deleted successfully!", success: true });
+      req.flash('success', 'Address deleted successfully!');
+      res.redirect('/addAddress');
     } else {
-      res.status(400).json({ message: "Address not found", success: false });
+      req.flash('error', 'Address not found');
+      res.redirect('/addAddress');
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Internal server Error!" });
+    req.flash('error', 'Internal server Error!');
+    res.redirect('/addAddress');
   }
 };
+
+
 
 
 
@@ -140,7 +145,7 @@ module.exports = {
   addAddressPage,
   insertAddress,
   deleteAddress,
-  editAddressPage,
+  editAddress,
   updateAddress,
   
 };

@@ -1,3 +1,4 @@
+
 const userCollection = require("../../models/userSchema");
 const productCollection = require("../../models/ProductSchema");
 const Variant = require("../../models/variantSchema");
@@ -47,43 +48,37 @@ const getCartPage = async (req, res) => {
 
 const addtoCart = async (req, res) => {
   try {
-    //const { productId, variantId, quantity } = req.body; // Define variantId here
     const { productId, variantId } = req.body;
-
     const { quantity = 1 } = req.query;
-
- 
-    const ID = req.session.user._id;
-    console.log("id===", req.session.user._id);
-
-    console.log("variantId", variantId);
-
-    const variant = await Variant.findById(variantId); // Use the Variant model
-    const variantExists = await Variant.exists({ _id: variantId }); // Use the Variant model
+    const userId = req.session.user._id;
 
     // Check if variantId is provided
     if (!variantId) {
-      return res.status(400).json({ message: "Variant ID is required" });
+      req.flash('error', 'Variant ID is required');
+      return res.status(400).json({ message: 'Variant ID is required' });
     }
+
+    const variant = await Variant.findById(variantId);
+    const variantExists = await Variant.exists({ _id: variantId });
 
     // Check if the variant ID is valid
     if (!variantExists) {
-      return res.status(404).json({ message: "Variant not found" });
+      req.flash('error', 'Variant not found');
+      return res.status(404).json({ message: 'Variant not found' });
     }
 
     const alreadyIn = await userCollection.findOne({
-      _id: ID,
-      "cart.variantId": variantId,
+      _id: userId,
+      'cart.variantId': variantId,
     });
 
-    console.log("Already in Cart:", alreadyIn);
-
     if (alreadyIn) {
-      return res.status(409).json({ message: "Item already in Cart" });
+      req.flash('error', 'Item already in Cart');
+      return res.status(409).json({ message: 'Item already in Cart' });
     }
 
     const cartUpdated = await userCollection.findByIdAndUpdate(
-      ID,
+      userId,
       {
         $push: {
           cart: {
@@ -96,21 +91,16 @@ const addtoCart = async (req, res) => {
       { new: true }
     );
 
-    console.log("Cart Updated:", cartUpdated);
-
-    if (cartUpdated) {
-      
-      return res.status(200).json({ message: "Product added to cart" });
-    } else {
-      return res
-        .status(400)
-        .json({ message: "Couldn't update Cart", success: false });
-    }
+    req.flash('success', 'Product added to cart');
+    return res.status(200).json({ message: 'Product added to cart' });
   } catch (error) {
-    console.error("Error in Cart", error);
-    return res.status(500).send({ message: "Internal Server Error" });
+    console.error('Error in Cart', error);
+    req.flash('error', 'Internal Server Error');
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+  
+
 
 
 
@@ -204,26 +194,8 @@ const checkProductAvailability = async (req, res) => {
 };
 
 
-// counting cart items--
-const getCartCount = async (req, res) => {
-    try {
-        if (req.user) {
-            // Get the user's cart items count from your user model
-            const Id = req.session.user._id;
-            const user = await userCollection.findById(Id).exec();
-            const cartItemCount = user.cart.length;     
 
-            console.log("cartItemCount",cartItemCount);
-            console.log("userId",userId)
-            res.json({ cartItemCount }); // Use the correct property name
-        } else {
-            // User is not authenticated
-            res.json({ cartItemCount: 0 }); // Return 0 if the user is not logged in
-        }
-    } catch (error) {
-        console.error(error);
-    }
-};
+
 
 
 
@@ -236,6 +208,6 @@ module.exports = {
   updateCart,
   removeProductfromCart,
   checkProductAvailability,
-  getCartCount
+  
 
 };

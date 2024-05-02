@@ -53,6 +53,14 @@ const userSchema = new Schema({
   wallet: { type: mongoose.Schema.Types.ObjectId, ref: 'Wallet' },
 
   coupons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Coupon' }],
+
+  referralCode:{
+    type:String,
+    unique:true,
+    default:'ReferralCode'
+},
+
+  
   
   cart:[
     {

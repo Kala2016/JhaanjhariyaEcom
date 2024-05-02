@@ -15,7 +15,7 @@ function hideError(inputField) {
     errorMessage.textContent = "";
 }
 function validateForm() {
-    const nameInput = document.querySelector('input[name="name"]');
+    const nameInput = document.querySelector('input[name="address_name"]');
     const address = document.querySelector('input[name="address"]');
     const town = document.querySelector('input[name="town"]');
     const state = document.querySelector('input[name="state"]');

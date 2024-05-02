@@ -2,45 +2,37 @@ const userCollection = require("../../models/userSchema");
 const productCollection = require("../../models/ProductSchema");
 const CategoryCollection = require("../../models/categorySchema");
 const CollectionModel = require("../../models/collectionSchema");
-const Banner = require("../../models/bannerSchema")
+const Banner = require("../../models/bannerSchema");
 const { ObjectId } = require("mongodb");
-const variant= require("../../models/variantSchema");
-const express = require('express')
+const variant = require("../../models/variantSchema");
+const express = require("express");
 const router = express.Router();
 
-//Search 
+//Search
 
 // Define the search route
-
 
 const searchRouter = async (req, res) => {
   try {
     const query = req.query.query;
     if (!query) {
-      return res.status(400).json({ message: 'Please provide a search query' });
+      return res.status(400).json({ message: "Please provide a search query" });
     }
     // Perform the search query on the productCollection
     const results = await productCollection.find({ $text: { $search: query } });
     if (results.length === 0) {
-      return res.status(404).json({ message: 'No products found matching your search' });
+      return res
+        .status(404)
+        .json({ message: "No products found matching your search" });
     }
     res.render("./users/pages/product", {
-      products: results,      
-
-     });
-
-    
+      products: results,
+    });
   } catch (error) {
-    console.error('Error in searching:', error);
-    return res.status(500).json({ message: 'Server Error!' });
+    console.error("Error in searching:", error);
+    return res.status(500).json({ message: "Server Error!" });
   }
 };
-
-
-
-
-
-
 
 // Load Home Page
 const getUserRoute = async (req, res) => {
@@ -48,14 +40,14 @@ const getUserRoute = async (req, res) => {
     const user = req.session.user;
     const loggedIn = req.session.loggedIn;
     const category = await CategoryCollection.find();
-    const banners = await Banner.find({isActive:true})
+    const banners = await Banner.find({ isActive: true });
     // Assuming 'banners' is an array of banner objects
-const listBanners = banners.map(banner => ({
-  ...banner,
-  imgUrl: banner.bannerImage.replace(/\\/g, '/')
-}));
+    const listBanners = banners.map((banner) => ({
+      ...banner,
+      imgUrl: banner.bannerImage.replace(/\\/g, "/"),
+    }));
 
-    console.log('list bzannerrrr',listBanners);
+    console.log("list bzannerrrr", listBanners);
     const cart = await userCollection.find();
     const products = await productCollection
       .find()
@@ -65,18 +57,15 @@ const listBanners = banners.map(banner => ({
       .populate("categoryName")
       .populate("collectionName");
 
-
     res.render("./users/pages/home", {
       products: products,
       cart: cart,
-      banners: listBanners
+      banners: listBanners,
     });
   } catch (error) {
     console.error(error);
   }
 };
-
-
 
 // logout
 const getLogout = async (req, res) => {
@@ -194,14 +183,12 @@ const getShoppingpage = async (req, res) => {
   }
 };
 
-
-
 const getproductpage = async (req, res) => {
   try {
     const id = req.params.id;
     const user = req.user;
 
-    const category = await CategoryCollection.find({ isListed: true })
+    const category = await CategoryCollection.find({ isListed: true });
     const collection = await CollectionModel.find();
     const cart = await productCollection.findOne({
       user_id: req.session.userId,
@@ -253,10 +240,10 @@ const getproductpage = async (req, res) => {
       return res.status(404).render("./shop/pages/404");
     } else {
       res.render("./users/pages/product", {
-        products: products,        
+        products: products,
         category: category,
         collection: collection,
-        relatedProducts:relatedProducts,     
+        relatedProducts: relatedProducts,
         selectedCategory: req.query.category,
         selectedCollection: req.query.collection,
         salePrice: salePrice,
@@ -264,7 +251,7 @@ const getproductpage = async (req, res) => {
         highlightedIndex: 0,
       });
     }
-    console.log("category===",category)
+    console.log("category===", category);
     console.log("products", products);
   } catch (error) {
     console.error(error);
@@ -277,11 +264,11 @@ const getproductpage = async (req, res) => {
 const getVariantDetails = async (req, res) => {
   try {
     const { id } = req.params;
-  
+
     const findVariant = await variant.findById(id);
-    console.log(findVariant)
+    console.log(findVariant);
     if (findVariant) {
-      return res.status(200).json({ message: "successful",data:findVariant });
+      return res.status(200).json({ message: "successful", data: findVariant });
     }
     res.json("Id is not valid");
   } catch (error) {
@@ -294,15 +281,15 @@ const wishlist = async (req, res) => {
   try {
     const id = req.userId;
     const userWishlist = await userCollection.findById({ _id: id }).populate({
-      path: 'wishlist',
+      path: "wishlist",
       populate: {
-        path: 'images',
+        path: "images",
       },
     });
-    res.render('./users/pages/wishlist', { wishlist: userWishlist.wishlist });
+    res.render("./users/pages/wishlist", { wishlist: userWishlist.wishlist });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send("Internal Server Error");
   }
 };
 
@@ -328,6 +315,8 @@ const addTowishlist = async (req, res) => {
   }
 };
 
+
+
 const removeItemfromWishlist = async (req, res) => {
   try {
     const userId = req.userId;
@@ -335,17 +324,20 @@ const removeItemfromWishlist = async (req, res) => {
 
     const user = await userCollection.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
-    await userCollection.findByIdAndUpdate(userId, { $pull: { wishlist: productId } });
-    res.json({ success: true, message: 'Product removed from wishlist' });
+    await userCollection.findByIdAndUpdate(userId, {
+      $pull: { wishlist: productId },
+    });
+    res.json({ success: true, message: "Product removed from wishlist" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
 
 const additemsfrmWishlisttoCart = async (req, res) => {
   try {
@@ -388,7 +380,9 @@ const additemsfrmWishlisttoCart = async (req, res) => {
     );
 
     if (!cartUpdated) {
-      return res.status(400).json({ message: "Couldn't update Cart", success: false });
+      return res
+        .status(400)
+        .json({ message: "Couldn't update Cart", success: false });
     }
 
     // Clear wishlist for the user
@@ -407,28 +401,23 @@ const additemsfrmWishlisttoCart = async (req, res) => {
   }
 };
 
-
 function toggleWishlist(productId) {
   // Check if the product is already in the wishlist
   fetch(`/toggleWishlist/${productId}`)
-      .then(response => {
-          if (!response.ok) {
-              throw new Error('Network response was not ok');
-          }
-          return response.json();
-      })
-      .then(data => {
-          // Update UI based on wishlist data
-          updateUIWithWishlistData(data.wishlist);
-      })
-      .catch(error => {
-          console.error('Error toggling wishlist:', error);
-      });
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      // Update UI based on wishlist data
+      updateUIWithWishlistData(data.wishlist);
+    })
+    .catch((error) => {
+      console.error("Error toggling wishlist:", error);
+    });
 }
-
-
-
-
 
 module.exports = {
   getLogout,
@@ -441,5 +430,5 @@ module.exports = {
   removeItemfromWishlist,
   addTowishlist,
   toggleWishlist,
-  additemsfrmWishlisttoCart
+  additemsfrmWishlisttoCart,
 };

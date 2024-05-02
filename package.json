@@ -31,6 +31,7 @@
     "sharp": "^0.33.0",
     "sweetalert2": "^11.10.1",
     "toastify": "^2.0.1",
+    "toastr": "^2.1.4",
     "uuid": "^9.0.1"
   },
   "description": ""
