@@ -32,6 +32,7 @@ const postLogin = async (req, res) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
+    console.log(req.body)
    
     try {
       const userData = await userCollection.findOne({ email: email })
@@ -43,7 +44,7 @@ const postLogin = async (req, res) => {
     console.log("User Data", userData);
 
     if (userData && userData.password) {
-      const passwordMatch = await bcrypt.compare(password, userData.password);
+      const passwordMatch = await bcrypt.compare(password.trim(), userData.password.trim());
       console.log("Password Match", passwordMatch);
       if (passwordMatch) {
         req.session.user = userData;

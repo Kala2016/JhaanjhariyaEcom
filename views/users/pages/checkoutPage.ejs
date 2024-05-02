@@ -59,17 +59,16 @@
                         
                         </div>
                       </div>
-                        <div id="checkout_coupon" class="coupon-checkout-content">
-                            <div class="coupon-info">
-                                <p class="checkout-coupon">
-                                    
-                                    <input type="text" id="couponCode" placeholder="Coupon code" name="coupon" />
-                                    <input type="button" onclick="applyCouponAjax('<%= grandTotal %>','<%= walletBalance %>')" id="couponButton" value="Apply Coupon" />
-                                </p>
-                                <p id="coupon-details"></p>
-                            </div>
+                      <div id="checkout_coupon" class="coupon-checkout-content">
+                        <div class="coupon-info">
+                            <p class="checkout-coupon">
+                                <input type="text" id="couponCode" placeholder="Coupon code" name="coupon" class="coupon-input" />
+                                <input type="button" onclick="applyCouponAjax('<%= grandTotal %>','<%= walletBalance %>')" id="couponButton" value="Apply Coupon" class="coupon-button" />
+                            </p>
+                            <p id="coupon-details"></p>
                         </div>
-                        
+                    </div>
+                    
                     <!-- ACCORDION END -->
                 </div>  
                
@@ -83,10 +82,15 @@
                 <div class="col-lg-6 col-md-12 col-12">
                     <div class="checkbox-form">
                         <div class="d-flex">
-                            <h3>Billing Address</h3>
-                            <a class="btn-hover list-btn-style mb-4 billing-address-btn" data-toggle="tooltip" title="Add new Address"
-                                href="/addAddressPage?from=checkoutPage">Add New Address</a>
+                            <h3>Billing Address</h3>                           
+
                         </div>
+                        <br>
+                        <a class="" href="/addAddressPage?from=checkoutPage">Click here to add a new address</a>
+                                            
+                        
+                        <br>
+                        <br>
                         <div class="row">
                             <% if (address.length > 0) { %>
                                 <% address.forEach(address => { %>
@@ -117,10 +121,10 @@
                             <% } %>
                         </div>
                     </div>
-                </div>
+                </div>               
                 
                 <div class="col-lg-6 col-md-12 col-12">
-                    
+                                      
                     <div class="your-order">
                         <h3>Your Order</h3>
                         <input type="hidden" id="originalCartData" name="cartItems"
@@ -269,7 +273,7 @@
 
 
 <style>
-    /* Custom styles for the checkout page */
+     /* Custom styles for the checkout page */
 
     /* Billing Address Section */
     .checkbox-form {
@@ -322,7 +326,59 @@
 
     .billing-address-btn:hover {
         background-color: #ffc107;
+    }  
+
+    /* Styles for the coupon display */
+    #showcoupon {
+        cursor: pointer; /* Change cursor to pointer on hover */
     }
+
+    #showcoupon:hover {
+        background-color: #6c757d; /* Change background color on hover */
+        border-radius: 0px; /* Add rounded corners */
+        padding: 8px; /* Add padding for better visual */
+    }
+
+    /* Styles for the coupon input field */
+    .coupon-input {
+        padding: 10px; /* Add padding */
+        border: 1px solid #ccc; /* Add border */
+        border-radius: 5px; /* Add rounded corners */
+        width: 200px; /* Set width */
+        margin-right: 10px; /* Add margin between input and button */
+    }
+
+    /* Styles for the apply button */
+    .coupon-button {
+        padding: 10px 20px; /* Add padding */
+        background-color: #ffc107; /* Green background color */
+        color: white; /* White text color */
+        border: none; /* Remove border */
+        border-radius: 0px; /* Add rounded corners */
+        cursor: pointer; /* Change cursor to pointer */
+    }
+
+    .coupon-button:hover {
+        background-color: #6c757d; /* Darker green background color on hover */
+    }
+
+    .list-btn-style {
+        /* Your existing styles for the link */
+        text-decoration: none; /* Remove underline */
+        color: #333; /* Default text color */
+        border: 1px solid #ccc; /* Add border */
+        padding: 8px 16px; /* Add padding */
+        border-radius: 5px; /* Add rounded corners */
+        transition: background-color 0.3s ease; /* Add transition effect */
+    }
+
+    .list-btn-style:hover {
+        background-color: #f0f0f0; /* Change background color on hover */
+    } 
+
+    
+
+
 </style>
 
 <!-- Script Section -->
@@ -733,6 +789,43 @@
   cursor: pointer;
 }
 
+/* Styles for the copy coupon button */
+#copyButton {
+    background-color: #4CAF50; /* Green background color */
+    border: none; /* Remove button border */
+    color: white; /* White text color */
+    padding: 10px 20px; /* Padding for button */
+    text-align: center; /* Center text */
+    text-decoration: none; /* Remove default underline */
+    display: inline-block; /* Display as inline-block */
+    font-size: 16px; /* Font size */
+    margin: 4px 2px; /* Margin */
+    transition-duration: 0.4s; /* Transition duration */
+    cursor: pointer; /* Cursor pointer */
+    border-radius: 8px; /* Rounded corners */
+}
+
+#copyButton:hover {
+    background-color: #45a049; /* Darker green background color on hover */
+}
+
+/* CSS for flash message */
+.flash-message {
+    position: fixed; /* Fixed position */
+    top: 20px; /* Distance from the top */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Center horizontally */
+    background-color: #4CAF50; /* Green background color */
+    color: white; /* White text color */
+    padding: 10px 20px; /* Padding */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Box shadow */
+    z-index: 9999; /* Ensure it appears on top of other elements */
+}
+
+
+
+
 </style>
 
 <script>
@@ -765,8 +858,19 @@ span.onclick = function() {
     input.select();
     document.execCommand('copy');
     document.body.removeChild(input);
-    alert("Coupon code copied!");
+
+    // Create flash message element
+    var flashMessage = document.createElement('div');
+    flashMessage.textContent = "Coupon code copied!";
+    flashMessage.classList.add('flash-message'); // Add a class for styling
+    document.body.appendChild(flashMessage);
+
+    // Remove flash message after 3 seconds
+    setTimeout(function() {
+        document.body.removeChild(flashMessage);
+    }, 3000);
 }
+
 
     
     // Function to populate table with coupons
@@ -784,7 +888,7 @@ span.onclick = function() {
                     <td>${new Date(coupon.timestamp).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
                     <td>${new Date(coupon.expirationDate).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
                     <td>
-                        <button onclick="copyCoupon('${coupon.code}')">Copy</button>
+                        <button onclick="copyCoupon('${coupon.code}')" id="copyButton">Copy</button>
                     </td>
                 `;
                 couponBody.appendChild(tr);
@@ -824,5 +928,10 @@ span.onclick = function() {
         modal.style.display = "none";
     }
 </script>
+
+
+<style>
+    
+</style>
 
 <%- include('../partials/footer.ejs')%>

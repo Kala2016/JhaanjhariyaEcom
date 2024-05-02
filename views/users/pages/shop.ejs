@@ -1,5 +1,24 @@
 <%- include('../partials/header.ejs')%>
 
+<script>
+    // Initialize Toastr
+    toastr.options = {
+      closeButton: true,
+      progressBar: true,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+      newestOnTop: true,
+      showDuration: 300,
+      hideDuration: 1000,
+      timeOut: 5000,
+      extendedTimeOut: 1000,
+      showEasing: 'swing',
+      hideEasing: 'linear',
+      showMethod: 'fadeIn',
+      hideMethod: 'fadeOut'
+    };
+</script>
+
 <!-- Breadcrumb Section Begin -->
 <div class="breacrumb-section">
     <div class="container">
@@ -68,10 +87,10 @@
                     <div class="sidebar-categories">
                         <ul>
                             
-                            <li><span style="color: blue; cursor: pointer;" onclick='handleSort("lowtoHigh")' id="lowToHigh">
+                            <li><span style="color: #525353; cursor: pointer;" onclick='handleSort("lowtoHigh")' id="lowToHigh">
                                     Low to High
                             </span></li>
-                            <li><span onclick="handleSort('highToLow')" style="color: blue; cursor: pointer;" id="highToLow">
+                            <li><span onclick="handleSort('highToLow')" style="color: #525353; cursor: pointer;" id="highToLow">
                                     High to low
                             </span></li>
                         </ul>
@@ -128,18 +147,27 @@
                                     <span>No image available</span>
                                     <% } %>
                 
+                                    
                                     <!-- Wishlist icon -->
                                     <div class="icon">
                                         <!-- Heart icon with inline onclick event to toggle color -->
                                         <i class="icon_heart_alt" onclick="toggleWishlist('<%= product._id %>')" id="heart-icon-<%= product._id %>" style="font-size: 20px; cursor: pointer; color: <%= userWishlist && userWishlist.includes(product._id) ? 'red' : 'black' %>"></i>
                                     </div>
                                     
+                                                                                              
+                                    
+
+                                    
+                                    
+                                    
+
                                     <!-- Cart and View Product links -->
                                     <ul>
                                             
                                         <li class="quick-view"><a href="/product/<%= product._id %>">+ View Product</a></li>
                                     </ul>
                                 </div>
+                                
                 
                                 <!-- Product details -->
                                 <div class="pi-text">
@@ -179,6 +207,8 @@
                         <% }); %>
                     </div>
                 </div>
+
+                <div id="wishlist-message" class="toast" style="display: none;"></div>
                 
                 
                 <!-- Pagination -->
@@ -227,12 +257,21 @@
     console.log("Categories:", <%= JSON.stringify(category) %>);
 </script> -->
 
-  <script>
 
-    const handleSort = (value) =>{
-        const search = document.getElementById('searchInput').value
-        window.location.href = `${window.location.pathname}?sort=${value}&&search=${search}`
-    }
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<script>
+
+
+const handleSort = (value) => {
+    const search = document.getElementById('searchInput').value;
+    const currentURL = window.location.href;
+    const url = new URL(currentURL);
+    url.searchParams.set('sort', value); // Set sorting parameter
+    window.location.href = url.toString();
+}
+
     // Assuming you have the total pages and current page information available from the backend
     const totalPages = 2;
     const currentPage = 1;
@@ -277,16 +316,57 @@
 
 <!-- filter -->
 
-<!-- <script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const filterBtn = document.querySelector('.filter-btn');
-    filterBtn.addEventListener('click', function (event) {
-        event.preventDefault();
-        const minPrice = 0; // Set your minPrice here
-        const maxPrice = 10000; // Set your maxPrice here
-        const url = '/shop'; // Replace with your actual backend API URL
-        const params = new URLSearchParams({ minPrice: minPrice, maxPrice: maxPrice });
-        fetch(url + '?' + params)
+
+
+
+
+
+<script>
+
+    
+    const addProductToCart = async (productId) => {
+    try {
+        const response = await fetch('/addtoCart', {
+            method: 'POST',
+            headers: {  
+                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productId })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+                // Update cart count in navbar icon
+                updateCartItemCount();
+            }
+        } else {
+            console.error('Failed to add product to cart');
+        }
+    } catch (error) {
+        console.error('Error adding product to cart:', error);
+    }
+};
+
+</script>
+
+
+
+<script>
+    function toggleWishlist(productId) {
+        const wishlistMessage = document.getElementById('wishlist-message');
+        const heartIcon = document.getElementById('heart-icon-' + productId);
+
+        // Toggle heart icon color
+        if (heartIcon.style.color === 'red') {
+            heartIcon.style.color = 'black'; // If red, change to black
+        } else {
+            heartIcon.style.color = 'red'; // If black, change to red
+        }
+
+        // Fetch to add/remove product from wishlist
+        fetch(`/addTowishlist/${productId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -294,90 +374,114 @@
                 return response.json();
             })
             .then(data => {
-                // Handle response data here
-                console.log(data);
+                // Display toast message
+                if (data.success) {
+                    toastr.success("Product was added to Wishlist"); // Success message
+                } else {
+                    toastr.error("Product already in Wishlist"); // Error message
+                }
             })
             .catch(error => {
-                // Handle errors here
-                console.error('There was a problem with the fetch operation:', error);
+                console.error('Error in sending addtowishlist request:', error);
             });
-    });
-});
-
-</script> -->
-
-<!-- <script>
-    const query = document.querySelector('input[name="query"]').value;
-fetch(`/search?query=${query}`)
-    .then(response => response.json())
-    .then(data => {
-        // Handle search results
-        console.log(data);
-    })
-    .catch(error => {
-        // Handle errors
-        console.error('Error during search:', error);
-    });
-
-</script> -->
-
-<script>
-    function toggleWishlist(productId) {
-        console.log('Toggle wishlist function called');
-    const wishlistMessage = document.getElementById('wishlist-message');
-    const fixedDiv = document.getElementById('fixed-div');
-    const wishlist = document.getElementById('wishlist-' + productId);
-    const wishlistAnimate = document.querySelector('.icon-wishlist');
-    const heartIcon = document.getElementById('heart-icon-' + productId);
-
-    if (heartIcon.style.color === 'red') {
-            heartIcon.style.color = 'black'; // If red, change to black
-        } else {
-            heartIcon.style.color = 'red'; // If black, change to red
-            heartIcon.style.color = 'red'; // If black, change to red
-        }
-
-    function hide() {
-        fixedDiv.style.display = 'none';
     }
-
-    fetch(`/addTowishlist/${productId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                fixedDiv.style.display = 'block';
-                fixedDiv.style.color = 'red';
-                fixedDiv.style.backgroundColor = 'green';
-                wishlistMessage.innerText = data.message;
-                wishlist.nextElementSibling.style.color = 'red';
-                wishlistAnimate.classList.toggle('added');
-                setTimeout(function () {
-                    hide();
-                    wishlistAnimate.classList.remove('added');
-                }, 3000);
-            } else {
-                fixedDiv.style.color = '';
-                fixedDiv.style.display = 'block';
-                fixedDiv.style.backgroundColor = 'red';
-                wishlistMessage.innerText = data.message;
-                wishlist.nextElementSibling.style.color = 'black';
-                setTimeout(hide, 3000);
-            }
-        })
-        .catch(error => {
-            console.error('Error in sending addtowishlist request:', error);
-        });
-}
-
 </script>
 
 
 
+
+
+
+<style>
+    /* Sidebar search form */
+.sidebar-search form {
+    display: flex;
+    align-items: center;
+}
+
+/* Search input field */
+.sidebar-search input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 0px;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Search button */
+.sidebar-search button {
+    background-color:#e7ab3c;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 0px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* Search button hover effect */
+.sidebar-search button:hover {
+    background-color: #525353;
+}
+
+/* Select option container */
+.select-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Link styling */
+.select-option a {
+    text-decoration: none;
+    color: #333;
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 0px;
+    transition: all 0.3s ease;
+}
+
+/* Link hover effect */
+.select-option a:hover {
+    background-color:  #e7ab3c;
+    color: #fff;
+}
+
+/* Sidebar categories container */
+.sidebar-categories {
+    margin-bottom: 20px;
+}
+
+/* List styling */
+.sidebar-categories ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+/* List item styling */
+.sidebar-categories li {
+    margin-bottom: 10px;
+}
+
+/* Link styling */
+.sidebar-categories li span {
+    color: blue;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Link hover effect */
+.sidebar-categories li span:hover {
+    text-decoration: underline;
+}
+
+
+</style>
+
+
+
+    <!-- Include Toastr CSS and JavaScript files -->
 
 
   

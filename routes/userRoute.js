@@ -93,7 +93,7 @@ userRoute.post("/addtocart",userValid,userLoggedIn,cartController.addtoCart)
 userRoute.post('/updateCartItem/:id',userValid,userLoggedIn,cartController.updateCart)
 userRoute.get('/checkProductAvailability', userLoggedIn, cartController.checkProductAvailability);
 userRoute.get('/removeProduct/:id',userValid,userLoggedIn,cartController.removeProductfromCart);
-userRoute.get('/getCartItemCount',userLoggedIn,cartController.getCartCount);
+userRoute.get('/getCartCount',userLoggedIn,cartController.addtoCart);
 
 
 
@@ -117,9 +117,9 @@ userRoute.get('/wallet-history',userLoggedIn,profileController.viewWallethistory
 
 userRoute.get('/addAddressPage',userValid,userLoggedIn,addressController.addAddressPage)
 userRoute.put('/addAddress',userValid,userLoggedIn,addressController.insertAddress)
-userRoute.get('/editAddressPage',userValid,userLoggedIn,addressController.editAddressPage)
+userRoute.get('/editAddress/:addressId',userValid,userLoggedIn,addressController.editAddress)
 userRoute.delete('/deleteAddress/:id',userValid,userLoggedIn,addressController.deleteAddress)
-userRoute.post('/updateAddress/:id', userValid, userLoggedIn, addressController.updateAddress);
+userRoute.post('/editAddress/:addressId', userValid, userLoggedIn, addressController.updateAddress);
 
 
 

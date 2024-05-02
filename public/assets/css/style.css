@@ -1739,6 +1739,12 @@ ol {
 	line-height: 39px;
 }
 
+.filter-widget .filter-catagories li.a.active {
+    background: #e7ab3c;/* Set the background color to indicate the selected category */
+    font-weight: bold; /* Optionally, make the text bold */
+    /* Add any other styles to highlight the selected category */
+}
+
 .filter-widget .fw-brand-check .bc-item {
 	margin-bottom: 3px;
 }

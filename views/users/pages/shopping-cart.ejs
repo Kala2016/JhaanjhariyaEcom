@@ -78,11 +78,11 @@
                                         
                                         <td class="total-price first-row" id="subtotal-<%= cartItem._id %>"><%= (cartItem.productId.salePrice * cartItem.quantity).toLocaleString() %></td>
                                         <td class="product-remove first-row">
-                                            <button style="width: 30px; height: 30px;" onclick="showConfirmation(`<%= cartItem._id %>`)"><i class="ti-close"></i></button>
-
-                                               
-                                            
+                                            <button style="width: 30px; height: 30px; border: none; background-color: transparent;" onclick="showConfirmation('<%= cartItem._id %>')">
+                                                <i class="ti-close" style="font-size: 20px;"></i>
+                                            </button>
                                         </td>
+                                        
                                     </tr>
                                     <% grandTotal += (cartItem.productId.salePrice * cartItem.quantity); %>
                                 <% }); %>

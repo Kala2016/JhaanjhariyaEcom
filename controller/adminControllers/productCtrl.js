@@ -25,6 +25,7 @@ const productManagement = async (req, res) => {
     res.render("./admin/pages/Products", {
       title: "Products",
       productList: findProduct,
+      cartCount:cartCount
     }); 
   } catch (error) {
     console.log(error);

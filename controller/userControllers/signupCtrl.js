@@ -4,6 +4,7 @@
   const { sendOtp, generateOTP } = require("../../utility/nodeMailer");
   const { productAddtoCart } = require("./cartCtrl");
   const productCollection = require("../../models/ProductSchema");
+  
 
 
   //  user signup
@@ -26,13 +27,14 @@
           error: "Email already exists,please try with new email",
         });
       } else {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
+        const hashedPassword = await bcrypt.hash(req.body.password.trim(), 10);
         (req.session.fname = req.body.fname),
           (req.session.lname = req.body.lname),
           (req.session.email = req.body.email),
           (req.session.mobile = req.body.mobile),
           (req.session.password = hashedPassword);
+          console.log(req.session,'signup ',hashedPassword)
+
         const OTP = generateOTP();
         req.session.otpUser = OTP;
         console.log("Sending OTP to email:", req.body.email);
@@ -90,15 +92,15 @@
 
   const verifyOTP = async (req, res) => {
     try {
-      const otpUser = req.session.otpUser;
-      console.log("req,res", otpUser);
+      const otpUser = req.session.otpUser.toString();
+      console.log("req,res", otpUser,req.session,req.body.otpInput);
       if (!otpUser) {
         return res.redirect("users/pages/user-signup");
       }
 
-      const enteredOTP = req.body.otpInput;
+      const enteredOTP = req.body.otpInput.toString()
       const userInDB = await userCollection.findOne({
-        email: otpUser.email,
+        email: req.session.email,
       });
 
       if (userInDB) {
@@ -106,29 +108,29 @@
         return res.status(400).json({ error: "User not found" });
       }
 
-      if (enteredOTP === otpUser.otp) {
-        otpUser.otp = null;
-        const newUser = new userCollection({
-          // Update user data in the database
-          fname: req.session.fname,
-          lname: req.session.lname,
-          email: req.session.email,
-          mobile: req.session.mobile,
-          password: req.session.password,
-        });
+      if (enteredOTP === otpUser) {
+        req.session.otpUser= null;
+        // const newUser = new userCollection({
+        //   // Update user data in the database
+        //   fname: req.session.fname,
+        //   lname: req.session.lname,
+        //   email: req.session.email,
+        //   mobile: req.session.mobile,
+        //   password: req.session.password,
+        // });
 
-        let insertUser  = await newUser.save();
+        let insertUser  = await userCollection.create(req.session);
         console.log(insertUser,'insertUser')
         if(insertUser) {
           
-          const user = await userCollection.findone({email:otpUser.email})
-          const newCart = new productCollection.findById({user_id:user._id,products:[]})
+          const user = await userCollection.findOne({email:otpUser.email})
+          const newCart = new productCollection.findById({user_id:user,products:[]})
           await newCart.save();
 
         } 
         
 
-        req.session.otpUser = null;
+        req.session = null;
 
         res.redirect("/login?message=OTP verification successful");
       } else {

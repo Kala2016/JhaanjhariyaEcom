@@ -1,24 +1,19 @@
 <%-include('../partials/header.ejs') %>
 
 <br>
-<br>
-
-<!-- Edit Address Modal -->
-<div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form action="/updateAddress/<%= editData._id %>" method="POST" class="address-form" onsubmit="return validateForm()">
-            <!-- Your form fields for editing address details -->
-            <!-- For example: -->
-            <div class="mb-3">
-              <label for="addressName" class="form-label">Address Name</label>
-              <input type="text" class="form-control" id="addressName" name="name" value="<%= editData.name %>">
-            </div>
+<br><div class="add-address pb-10">
+    <div class="container"> 
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 col-12">
+          <form action="/editAddress/<%= editData._id %>" method="POST" class="address-form" onsubmit="return validateForm()">
+            <form action="" method="POST" class="address-form" onsubmit="return validateForm()">
+                    <h3>Edit Address</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="first-name"> Name:<span class="required">*</span></label>
+                                <input type="text" name="name" class="form-control" placeholder="Name"
+                                    value="<%= editData.address_name %>" />
                                 <div class="error-message"></div>
                             </div>
                         </div>
@@ -40,21 +35,23 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="address">House Name <span class="required">*</span></label>
-                                <input type="text" name="address" class="form-control" value="<%= editData.house %>"
-                                    placeholder="House Name" />
-                                <div class="error-message"></div>
-                            </div>
-                            <div class="form-group">
-                                <label for="address">Street Name <span class="required">*</span></label>
-                                <input type="text" name="address" class="form-control" value="<%= editData.street %>"
+                                <input type="text" name="address" class="form-control" value="<%= editData.house_name %>"
                                     placeholder="Street Address" />
                                 <div class="error-message"></div>
                             </div>
                         </div>
                         <div class="col-md-6  ">
                             <div class="form-group mt-2">
-                                <label for="city">City <span class="required">*</span></label>
-                                <input type="text" name="town" class="form-control" value="<%= editData.town %>"
+                                <label for="city">Street Name <span class="required">*</span></label>
+                                <input type="text" name="town" class="form-control" value="<%= editData.street_address %>"
+                                    placeholder="Town / City" />
+                                <div class="error-message"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6  ">
+                            <div class="form-group mt-2">
+                                <label for="city">Town / City <span class="required">*</span></label>
+                                <input type="text" name="town" class="form-control" value="<%= editData.city %>"
                                     placeholder="Town / City" />
                                 <div class="error-message"></div>
                             </div>
@@ -69,17 +66,15 @@
                         </div>
                         <div class="col-md-6 ">
                             <div class="form-group mt-2">
-                                <label for="postcode">Pin-Code <span class="required">*</span></label>
+                                <label for="postcode">Postcode / Zip <span class="required">*</span></label>
                                 <input type="text" name="postCode" class="form-control"
-                                    value="<%= editData.postCode %>" />
+                                    value="<%= editData.pinCode %>" />
                                 <div class="error-message"></div>
                             </div>
                         </div>
-                        <br>
-                        <br>
                         <div class="col-md-6">
                             <div class="form-group mt-2">
-                                <label for="phone">Phone Number<span class="required">*</span></label>
+                                <label for="phone">Phone <span class="required">*</span></label>
                                 <input type="text" name="phone" class="form-control" value="<%= editData.phone %>"
                                     placeholder="Phone" />
                                 <div class="error-message"></div>
@@ -87,25 +82,33 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mt-2">
-                                <label for="phone">Alt Phone Number<span class="required">*</span></label>
-                                <input type="text" name="phone" class="form-control" value="<%= editData.phone %>"
+                                <label for="phone">Alt _Phone <span class="required">*</span></label>
+                                <input type="text" name="phone" class="form-control" value="<%= editData.alt_phone %>"
                                     placeholder="Phone" />
                                 <div class="error-message"></div>
                             </div>
                         </div>
                     </div>
+                    
+                        
+                    
                     <button type="submit" class="btn btn-primary">Save changes</button>
+                  
+
                 </form>
-              </div>
+                
             </div>
-          </div>
         </div>
+    </div>
+</div>
+<script>
+    function redirectToAddAddress() {
+        window.location.href = '/addAddressPage';
+    }
+</script>
 
-<script src="/assets/js/users/addressValidation.js"></script>
 
 
-<br>
-<br>
 
 
 <%-include('../partials/footer.ejs') %>
