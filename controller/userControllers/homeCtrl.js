@@ -61,6 +61,7 @@ const getUserRoute = async (req, res) => {
       products: products,
       cart: cart,
       banners: listBanners,
+      
     });
   } catch (error) {
     console.error(error);
@@ -308,9 +309,11 @@ const addTowishlist = async (req, res) => {
     } 
 
     await userCollection.findByIdAndUpdate(userId, { $push: { wishlist: productId } });
+    req.flash("success","Product added to wishlist")
     res.json({ success: true, message: 'Product added to wishlist' });
   } catch (error) {
     console.error(error);
+    req.flash("error","Internal Server error");
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
@@ -324,18 +327,20 @@ const removeItemfromWishlist = async (req, res) => {
 
     const user = await userCollection.findById(userId);
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      req.flash("error", "User not found");
+      return res.redirect("/wishlist"); // Redirect to wishlist page
     }
 
     await userCollection.findByIdAndUpdate(userId, {
       $pull: { wishlist: productId },
     });
-    res.json({ success: true, message: "Product removed from wishlist" });
+    
+    req.flash("success", "Product removed from wishlist");
+    res.redirect("/wishlist"); // Redirect to wishlist page with success message
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    req.flash("error", "Internal Server Error");
+    res.redirect("/wishlist"); // Redirect to wishlist page with error message
   }
 };
 
@@ -344,7 +349,7 @@ const additemsfrmWishlisttoCart = async (req, res) => {
     const { productId, variantId } = req.body;
     const { quantity = 1 } = req.query;
     const userID = req.session.user._id;
-
+    console.log(req.body, 'lkaskfjsjfokasfkjaskofasofjoij');
     const variantData = await variant.findById(variantId);
     const variantExists = await variant.exists({ _id: variantId });
 
@@ -386,20 +391,21 @@ const additemsfrmWishlisttoCart = async (req, res) => {
     }
 
     // Clear wishlist for the user
-    const updatedUser = await userCollection.findByIdAndUpdate(
+    const removedProductFromWishlist = await userCollection.findByIdAndUpdate(
       userID,
-      { wishlist: [] },
+      { $pull: { wishlist: productId } }, // Remove productId from wishlist
       { new: true }
     );
 
-    console.log("Wishlist cleared for user:", updatedUser);
-
-    return res.status(200).redirect("/shopping-cart");
+    // Send success message as JSON response
+    return res.status(200).json({ message: "Item added to cart successfully", success: true });
   } catch (error) {
     console.error("Error in Cart", error);
-    return res.status(500).send({ message: "Internal Server Error" });
+    req.flash('error', 'Internal Server Error');
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 function toggleWishlist(productId) {
   // Check if the product is already in the wishlist
@@ -419,6 +425,28 @@ function toggleWishlist(productId) {
     });
 }
 
+
+//counting wishlist items--
+
+const getWishlistCount = async (req, res) => {
+  try {
+    console.log(req.userId)
+    console.log('akjshajsdfashf')
+      if (req.userId) {
+          // Get the user's cart items count from your user model
+          const userId = req.userId;
+          const user = await userCollection.findById(userId).exec();
+          const wishlistItemCount = user.wishlist.length;
+          res.json({success:true, wishlistItemCount}); // Use the correct property name
+      } else {
+          // User is not authenticated
+          res.json({success:false, wishlistItemCount: 0 }); // Return 0 if the user is not logged in
+      }
+  } catch (error) {
+      console.error(error);
+  }
+};
+
 module.exports = {
   getLogout,
   getUserRoute,
@@ -431,4 +459,5 @@ module.exports = {
   addTowishlist,
   toggleWishlist,
   additemsfrmWishlisttoCart,
+  getWishlistCount
 };

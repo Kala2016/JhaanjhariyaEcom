@@ -141,58 +141,20 @@
                     </div>
                     <div class="col-lg-3 text-right col-md-3">
                         <ul class="nav-right">
-                            <li class="heart-icon"><a href="/wishlist" title="Wishlist">
+                            <li class="heart-icon">
+                                <a href="/wishlist" data-toggle="tooltip" data-placement="top" title="Wishlist">
                                 <i class="icon_heart_alt"></i>
-                                <span></span>
+                                <span class="shop-count-furniture green" id="wishlistItemCount"></span>
                             </a>
                             </li>
+                      
                             <li class="cart-icon">
                                 <a href="/shopping-cart" data-toggle="tooltip" data-placement="top" title="View Cart">
                                     <i class="icon_bag_alt"></i>
                                     <span class="shop-count-furniture green" id="cartItemCount" ></span>
                                 </a>
                             </li>
-                            
-                            <!-- <div class="cart-hover">
-                                <div class="select-items">
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td class="si-pic"><img src="/assets/img/select-product-1.jpg" alt=""></td>
-                                                <td class="si-text">
-                                                    <div class="product-selected">
-                                                        <p>$60.00 x 1</p>
-                                                        <h6>Kabino Bedside Table</h6>
-                                                    </div>
-                                                </td>
-                                                <td class="si-close">
-                                                    <i class="ti-close"></i>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="si-pic"><img src="/assets/img/select-product-2.jpg" alt=""></td>
-                                                <td class="si-text">
-                                                    <div class="product-selected">
-                                                        <p>$60.00 x 1</p>
-                                                        <h6>Kabino Bedside Table</h6>
-                                                    </div>
-                                                </td>
-                                                <td class="si-close">
-                                                    <i class="ti-close"></i>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="select-total">
-                                    <span>total:</span>
-                                    <h5>$120.00</h5>
-                                </div>
-                                <div class="select-button">
-                                    <a href="#" class="primary-btn view-card">VIEW CARD</a>
-                                    <a href="#" class="primary-btn checkout-btn">CHECK OUT</a>
-                                </div>
-                            </div> -->
+                          
                         </li>
                             <li class="cart-price"></li>
                         </ul>
@@ -439,23 +401,171 @@
     }
 </style>
 
-<script>
-    function updateCartItemCount() {
-    $.ajax({
-        type: "GET",
-        url: "/getCartCount",
-        success: function (response) {
-            const cartCount = response.cartCount;
-            $("#cartItemCount").text(cartCount); // Update cart count in navbar icon
-        },
-        error: function (error) {
-            console.error("Error fetching cart count:", error);
+<style>
+    @media only screen and (max-width: 1024px) {
+        .header-cart-icon {
+            position: absolute;
+            top: 21px;
+            right: 63px;
         }
-    });
+
+        .header-cart {
+            position: absolute;
+            top: 55px;
+            right: 73px;
+        }
+    }
+
+    @media screen and (min-width:768px) {
+        .header-cart-icon {
+            position: absolute;
+            top: 21px;
+            right: 94px;
+        }
+
+        .header-cart {
+            position: absolute;
+            top: 55px;
+            right: 73px;
+        }
+    }
+
+    @media screen and (min-width:1024px) {
+        .header-cart-icon {
+            position: absolute;
+            top: 10px;
+            right: 39px;
+        }
+
+        .header-cart {
+            position: absolute;
+            top: 45px;
+            right: 85px;
+        }
+    }
+
+    .icon-wishlist {
+        font-size: 26px;
+    }
+
+    .logo-img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+
+    #userDropdown:hover .dropdown-menu {
+        display: block;
+    }
+
+    #userDropdown {
+        color: #000000;
+        display: inline-block;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 50px 0 51px;
+        text-transform: capitalize;
+    }
+
+    .dropdown-toggle::after {
+        display: none;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.1);
+            opacity: 0.7;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes shake {
+        0% {
+            transform: translateX(0);
+            color: red;
+            /* Start color */
+        }
+
+        25% {
+            transform: translateX(-2px);
+            color: red;
+            /* Mid color */
+        }
+
+        50% {
+            transform: translateX(2px);
+            color: red;
+            /* End color */
+        }
+
+        75% {
+            transform: translateX(-2px);
+            color: red;
+            /* Mid color */
+        }
+
+        100% {
+            transform: translateX(2px);
+            color: red;
+            /* End color */
+        }
+    }
+
+    .icon-wishlist.added {
+        animation: shake 0.5s ease-in-out 3 alternate;
+    }
+</style>
+
+<script>
+function updateCartItemCount() {
+    const cartCount = document.getElementById('cartItemCount')
+    fetch('/getCartCount')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((data) => {           
+            cartCount.innerText = data.cartItemCount
+          
+        })
+        .catch(error => {
+            console.error('Error fetching cart count:', error);
+        });
 }
 
+updateCartItemCount();
+
+function updatewishlistItemCount() {
+    const wishlistCount = document.getElementById('wishlistItemCount')
+    fetch('/getwishlistCount')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((data) => {           
+            wishlistCount.innerText = data.wishlistItemCount
+          
+        })
+        .catch(error => {
+            console.error('Error fetching cart count:', error);
+        });
+}
+
+updatewishlistItemCount();
+
 </script>
-    
    
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/themify-icons@latest/css/themify-icons.css">

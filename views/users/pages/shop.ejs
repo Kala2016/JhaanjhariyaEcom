@@ -154,11 +154,13 @@
                                         <i class="icon_heart_alt" onclick="toggleWishlist('<%= product._id %>')" id="heart-icon-<%= product._id %>" style="font-size: 20px; cursor: pointer; color: <%= userWishlist && userWishlist.includes(product._id) ? 'red' : 'black' %>"></i>
                                     </div>
                                     
+                                    
                                                                                               
                                     
 
                                     
-                                    
+                                    <div id="flash-message" class="flash-message"></div>
+
                                     
 
                                     <!-- Cart and View Product links -->
@@ -190,8 +192,9 @@
                                             <i class="bi bi-currency-rupee" style="font-size: small;"></i>
                                             <small id="price" class="text-decoration-line-through" style="text-decoration-line-through;">
                                                 Rs.<%= product.variants[0].price.toLocaleString("en-IN") %>
-                                            </small
+                                            </small>
                                         </span>
+                            
                                     <% } else { %>
                                         <!-- If there's no sale, display regular price -->
                                         <span class="mtext-106 cl2">
@@ -357,6 +360,7 @@ const handleSort = (value) => {
     function toggleWishlist(productId) {
         const wishlistMessage = document.getElementById('wishlist-message');
         const heartIcon = document.getElementById('heart-icon-' + productId);
+        const flashMessage = document.getElementById('flash-message');
 
         // Toggle heart icon color
         if (heartIcon.style.color === 'red') {
@@ -367,24 +371,42 @@ const handleSort = (value) => {
 
         // Fetch to add/remove product from wishlist
         fetch(`/addTowishlist/${productId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Display toast message
-                if (data.success) {
-                    toastr.success("Product was added to Wishlist"); // Success message
-                } else {
-                    toastr.error("Product already in Wishlist"); // Error message
-                }
-            })
-            .catch(error => {
-                console.error('Error in sending addtowishlist request:', error);
-            });
-    }
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Display flash message
+            if (data.success) {
+                flashMessage.textContent = "Product added to wishlist";
+                flashMessage.style.color = "green";
+                flashMessage.style.display = "block";
+                setTimeout(() => {
+                    flashMessage.style.display = "none";
+                }, 3000); // Hide flash message after 3 seconds
+                // Reload the page (optional)
+                // window.location.reload();
+            } else {
+                flashMessage.textContent = data.message; // Display error message
+                flashMessage.style.color = "red";
+                flashMessage.style.display = "block";
+                setTimeout(() => {
+                    flashMessage.style.display = "none";
+                }, 3000); // Hide flash message after 3 seconds
+            }
+        })
+        .catch(error => {
+            console.error('Error in sending addTowishlist request:', error);
+            flashMessage.textContent = "An error occurred while processing your request";
+            flashMessage.style.color = "red";
+            flashMessage.style.display = "block";
+            setTimeout(() => {
+                flashMessage.style.display = "none";
+            }, 3000); // Hide flash message after 3 seconds
+        });
+}
 </script>
 
 
@@ -476,8 +498,24 @@ const handleSort = (value) => {
     text-decoration: underline;
 }
 
+.flash-message {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
 
 </style>
+
+
+
 
 
 

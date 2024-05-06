@@ -121,12 +121,12 @@
             const tableHeader = document.createElement('thead');
             const headerRow = document.createElement('tr');
             headerRow.innerHTML = `
-        <th>Order ID</th>
-        <th>Order Date</th>
-        <th>Customer</th>
-        <th>Payment Method</th>
-        <th>Payment Status</th>
-        <th>Total</th>
+            <th>Order ID</th>
+            <th>Order Date</th>
+            <th>Customer</th>
+            <th>Payment Method</th>
+            <th>Payment Status</th>
+            <th>Total</th>
     `;
             tableHeader.appendChild(headerRow);
             table.appendChild(tableHeader);
@@ -273,127 +273,7 @@
 
     </script>
 
-    <style>
-        /* styles.css */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-        }
-
-        .fa-list-alt,
-        .fa-gift,
-        .fa-tag,
-        .fa-image {
-            color: #adb5bd;
-        }
-
-        .text {
-            color: black;
-            font-weight: 400;
-        }
-
-        .menu-item {
-            text-decoration: none;
-        }
-
-        a {
-            /* Your CSS styles here */
-            text-decoration: none !important;
-
-        }
-
-        .logo-img {
-            max-width: 100px;
-            max-height: 100px;
-        }
-
-        .report-form-container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-        }
-
-        input,
-        button {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-            /* Increase font size for better readability */
-        }
-
-        button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Add styles for the table */
-        table.responsive-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #fff;
-            border: 1px solid #ddd;
-        }
-
-        table.responsive-table th,
-        table.responsive-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        table.responsive-table th {
-            background-color: #007bff;
-            color: #fff;
-            font-weight: bold;
-        }
-
-        table.responsive-table td {
-            background-color: #f9f9f9;
-        }
-
-        table.responsive-table tr:nth-child(even) {
-            background-color: #f2f2f2;
-            margin-bottom: 10px;
-        }
-
-        table.responsive-table tr:hover {
-            background-color: #ccc;
-            cursor: pointer;
-        }
-
-        /* Add some spacing to the table container */
-        #table-container {
-            margin-top: 15px;
-            margin-bottom: 20px;
-
-        }
-    </style>
+    
 
     <script>
         document.querySelector('form').addEventListener('submit', async (e) => {
@@ -506,4 +386,128 @@ async function generateSalesReport(reportType) {
     margin-right: 10px; /* Adjust margin between buttons as needed */
 }
 
+
+
     </style>
+
+<style>
+    /* styles.css */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .fa-list-alt,
+    .fa-gift,
+    .fa-tag,
+    .fa-image {
+        color: #adb5bd;
+    }
+
+    .text {
+        color: black;
+        font-weight: 400;
+    }
+
+    .menu-item {
+        text-decoration: none;
+    }
+
+    a {
+        /* Your CSS styles here */
+        text-decoration: none !important;
+
+    }
+
+    .logo-img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+
+    .report-form-container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+    }
+
+    input,
+    button {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        /* Increase font size for better readability */
+    }
+
+    button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Add styles for the table */
+    table.responsive-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff;
+        border: 1px solid #ddd;
+    }
+
+    table.responsive-table th,
+    table.responsive-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+    table.responsive-table th {
+        background-color: #007bff;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    table.responsive-table td {
+        background-color: #f9f9f9;
+    }
+
+    table.responsive-table tr:nth-child(even) {
+        background-color: #f2f2f2;
+        margin-bottom: 10px;
+    }
+
+    table.responsive-table tr:hover {
+        background-color: #ccc;
+        cursor: pointer;
+    }
+
+    /* Add some spacing to the table container */
+    #table-container {
+        margin-top: 15px;
+        margin-bottom: 20px;
+
+    }
+</style>
