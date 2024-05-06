@@ -53,7 +53,7 @@ const loadDashboard = async (req, res) => {
         const category = await CategoryCollection.find({ isListed: true }).count()
         const orders = await orderModel.find().count()
         const latestOrders = await orderModel.find().populate('address').limit(10)
-        const newUsers = await userCollection.find().limit(3)
+        const newUsers = await userCollection.find({is_Blocked:false}).sort({ createdAt: -1 }).limit(3)
 
         const [totalRevenue, slice] = await graphHelper.calculateRevenue();
 
@@ -127,27 +127,31 @@ const generateSalesReport = async (req, res) => {
           endOfMonth.setMonth(endOfMonth.getMonth() + 1);
           endOfMonth.setDate(0);
           dateFilter = { orderDate: { $gte: startOfMonth, $lte: endOfMonth } };
+      } else if (reportType === 'yearly') {
+          const startOfYear = new Date(fromDate);
+          startOfYear.setMonth(0);
+          startOfYear.setDate(1);
+          const endOfYear = new Date(toDate);
+          endOfYear.setMonth(11);
+          endOfYear.setDate(31);
+          dateFilter = { orderDate: { $gte: startOfYear, $lte: endOfYear } };
       } else {
           dateFilter = { orderDate: { $gte: new Date(fromDate), $lte: new Date(toDate) } };
       }
 
       const matchedOrders = await orderModel.aggregate([
           { $match: dateFilter },
-          // Additional aggregation stages based on report type
-          { $group: { _id: "$product", totalQuantity: { $sum: "$quantity" } } },
-          { $sort: { totalQuantity: -1 } },
-          { $limit: 10 } // Example: Get top 10 products by quantity sold
+          { $group: { 
+              _id: { 
+                  year: { $year: "$orderDate" },
+                  month: { $month: "$orderDate" },
+                  day: { $dayOfMonth: "$orderDate" }
+              },
+              totalSales: { $sum: "$totalPrice" } 
+          } }
       ]);
 
-      // Calculate total sales
-      // Calculate total sales
-      const total = matchedOrders.reduce((prev, curr) => {
-        return prev + curr.totalQuantity; // Use totalQuantity instead of total
-      }, 0);
-
-      
-
-      res.json({ matchedOrders: matchedOrders, salesTotal: total });
+      res.json({ matchedOrders: matchedOrders });
   } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error", success: false });

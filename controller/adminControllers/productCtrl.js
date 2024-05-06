@@ -25,7 +25,7 @@ const productManagement = async (req, res) => {
     res.render("./admin/pages/Products", {
       title: "Products",
       productList: findProduct,
-      cartCount:cartCount
+      
     }); 
   } catch (error) {
     console.log(error);
@@ -213,64 +213,103 @@ const addVariant = async (req, res) => {
   }
 };
 
+// const updateVariants = async (req, res) => {
+//   const session = await mongoose.startSession();
+//   try {
+//     session.startTransaction();
+//     const changedVariants = JSON.parse(req.body.changedVariants);
+//     const product = await productCollection.findById(req.session.productId);
+//     const promiseArray = [];
+
+//     for (const variant of changedVariants) {
+//       let color ="color" + variant,
+//         stock = "stock" + variant,
+//         price = "price" + variant; 
+
+//       const currentVariant = await Variant.findOne({
+//         product_id: product._id,
+//         v_name: variant,
+//       });
+//       let stockValue = currentVariant.stock + Number(req.body[stock]);
+//       stockValue < 0
+//         ? (stockValue = -currentVariant.stock)
+//         : (stockValue = req.body[stock]);
+
+//       const changed = await Variant.findOneAndUpdate(
+//         { product_id: product._id, v_name: variant },
+//         {
+//           $set: {
+//             color: req.body[color],
+//             price: req.body[price],
+//           },
+//           $inc: { stock: stockValue || 0 },
+//         },
+//         { new: true }
+//       );
+//       promiseArray.push(changed);
+//     }
+
+//     const allChanged = await Promise.all(promiseArray);
+
+//     if (allChanged) {
+//       session.commitTransaction();
+//       res
+//         .status(200)
+//         .json({ message: "All updates were successful", success: true });
+//       console.log("update successfull");
+//     } else {
+//       session.abortTransaction();
+//       res
+//         .status(400)
+//         .json({ message: "updation failed, retry!", success: false });
+//     }
+//   } catch (error) {
+//     console.log(error.message);
+//     session.abortTransaction();
+//     res.status(500).send("Internal server error!");
+//   } finally {
+//     session.endSession();
+//   }
+// };
+
 const updateVariants = async (req, res) => {
   const session = await mongoose.startSession();
+  session.startTransaction();
+  
   try {
-    session.startTransaction();
     const changedVariants = JSON.parse(req.body.changedVariants);
-    const product = await productCollection.findById(req.session.productId);
+    const productId = req.session.productId;
     const promiseArray = [];
 
     for (const variant of changedVariants) {
-      let color ="color" + variant,
-        stock = "stock" + variant,
-        price = "price" + variant; 
+      const { color, stock, price } = req.body[variant];
 
-      const currentVariant = await Variant.findOne({
-        product_id: product._id,
-        v_name: variant,
-      });
-      let stockValue = currentVariant.stock + Number(req.body[stock]);
-      stockValue < 0
-        ? (stockValue = -currentVariant.stock)
-        : (stockValue = req.body[stock]);
-
-      const changed = await Variant.findOneAndUpdate(
-        { product_id: product._id, v_name: variant },
+      const updatedVariant = await Variant.findOneAndUpdate(
+        { product_id: productId, v_name: variant },
         {
-          $set: {
-            color: req.body[color],
-            price: req.body[price],
-          },
-          $inc: { stock: stockValue || 0 },
+          $set: { color, price },
+          $inc: { stock: stock || 0 },
         },
-        { new: true }
+        { new: true, session }
       );
-      promiseArray.push(changed);
+      
+      promiseArray.push(updatedVariant);
     }
 
-    const allChanged = await Promise.all(promiseArray);
+    await Promise.all(promiseArray);
+    await session.commitTransaction();
 
-    if (allChanged) {
-      session.commitTransaction();
-      res
-        .status(200)
-        .json({ message: "All updates were successful", success: true });
-      console.log("update successfull");
-    } else {
-      session.abortTransaction();
-      res
-        .status(400)
-        .json({ message: "updation failed, retry!", success: false });
-    }
+    res.status(200).json({ message: "All updates were successful", success: true });
+    console.log("Updates successful");
   } catch (error) {
-    console.log(error.message);
-    session.abortTransaction();
+    await session.abortTransaction();
+    console.error(error.message);
     res.status(500).send("Internal server error!");
   } finally {
     session.endSession();
   }
 };
+
 
 // ListProduct
 const listProduct = async (req, res) => {

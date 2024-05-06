@@ -194,6 +194,29 @@ const checkProductAvailability = async (req, res) => {
 };
 
 
+//counting cart items--
+
+const getCartCount = async (req, res) => {
+    try {
+      console.log(req.userId)
+      console.log('akjshajsdfashf')
+        if (req.userId) {
+            // Get the user's cart items count from your user model
+            const userId = req.userId;
+            const user = await userCollection.findById(userId).exec();
+            const cartItemCount = user.cart.length;
+            res.json({success:true, cartItemCount }); // Use the correct property name
+        } else {
+            // User is not authenticated
+            res.json({success:false, cartItemCount: 0 }); // Return 0 if the user is not logged in
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+
+
 
 
 
@@ -208,6 +231,7 @@ module.exports = {
   updateCart,
   removeProductfromCart,
   checkProductAvailability,
+  getCartCount
   
 
 };

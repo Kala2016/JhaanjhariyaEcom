@@ -84,6 +84,7 @@ userRoute.get('/removeWishlist/:id', userValid,userLoggedIn,homeController.remov
 userRoute.get('/toggleWishlist',homeController.toggleWishlist)
 userRoute.post('/wishlist',userValid,userLoggedIn,homeController.addTowishlist)
 userRoute.post('/additemsfrmWishlisttoCart',userValid,userLoggedIn,homeController.additemsfrmWishlisttoCart)
+userRoute.get('/getwishlistCount',userLoggedIn,homeController.getWishlistCount);
 
 
 // shopping-cart
@@ -93,7 +94,7 @@ userRoute.post("/addtocart",userValid,userLoggedIn,cartController.addtoCart)
 userRoute.post('/updateCartItem/:id',userValid,userLoggedIn,cartController.updateCart)
 userRoute.get('/checkProductAvailability', userLoggedIn, cartController.checkProductAvailability);
 userRoute.get('/removeProduct/:id',userValid,userLoggedIn,cartController.removeProductfromCart);
-userRoute.get('/getCartCount',userLoggedIn,cartController.addtoCart);
+userRoute.get('/getCartCount',userLoggedIn,cartController.getCartCount);
 
 
 
