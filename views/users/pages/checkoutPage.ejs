@@ -213,17 +213,17 @@
                                                         <label class="form-check-label" for="cashOnDelivery">Cash On
                                                             Delivery (COD)</label>
                                                     </div>
-                                                    <% if (amount) { %> 
-                                                        <div class="form-check">
+                                                    <%# if (amount) { %> 
+                                                        <!-- <div class="form-check">
                                                             <input class="form-check-input" type="radio"
                                                                 value="Wallet" name="paymentMethod"
                                                                 id="payWithWallet" required>
                                                             <label class="form-check-label" for="razorPay">Pay
                                                                 with
                                                                 Wallet</label>
-                                                        </div>
+                                                        </div> -->
 
-                                                        <% } else if (minBalance) {%>
+                                                        <%# } else if (minBalance) {%>
 
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="radio"
@@ -235,7 +235,7 @@
                                                                 </label>
                                                             </div>
 
-                                                            <% } %>
+                                                            <%# } %>
 
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="radio"
@@ -266,7 +266,20 @@
                 </div>
             </div>
         </form>
+        <% if (messages.length) { %>
+         
+            <% if (messages.success) { %>
+                <div class="alert alert-success" role="alert">
+                <%= messages.success %>
+            </div>
+            <% } %>
         
+            <% if (messages.error) { %>
+                <div class="alert alert-danger" role="alert">
+                    <%= messages.error %>
+                </div>
+                <% } %>
+     <% } %>
     </div>
 </div>
 
@@ -697,7 +710,7 @@
                 },
                 success: (response) => {
                     if (response.status) {
-                        window.location.href = `/checkout`;
+                        window.location.href = `/checkoutPage`;
                         console.log('order cancelled after payment failed');
                     }
                 },

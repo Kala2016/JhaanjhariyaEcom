@@ -91,7 +91,7 @@ const addtoCart = async (req, res) => {
       { new: true }
     );
 
-    req.flash('success', 'Product added to cart');
+    // req.flash('success', 'Product added to cart');
     return res.status(200).json({ message: 'Product added to cart' });
   } catch (error) {
     console.error('Error in Cart', error);

@@ -11,6 +11,7 @@ const adminRoute = express.Router();
 const { ObjectId } = require("mongodb");
 const { log } = require("console");
 
+
 //Product Management
 const productManagement = async (req, res) => {
   try {
@@ -114,9 +115,12 @@ const insertProduct = async (req, res) => {
       }
       console.log("imageUrls", imageUrls);
       
-      if (imageUrls.length > 0){
-      const image = await Images.create(imageUrls);
-      const imageId = image.map((image) => image._id).reverse()}
+      let imageIds = [];
+
+      if (imageUrls.length > 0) {
+        const image = await Images.create(imageUrls);
+        imageIds = image.map((image) => image._id).reverse();
+      }
 
       const newProduct = await productCollection.create({
         productName: req.body.productName,
@@ -124,11 +128,24 @@ const insertProduct = async (req, res) => {
         description: req.body.description,
         categoryName: req.body.categoryName,
         salePrice: req.body.salePrice,
-        images:imageId
+        image:imageIds 
         
         
       });
       const productData = await newProduct.save();
+
+      // Save image URLs and associate them with the product
+      if (imageUrls.length > 0) {
+        const image = await Images.create(imageUrls.map(urls => ({
+          ...urls,
+          product_id: productData._id,
+        })));
+        const imageId = image.map(img => img._id);
+        productData.images = imageId;
+        await productData.save();
+      }
+
+
       let variantsId = [];
       let i = 1;
 
@@ -154,7 +171,7 @@ const insertProduct = async (req, res) => {
         await productData.save();
       };
 
-      addVariants();
+      await addVariants();
 
       console.log("inserted", newProduct);
       // res.redirect("/admin/products?success=true");
@@ -168,6 +185,7 @@ const insertProduct = async (req, res) => {
     }
   } catch (error) {
     console.error(error.message);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -379,48 +397,74 @@ const editProductPage = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log('id  body', req.body);
-    const updateProduct = await productCollection.findByIdAndUpdate(
-      { _id: id },
-      req.body
+    console.log('id body', req.body);
+
+    // Extract image filenames from the request body
+    const imageFilenames = req.body.images;
+
+    // Convert image filenames to ObjectIds by finding corresponding Image documents
+    const imageDocs = await Images.find({ filename: { $in: imageFilenames } });
+    const imageIds = imageDocs.map(image => image._id);
+
+    // Prepare the update data
+    const updateData = {
+      ...req.body,
+      images: imageIds,
+    };
+
+    // Update the product document
+    const updatedProduct = await productCollection.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true }
     );
-    if (!updateProduct) {
+
+    if (!updatedProduct) {
       return res.status(404).send("Product not found");
     }
 
     res.redirect("/admin/Products");
   } catch (error) {
     console.error(error.message);
-    if (!updateProduct) {
-      return res.status(404).send("Product not found");
-    }
+    res.status(500).send("Internal server error");
   }
 };
+
 
 // edit image function
-const editImage = async (req, res) => {
+const uploadImages = async (req, res, next) => {
   try {
-    const imageId = req.params.id;
-    const file = req.file;
-    console.log("file", req.file);
-    const imageBuffer = await sharp(file.path).resize(600, 800).toBuffer();
-    const thumbnailBuffer = await sharp(file.path).resize(300, 300).toBuffer();
-    const imageUrl = path.join("/adminassets/uploads", file.filename);
-    const thumbnailUrl = path.join("/adminassets/uploads", file.filename);
-    const product = await productCollection.findById({_id :id});
+    
+    const files = req.files;
+    const imageDocs = [];
 
-    const images = await Images.findByIdAndUpdate(imageId, {
-      imageUrl: imageUrl,
-      thumbnailUrl: thumbnailUrl,
+    for (const file of files) {
+      const imageBuffer = await sharp(file.path).resize(600, 800).toBuffer();
+      const thumbnailBuffer = await sharp(file.path).resize(300, 300).toBuffer();
+      const imageUrl = path.join("/adminassets/uploads", file.filename);
+      const thumbnailUrl = path.join("/adminassets/uploads", file.filename);
 
-    }, { new: true }); //return the updated document
+      const imageDoc = new Images({
+        filename: file.filename,
+        imageUrl,
+        thumbnailUrl,
+        
+      });
 
-    req.flash("success", "Image updated");
-    res.redirect("back");
+      const savedImage = await imageDoc.save();
+      imageDocs.push(savedImage);
+    }
+
+    req.imageDocs = imageDocs;
+    next();
   } catch (error) {
     console.error(error.message);
+    res.status(500).send("Error uploading images");
   }
 };
+
+
+
 
 // Delete image using fetch
 // const deleteImage = async (req, res) => {
@@ -514,7 +558,7 @@ module.exports = {
   unListProduct,
   editProductPage,
   updateProduct,
-  editImage,
+  uploadImages,
   deleteImage,
   productManagement,
   getaProduct,

@@ -62,12 +62,12 @@ async function calculateRevenue() {
     console.log('Monthly revenue:', monthlyRevenue);
 
     const slice = monthlyRevenue.slice(-1)[0].totalRevenue;
-    console.log('Revenue for the last month:', slice);
+    console.log('Revenue for the current month:', slice);
 
     const totalRevenue = total[0].totalRevenue;
     console.log('Total revenue:', totalRevenue);
 
-    return [totalRevenue, slice];
+    return [totalRevenue,slice];
 }
 
 

@@ -54,10 +54,10 @@ const { generateRazorPay,verifyingPayment } = require("../../config/razorpay");
       const coupons = await isValidCoupon(couponCode, user, total);
       
 
-      let amount = false;
+      let totalAmountToPay = false;
       let minBalance = false;
       let walletBalance = 0; 
-
+      let amount = false;
       const findWallet = await userCollection.findById(user).populate("wallet");
       if (findWallet.wallet) {
         walletBalance = findWallet.wallet.balance;
@@ -254,6 +254,11 @@ const placeOrder = async (req, res) => {
 
     // Destructure the totalArray for readability
     const [cartItem, cartSubtotal, processingFee, grandTotal] = totalArray;
+
+    if (paymentMethod === 'COD' && grandTotal > 1000) {
+      req.flash('error', 'COD not allowed for orders above Rs 1000! Choose another payment method.');
+      // return res.redirect('/checkoutPage'); // Redirect to checkout page or any appropriate page
+    }
 
     // Map cart items to orderItems
     const orderItems = cartItem.map((item) => ({

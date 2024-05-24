@@ -111,6 +111,7 @@ const verifyOTP = async (req, res) => {
 
       res.redirect("/login?message=OTP verification successful");
     } else {
+      req.flash('error',"Invalid OTP , please try again")
       res.status(400).json({ error: "Invalid OTP, please try again" });
     }
   } catch (error) {
