@@ -141,7 +141,7 @@
                     <div class="card">
                         <div class="card-body p-4">                        
                             <% product.images.forEach((element, index)=> { %>
-                                <form action="/editimage/<%= product.images[index]._id %>/?_method=PUT"
+                                <form action="/uploadImage/<%= product.images[index]._id %>/?_method=PUT"
                                     method="post" enctype="multipart/form-data">
                                     <div class="mb-3 d-flex align-items-center justify-content-between">
                                         <img src="<%= product.images[index].thumbnailUrl %>" alt="Image"
@@ -154,7 +154,7 @@
                                                 data-index="<%= index %>">
                                                 <i class="fas fa-upload mb-1"></i> Select Image
                                             </button>
-                                            <button type="submit" onclick="updateImages('<%= product.images[index]._id %>', <%=product.productId %> )" class="btn btn-sm btn-success"
+                                            <button type="submit" onclick="updateImages('<%= product.images[index]._id %>', <%= product.productId %>)" class="btn btn-sm btn-success"
                                                 id="submitImage<%= index %>" disabled>
                                                 <i class="fas fa-edit mb-1"></i> Update Image
                                             </button>

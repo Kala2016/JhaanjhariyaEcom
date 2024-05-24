@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const imageSchema = new mongoose.Schema({
+    filename: String,
     thumbnailUrl: String,
     imageUrl: String,
 });

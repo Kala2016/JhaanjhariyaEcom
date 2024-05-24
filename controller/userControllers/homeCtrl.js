@@ -41,6 +41,33 @@ const getUserRoute = async (req, res) => {
     const loggedIn = req.session.loggedIn;
     const category = await CategoryCollection.find();
     const banners = await Banner.find({ isActive: true });
+    const newArrivals = await productCollection
+      .find({ isListed:true }) 
+      .sort({ createdAt: -1 })
+      .limit(4)
+      .populate('images') 
+      .populate('productName'); 
+
+    console.log("newArrivals:", newArrivals.map(product => product.images[0].imageUrl)); 
+
+
+    // Fetch category-filtered products if a category is selected
+    const selectedCategory = req.query.category || null;
+    let products;
+
+    if (selectedCategory) {
+      const categoryData = await CategoryCollection.findOne({ categoryName: selectedCategory });
+      if (categoryData) {
+        products = await productCollection.find({ categoryName: categoryData._id }).populate('images');
+      } else {
+        products = await productCollection.find().populate('images');
+      }
+    } else {
+      products = await productCollection.find().populate('images');
+    }
+
+
+
     // Assuming 'banners' is an array of banner objects
     const listBanners = banners.map((banner) => ({
       ...banner,
@@ -48,21 +75,32 @@ const getUserRoute = async (req, res) => {
     }));
 
     console.log("list bzannerrrr", listBanners);
-    const cart = await userCollection.find();
-    const products = await productCollection
-      .find()
-      .populate("productName")
-      .populate("images")
-      .populate("variants")
-      .populate("categoryName")
-      .populate("collectionName");
+
+    
+
+    // Fetch the user's wishlist
+    let userWishlist = [];
+    if (user && user._id) {
+      const userData = await userCollection.findById(user._id).populate("wishlist");
+      userWishlist = userData ? userData.wishlist.map(item => item._id.toString()) : [];
+    }
+
+
+    
+    const cart = await userCollection.find().populate("wishlist")
+  
+      
+      
 
     res.render("./users/pages/home", {
       products: products,
       cart: cart,
       banners: listBanners,
-      
-    });
+      newArrivals: newArrivals,
+      userWishlist: userWishlist,
+      category: category,
+      selectedCategory: selectedCategory
+      });
   } catch (error) {
     console.error(error);
   }
@@ -116,9 +154,11 @@ const getShoppingpage = async (req, res) => {
     if (req.query.search) {
       filter.$or = [
           { productName: { $regex: req.query.search, $options: 'i' } },
-          { description: { $regex:   req.query.search, $options: 'i' } },
+          { description: { $regex: req.query.search, $options: 'i' } },
+        
       ];
   }
+  
 
     let sortCriteria = {};
 

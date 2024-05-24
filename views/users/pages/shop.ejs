@@ -45,13 +45,20 @@
                     <ul>
                         <% for (let i = 0; i < category.length; i++) { %>
                           <li>
-                            <a href="/shop?category=<%= category[i].categoryName %>"
-                              <% if (category[i]._id.equals(selectedCategory)) { %>class="active"<% } %>> 
-                              <%= category[i].categoryName %>
+                            <a href="/shop?category=<%= category[i].categoryName %>&search=<%= search %>">
+                              <% if (category[i]._id.equals(selectedCategory)) { %>
+                                <span class="active">
+                                  <%= category[i].categoryName %>
+                                </span>
+                              <% } else { %>
+                                <%= category[i].categoryName %>
+                              <% } %>
                             </a>
                           </li>
                         <% } %>
                       </ul>
+                      
+                      
                       
                    
                     
@@ -276,7 +283,7 @@ const handleSort = (value) => {
 }
 
     // Assuming you have the total pages and current page information available from the backend
-    const totalPages = 2;
+    const totalPages = 5;
     const currentPage = 1;
   
     const paginationContainer = document.getElementById("pagination");

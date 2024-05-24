@@ -65,6 +65,10 @@
 
         </div>
     </section>
+    <div>
+
+
+    </div>
     <!-- Hero Section End -->
 
     <!-- Banner Section Begin -->
@@ -107,46 +111,46 @@
                 <div class="col-lg-3">
                     <div class="product-large set-bg" data-setbg="/assets/img/Home-Pics/wome-large-left.jpg">
                         <h2>Women’s</h2>
-                        <a href="#">Discover More</a>
+                        <a href="./shop">Discover More</a>
                     </div>
                 </div>
                 <div class="col-lg-8 offset-lg-1">
+                    
                     <div class="filter-control">
+                        <div><h4>New Arriavals</h4></div>
+                    
                         <ul>
                             <li class="category-item active" data-category="Earrings">Earrings</li>
                             <li class="category-item" data-category="Necklaces">Necklaces</li>
                             <li class="category-item" data-category="Bracelets">Bracelets</li>
+                            <li class="category-item" data-category="Bracelets">Rings</li>
+                            <li class="category-item" data-category="Bracelets">Bags</li>
                         </ul>
                     </div>
                     <div class="product-slider owl-carousel">
-                        <% products.forEach(product => { %>
-                        
+                        <% if (newArrivals && newArrivals.length > 0) { %>
+                        <% newArrivals.forEach(product => { %>
                         <div class="product-item">
-                            
-                           
                             <div class="pi-pic">
-                                
-                                <% if (product.images && product.images.length > 0 && product.images[0] && product.images[0].imageUrl) { %>
+                                <% if (product.images && product.images.length > 0 && product.images[0].imageUrl) { %>
                                     <img src="<%= product.images[0].imageUrl.replace(/\\/g, '/') %>" alt="<%= product.productName %>">
-                                  <% } else { %>
+                                <% } else { %>
                                     <img src="#" alt="Default Image">
-                                  <% } %>
-                                  
-                                
-                                 
+                                <% } %>
                                 <div class="icon">
-                                    <i class="icon_heart_alt"></i>
+                                    <i class="icon_heart_alt" onclick="toggleWishlist('<%= product._id %>')" id="heart-icon-<%= product._id %>" style="font-size: 20px; cursor: pointer; color: <%= userWishlist && userWishlist.includes(product._id.toString()) ? 'red' : 'black' %>"></i>
                                 </div>
                                 <ul>
-                                    <li class="w-icon active"><a href="#"><i class="icon_bag_alt"></i></a></li>
-                                    <li class="quick-view"><a href="#">View Product</a></li>
-                                    
+                                    <li class="quick-view"><a href="/product/<%= product._id %>">View Product</a></li>
                                 </ul>
                             </div>
-
                         </div>
                         <% }); %>
-                </div>
+                        <% } else { %>
+                        <p>No new arrivals at the moment.</p>
+                        <% } %>
+                    </div>
+                    
             </div>
         </div>
     </section>
@@ -162,7 +166,7 @@
                         consectetur adipisicing elit </p>
                     <div class="product-price">
                         $35.00
-                        <span>/ HanBag</span>
+                        <span>/ HandBag</span>
                     </div>
                 </div>
                 <div class="countdown-timer" id="countdown">
@@ -183,7 +187,7 @@
                         <p>Secs</p>
                     </div>
                 </div>
-                <a href="#" class="primary-btn">Shop Now</a>
+                <a href="/shoP" class="primary-btn">Shop Now</a>
             </div>
         </div>
     </section>
@@ -192,91 +196,83 @@
     <!-- Man Banner Section Begin -->
     <section class="man-banner spad">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="filter-control">
-                        <ul>
-                            <li class="category-item active" data-category="Earrings">Hand Bags
-                            <li class="category-item" data-category="Necklaces">Hair Accessories</li>
-                            <li class="category-item" data-category="Bracelets">Hand Accessories</li>
-                            <li class="category-item" data-category="Bracelets">Foot Accessories</li>
-                            
-                        </ul>
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="filter-control">
+                <ul>
+                  <li class="category-item active" data-category="Hand Bags">Our Collections</li>
+                  <li class="category-item" data-category="Hair Accessories">Hair Accessories</li>
+                  <li class="category-item" data-category="Hand Accessories">Hand Accessories</li>
+                  <li class="category-item" data-category="Foot Accessories">Foot Accessories</li>
+                </ul>
+              </div>
+              <div class="product-slider owl-carousel">
+                <% products.forEach(product => { %>
+                <div class="product-item" data-category="<%= product.categoryName %>">
+                  <div class="pi-pic">
+                    <% if (product.images && product.images.length > 0 && product.images[0] && product.images[0].imageUrl) { %>
+                      <img src="<%= product.images[0].imageUrl.replace(/\\/g, '/') %>" alt="<%= product.productName %>">
+                    <% } else { %>
+                      <img src="#" alt="Default Image">
+                    <% } %>
+                    <div class="icon">
+                      <i class="icon_heart_alt"></i>
                     </div>
-                    <div class="product-slider owl-carousel">
-                        <% products.forEach(product => { %>
-                        
-                        <div class="product-item">
-                            
-                           
-                            <div class="pi-pic">
-                                
-                                <% if (product.images && product.images.length > 0 && product.images[0] && product.images[0].imageUrl) { %>
-                                    <img src="<%= product.images[0].imageUrl.replace(/\\/g, '/') %>" alt="<%= product.productName %>">
-                                  <% } else { %>
-                                    <img src="#" alt="Default Image">
-                                  <% } %>
-                                  
-                                
-                                 
-                                <div class="icon">
-                                    <i class="icon_heart_alt"></i>
-                                </div>
-                                <ul>
-                                    <li class="w-icon active"><a href="#"><i class="icon_bag_alt"></i></a></li>
-                                    <li class="quick-view"><a href="#">View Product</a></li>
-                                    
-                                </ul>
-                            </div>
-
-                        </div>
-                        <% }); %>
+                    <ul>
+                      <li class="w-icon active"><a href="#"><i class="icon_bag_alt"></i></a></li>
+                      <li class="quick-view"><a href="#">View Product</a></li>
+                    </ul>
+                  </div>
                 </div>
-                </div>
-                <div class="col-lg-3 offset-lg-1">
-                    <div class="product-large set-bg m-large" data-setbg="/assets/img/Home-Pics/wome-large-right.jpg">
-                        <h2>Jewellery</h2>
-                        <a href="#">Discover More</a>
-                    </div>
-                </div>
+                <% }); %>
+              </div>
             </div>
+            <div class="col-lg-3 offset-lg-1">
+              <div class="product-large set-bg m-large" data-setbg="/assets/img/Home-Pics/wome-large-right.jpg">
+                <h2>Jewellery</h2>
+                <a href="./shop">Discover More</a>
+              </div>
+            </div>
+          </div>
         </div>
-    </section>
+      </section>
+      
+      
     <!-- Man Banner Section End -->
 
     <!-- Instagram Section Begin -->
     <div class="instagram-photo">
-        <div class="insta-item set-bg" data-setbg="img/insta-1.jpg">
+        <div class="insta-item set-bg" data-setbg="/assets/img/insta-1.jpg">
             <div class="inside-text">
                 <i class="ti-instagram"></i>
                 <h5><a href="#">colorlib_Collection</a></h5>
             </div>
         </div>
-        <div class="insta-item set-bg" data-setbg="img/insta-2.jpg">
+        <div class="insta-item set-bg" data-setbg="/assets/img/insta-2.jpg">
             <div class="inside-text">
                 <i class="ti-instagram"></i>
                 <h5><a href="#">colorlib_Collection</a></h5>
             </div>
         </div>
-        <div class="insta-item set-bg" data-setbg="img/insta-3.jpg">
+        <div class="insta-item set-bg" data-setbg="/assets/img/insta-3.jpg">
             <div class="inside-text">
                 <i class="ti-instagram"></i>
                 <h5><a href="#">colorlib_Collection</a></h5>
             </div>
         </div>
-        <div class="insta-item set-bg" data-setbg="img/insta-4.jpg">
+        <div class="insta-item set-bg" data-setbg="/assets/img/insta-4.jpg">
             <div class="inside-text">
                 <i class="ti-instagram"></i>
                 <h5><a href="#">colorlib_Collection</a></h5>
             </div>
         </div>
-        <div class="insta-item set-bg" data-setbg="img/insta-5.jpg">
+        <div class="insta-item set-bg" data-setbg="/assets/img/insta-5.jpg">
             <div class="inside-text">
                 <i class="ti-instagram"></i>
                 <h5><a href="#">colorlib_Collection</a></h5>
             </div>
         </div>
-        <div class="insta-item set-bg" data-setbg="img/insta-6.jpg">
+        <div class="insta-item set-bg" data-setbg="/assets/img/insta-6.jpg">
             <div class="inside-text">
                 <i class="ti-instagram"></i>
                 <h5><a href="#">colorlib_Collection</a></h5>
@@ -323,6 +319,104 @@
         });
     });
 </script>
+<script>
+    function toggleWishlist(productId) {
+        const wishlistMessage = document.getElementById('wishlist-message');
+        const heartIcon = document.getElementById('heart-icon-' + productId);
+        const flashMessage = document.getElementById('flash-message');
+
+        // Toggle heart icon color
+        if (heartIcon.style.color === 'red') {
+            heartIcon.style.color = 'black'; // If red, change to black
+        } else {
+            heartIcon.style.color = 'red'; // If black, change to red
+        }
+
+        // Fetch to add/remove product from wishlist
+        fetch(`/addTowishlist/${productId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Display flash message
+            if (data.success) {
+                flashMessage.textContent = "Product added to wishlist";
+                flashMessage.style.color = "green";
+                flashMessage.style.display = "block";
+                setTimeout(() => {
+                    flashMessage.style.display = "none";
+                }, 3000); // Hide flash message after 3 seconds
+                // Reload the page (optional)
+                // window.location.reload();
+            } else {
+                flashMessage.textContent = data.message; // Display error message
+                flashMessage.style.color = "red";
+                flashMessage.style.display = "block";
+                setTimeout(() => {
+                    flashMessage.style.display = "none";
+                }, 3000); // Hide flash message after 3 seconds
+            }
+        })
+        .catch(error => {
+            console.error('Error in sending addTowishlist request:', error);
+            flashMessage.textContent = "An error occurred while processing your request";
+            flashMessage.style.color = "red";
+            flashMessage.style.display = "block";
+            setTimeout(() => {
+                flashMessage.style.display = "none";
+            }, 3000); // Hide flash message after 3 seconds
+        });
+}
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const categoryItems = document.querySelectorAll('.category-item');
+  
+      categoryItems.forEach(item => {
+        item.addEventListener('click', function() {
+          const category = this.getAttribute('data-category');
+          window.location.href = `/?category=${category}`;
+        });
+      });
+    });
+  </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const categoryItems = document.querySelectorAll('.category-item');
+      const productItems = document.querySelectorAll('.product-item');
+  
+      categoryItems.forEach(item => {
+        item.addEventListener('click', function() {
+          const category = this.getAttribute('data-category');
+  
+          categoryItems.forEach(item => item.classList.remove('active'));
+          this.classList.add('active');
+  
+          productItems.forEach(product => {
+            if (product.getAttribute('data-category') === category || category === 'all') {
+              product.style.display = 'block';
+            } else {
+              product.style.display = 'none';
+            }
+          });
+        });
+      });
+  
+      // Initially show all products
+      productItems.forEach(product => {
+        product.style.display = 'block';
+      });
+    });
+  </script>
+  
+  
+
+
 
 
     <%- include('../partials/footer.ejs')%>

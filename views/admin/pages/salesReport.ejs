@@ -1,513 +1,468 @@
 
+<%- include('../partials/header.ejs') %>
 
-<%- include('../../admin/partials/header.ejs') %>
 
-
-    <div class="report-form-container mt-3 mb-0">
-        <h1>Sales Report</h1>
-        <form action="/admin/dashboard/sales-report" method="POST">
-            <div class="form-group">
-                
-                <button id="dailyBtn" class="reportTypeBtn">Daily</button>
-                <button id="monthlyBtn" class="reportTypeBtn">Monthly</button>
-                <button id="customBtn" class="reportTypeBtn">Custom</button>
-            </div>
-            
-            <div class="form-group" id="dateFields" style="display: none;">
-                <label for="fromDate">From Date</label>
-                <input type="date" id="fromDate" name="fromDate" required>
-                <label for="toDate">To Date</label>
-                <input type="date" id="toDate" name="toDate" required>
-            </div>
-            
-            
-            <div class="form-group text-center">
-                <button type="submit">Generate Report</button>
-            </div>
-
-            <button type="button" class="btn-secondary" data-toggle="modal"
-            data-target="#exampleModalCenter">
-            Export
-        </button>
-            
-    </div>
-
-    </div>
-    <!-- Button trigger modal -->
+<body>
    
-
-    <div id="table-container">
-        <!-- The table will be inserted here after the AJAX response -->
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Export Options</h5>
-                </div>
-                <div class="modal-body d-flex justify-content-around">
-                    <div>
-                        <a href="" id="downloadCSV" class="btn btn-primary"></i>Export as Excel</a>
-                    </div>
-                    <div>
-                        <a href="" id="downloadPDF" class="btn btn-primary"></i>Export as PDF</a>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary col-md-3" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script>
-        // click event for download excel
-        document.getElementById('downloadCSV').addEventListener('click', (e) => {
-            e.preventDefault()
-            downloadCSV()
-        })
-        document.getElementById('downloadPDF').addEventListener('click', (e) => {
-            e.preventDefault()
-            downloadPDF()
-        })
-        // Generating sales Report
-        document.querySelector('form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const fromDate = document.getElementById('fromDate').value;
-            const toDate = document.getElementById('toDate').value;
-            // Retrieve user input
-
-            // Make an AJAX request to retrieve sales report data
-            try {
-                const response = await fetch('/admin/dashboard/sales-report', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ fromDate, toDate }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch data');
-                }
-                const responseData = await response.json();
-                const data = responseData.matchedOrders;
-                const salesTotal = responseData.salesTotal;
-                if (!data.length) {
-                    alert('No data in the dates')
-                    return
-                }
-                // Call a function to create and populate the table
-                createTable(data, salesTotal);
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        });
-
-        function createTable(data, salesTotal) {
-            const tableContainer = document.getElementById('table-container');
-
-            // Clear any existing table content
-            tableContainer.innerHTML = '';
-
-            // Create a table element and set its class for styling
-            const table = document.createElement('table');
-            table.className = 'responsive-table';
-
-            // Create table header
-            const tableHeader = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            headerRow.innerHTML = `
-            <th>Order ID</th>
-            <th>Order Date</th>
-            <th>Customer</th>
-            <th>Payment Method</th>
-            <th>Payment Status</th>
-            <th>Total</th>
-    `;
-            tableHeader.appendChild(headerRow);
-            table.appendChild(tableHeader);
-
-            // Create table body and populate with data
-            const tableBody = document.createElement('tbody');
-            data.forEach(order => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-            <td>${order.orderId}</td>
-            <td>${new Date(order.orderDate).toDateString()}</td>
-            <td>${order.fname}</td>
-            <td>${order.paymentMethod}</td>
-            <td>${order.paymentStatus}</td>
-            <td>₹${order.total}</td> 
-        `;
-                tableBody.appendChild(row);
-            });
-
-            table.appendChild(tableBody);
-            tableContainer.appendChild(table);
-
-            const totalRow = document.createElement('tr');
-            totalRow.innerHTML = `
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>₹${salesTotal}</td>
-    `;
-            tableBody.appendChild(totalRow);
-        }
-
-        // dowload as excelsheet
-        function downloadCSV() {
-            const tableContainer = document.getElementById('table-container');
-
-            // Find the table element within the container
-            const table = tableContainer.querySelector('table');
-
-            if (!table) {
-                alert('No data to download.');
-                return;
-            }
-
-            // Create a CSV content string
-            let csvContent = "\uFEFFOrder ID,Order Date,Customer,Payment Method,Payment Status,Total\n";
-
-            // Iterate through the rows of the table to extract data
-            let rows = table.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const columns = row.querySelectorAll('td');
-                if (columns.length === 6) {
-                    csvContent += `${columns[0].textContent},${columns[1].textContent},${columns[2].textContent},${columns[3].textContent},${columns[4].textContent},${columns[5].textContent}\n`;
-                }
-            });
-
-            // Create a Blob containing the CSV data
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-
-            // Create a temporary URL for the Blob
-            const url = URL.createObjectURL(blob);
-            const fromDate = document.getElementById('fromDate').value;
-            const toDate = document.getElementById('toDate').value;
-            // Create an anchor element for downloading the CSV file
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `sales_report-${fromDate}-${toDate}.csv`;
-
-            // Trigger a click event to start the download
-            a.click();
-
-            // Clean up by revoking the temporary URL
-            URL.revokeObjectURL(url);
-        }
-
-        function downloadPDF() {
-            const tableContainer = document.getElementById('table-container');
-            const table = tableContainer.querySelector('table');
-
-            if (!table) {
-                alert('No data to download.');
-                return;
-            }
-
-            const data = [];
-            const header = [];
-            const body = [];
-
-            // Extract header cells
-            table.querySelectorAll('thead th').forEach(cell => {
-                header.push({ text: cell.textContent, style: 'tableHeader' });
-            });
-
-            // Extract table data
-            table.querySelectorAll('tbody tr').forEach(row => {
-                const rowData = [];
-                row.querySelectorAll('td').forEach(cell => {
-                    rowData.push({ text: cell.textContent, style: 'tableCell' });
-                });
-                body.push(rowData);
-            });
-
-            data.push(header, ...body);
-
-            const docDefinition = {
-                content: [
-                    { text: 'Sales Report', style: 'header' },
-                    {
-                        table: {
-                            widths: 'auto',
-                            body: data,
-                        },
-                        layout: {
-                            fillColor: function (rowIndex, node, columnIndex) {
-                                return rowIndex === 0 ? '#337ab7' : null;
-                            },
-                        },
-                    },
-                ],
-                styles: {
-                    header: {
-                        fontSize: 16,
-                        bold: true,
-                        alignment: 'center',
-                        margin: [0, 0, 0, 10],
-                    },
-                    tableHeader: {
-                        fillColor: '#337ab7',
-                        color: '#ffffff',
-                        alignment: 'center',
-                        bold: true,
-                    },
-                    tableCell: {
-                        alignment: 'center',
-                    },
-                },
-            };
-            const fromDate = document.getElementById("fromDate").value;
-            const toDate = document.getElementById("toDate").value;
-            pdfMake.createPdf(docDefinition).download(`sales-report-${fromDate}--${toDate}.pdf`);
-        }
-
-    </script>
-
     
 
+
+    <div class="container-fluid">
+        
+            
+            <section>
+                <div class="container reportMain">
+                    <div class="row">
+                        <div class="col-12 d-flex  justify-content-center ">
+                            <h3>Sales Report</h3>
+                        </div>
+
+                        <div class="d-flex justify-content-end pe-4 pt-2">
+                            <div class="dropdown">
+                                <button class="btn btn-info dropdown-toggle" type="button" id="salesReportDropdown"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Sales Report
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="salesReportDropdown">
+                                    <li><a class="dropdown-item" href="/admin/salesDaily"><i
+                                                class="fas fa-calendar-day me-2"></i>Daily</a>
+                                    </li>
+                                    <li><a class="dropdown-item" href="/admin/salesWeekly"><i
+                                                class="fas fa-calendar-week me-2"></i>Weekly</a>
+                                    </li>
+                                    <li><a class="dropdown-item" href="/admin/salesMonthly"><i
+                                                class="fas fa-calendar-alt me-2"></i>Monthly</a></li>
+                                    <li><a class="dropdown-item" href="/admin/salesYearly"><i
+                                                class="fas fa-calendar me-2"></i>Yearly</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p style="color: Red; font-size: 14px; font-weight: bold; text-align: center; background-color: #ffeeee; padding: 5px;"
+                            id="errordate"></p>
+
+                        <form action="/admin/customDate" method="post">
+                        <div class="col-lg-6 d-flex ">
+                            <div class="input-group reportDate me-2" style="width: 500px;">
+                                <span class="input-group-text ">From Date</span>
+                                <input type="date" id="fromDate" value="<%#=fromDate%>" name="fromDate" class="form-control">
+                            </div>
+                            <div class="input-group reportDate me-2" style="width: 500px;">
+                                <span class="input-group-text">To Date</span>
+                                <input type="date" id="toDate" name="toDate" value="<%#= toDate%>" class="form-control">
+                            </div>
+                          <button type="submit" class="btn btn-primary " id="saleDateFilterBtn">Filter</button>
+                        </div>
+                    </form>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <div class="col-12">
+                            <input type="hidden" name="" id="pageValue" value="">
+
+                            <div class="pageTrue" id="pageMain">
+
+
+                                <table id="example" class="table table-striped table-bordered" style="width:100%">
+                                    <div class="row mt-3">
+                                        <div class="col-lg-3 d-flex justify-content-between  ">
+
+                                            <button type="button" class="btn btn-warning revenueShowBtn">
+                                                <h1 class="text-primary">Total Revenue: <span class="text-dark"
+                                                        id="totalAmount">₹<%=totalRevenue%>
+                                                    </span></h1>
+                                            </button>
+
+
+                                        </div>
+
+                                        <div class="col-lg-3 d-flex justify-content-between  ">
+
+                                            <button type="button" class="btn btn-success  revenueShowBtn">
+                                                <h1 class="text-white ">Total discount: <span class="text-white "
+                                                        id="totaldiscount">₹ <%#=TotalCouponAmount%>
+                                                    </span></h1>
+                                            </button>
+
+
+                                        </div>
+
+                                        <div class="col-lg-3 d-flex justify-content-between  ">
+
+                                            <button type="button" class="btn btn-primary  revenueShowBtn">
+                                                <h1 class="text-white ">Total sales count: <span class="text-white "
+                                                        id="totalSalesCount">
+                                                        <%#=orders%>
+                                                    </span></h1>
+                                            </button>
+
+
+                                        </div>
+                                    </div>
+
+
+                                    <%if(page=="daily"){%>
+                                        <thead class="table-dark  ">
+                                            <tr>
+                                                <th>SI No</th>
+                                                <th>Date</th>
+                                                <th>Orders</th>
+                                                <th>offers</th>
+                                                <th>coupon</th>
+                                                <th>Product Count</th>
+                                                <th>Total Revenue</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableData">
+
+                                            <%for(i=0;i< reportData.length;i++){%>
+                                                <tr>
+                                                    <td>
+                                                        <%=i+1%>
+                                                    </td>
+                                                    <td>
+                                                        <%=reportData[i].dateFormatted%>
+                                                    </td>
+                                                    <td>
+                                                        <%=reportData[i].totalOrderCount%>
+                                                    </td>
+                                                    <td>
+                                                        <%=reportData[i].offeredProductsSold%>
+                                                    </td>
+                                                    <td>
+                                                        ₹ <%=reportData[i].couponsUsed%>
+                                                    </td>
+                                                    <td>
+                                                        <%=reportData[i].totalProducts%>
+                                                    </td>
+                                                    <td>
+                                                        ₹<%=reportData[i].totalSales%>
+
+                                                    </td>
+                                                </tr>
+
+
+                                                <%}%>
+                                        </tbody>
+                                        <%}%>
+
+                                            <% if(page=='weekly' ){%>
+
+                                                <thead class="table-dark  ">
+                                                    <tr>
+                                                        <th>SI No</th>
+                                                        <th>Start date</th>
+                                                        <th>End date</th>
+                                                        <th>Orders</th>
+                                                        <th>offers</th>
+                                                        <th>coupon</th>
+                                                        <th>Product Count</th>
+                                                        <th>Total Revenue</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    <%for(i=0;i< reportData.length;i++){%>
+                                                        <tr>
+                                                            <td>
+                                                                <%=i+1%>
+                                                            </td>
+                                                            <td>
+                                                                <%=reportData[i].startOfWeek%>
+                                                            </td>
+                                                            <td>
+                                                                <%=reportData[i].endOfWeek%>
+                                                            </td>
+                                                            <td>
+                                                                <%=reportData[i].totalOrderCount%>
+                                                            </td>
+                                                            <td>
+                                                                <%=reportData[i].offeredProductsSold%>
+                                                            </td>
+                                                            <td>
+                                                                ₹<%=reportData[i].couponsUsed%>
+                                                            </td>
+                                                            <td>
+                                                                <%=reportData[i].totalProducts%>
+                                                            </td>
+                                                            <td>₹<%=reportData[i].totalSales%>
+                                                            </td>
+
+                                                        </tr>
+                                                        <%}%>
+                                                </tbody>
+
+                                                <%}%>
+
+
+                                                    <% if(page=='monthly' ){%>
+
+                                                        <thead class="table-dark  ">
+                                                            <tr>
+                                                                <th>SI No</th>
+                                                                <th>month-year</th>
+                                                                <th>orders</th>
+                                                                <th>offers</th>
+                                                                <th>coupons</th>
+                                                                <th>Product Count</th>
+                                                                <th>Total Revenue</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+
+                                                            <%for(i=0;i< reportData.length;i++){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        <%=i+1%>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%=reportData[i].monthYear%>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%=reportData[i].totalOrderCount%>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%=reportData[i].offeredProductsSold%>
+                                                                    </td>
+                                                                    <td>
+                                                                        ₹<%=reportData[i].couponsUsed%>
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <%=reportData[i].totalProducts%>
+                                                                    </td>
+                                                                    <td>₹<%=reportData[i].totalSales%>
+                                                                    </td>
+                                                                </tr>
+                                                                <%}%>
+                                                        </tbody>
+
+                                                        <%}%>
+
+
+
+
+                                                            <% if(page=='yearly' ){%>
+
+                                                                <thead class="table-dark  ">
+                                                                    <tr>
+                                                                        <th>SI No</th>
+                                                                        <th>Year</th>
+                                                                        <th>Order</th>
+                                                                        <th>offers</th>
+                                                                        <th>coupons</th>
+                                                                        <th>Product Count</th>
+                                                                        <th>Total Revenue</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+
+                                                                    <%for(i=0;i< reportData.length;i++){%>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <%=i+1%>
+                                                                            </td>
+                                                                            <td>
+                                                                                <%=reportData[i].year%>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <%=reportData[i].totalOrderCount%>
+                                                                            </td>
+                                                                            <td>
+                                                                                <%=reportData[i].offeredProductsSold%>
+                                                                            </td>
+                                                                            <td>
+                                                                                ₹ <%=reportData[i].couponsUsed%>
+                                                                            </td>
+                                                                            <td>
+                                                                                <%=reportData[i].totalProducts%>
+                                                                            </td>
+                                                                            <td>₹<%=reportData[i].totalSales%>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <%}%>
+                                                                </tbody>
+
+                                                                <%}%>
+
+
+
+
+                                                                    <%if(page=="customDate"){%>
+                                                                        <thead class="table-dark  ">
+                                                                            <tr>
+                                                                                <th>SI No</th>
+                                                                                <th>Date</th>
+                                                                                <th>Orders</th>
+                                                                                <th>offers</th>
+                                                                                <th>coupon</th>
+                                                                                <th>Product Count</th>
+                                                                                <th>Total Revenue</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tableData">
+
+                                                                            <%for(i=0;i< reportData.length;i++){%>
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        <%=i+1%>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <%=reportData[i].dateFormatted%>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <%=reportData[i].totalOrderCount%>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <%=reportData[i].offeredProductsSold%>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        ₹
+                                                                                        <%=reportData[i].couponsUsed%>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <%=reportData[i].totalProducts%>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        ₹
+                                                                                        <%=reportData[i].totalSales%>
+
+                                                                                    </td>
+                                                                                </tr>
+
+
+                                                                                <%}%>
+                                                                        </tbody>
+                                                                        <%}%>
+
+                                </table>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+        
+    </div>
+
+
+
+
     <script>
-        document.querySelector('form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const reportType = document.getElementById('reportType').value;
-    const fromDate = document.getElementById('fromDate').value;
-    const toDate = document.getElementById('toDate').value;
-
-    try {
-        const response = await fetch('/admin/dashboard/sales-report', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ reportType, fromDate, toDate }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch data');
-        }
-
-        const responseData = await response.json();
-        const data = responseData.matchedOrders;
-        const salesTotal = responseData.salesTotal;
-
-        if (!data.length) {
-            alert('No data in the selected date range');
-            return;
-        }
-
-        createTable(data, salesTotal);
-    } catch (error) {
-        console.error('Error:', error);
-    }
-});// Get buttons and date fields
-const dailyBtn = document.getElementById('dailyBtn');
-const monthlyBtn = document.getElementById('monthlyBtn');
-const customBtn = document.getElementById('customBtn');
-const dateFields = document.getElementById('dateFields');
-
-// Add event listeners to buttons
-dailyBtn.addEventListener('click', () => {
-    generateSalesReport('daily');
-    toggleDateFields(false);
-});
-
-monthlyBtn.addEventListener('click', () => {
-    generateSalesReport('monthly');
-    toggleDateFields(false);
-});
-
-customBtn.addEventListener('click', () => {
-    toggleDateFields(true);
-});
-
-// Function to toggle visibility of date fields
-function toggleDateFields(show) {
-    dateFields.style.display = show ? 'block' : 'none';
-}
-
-// Function to generate sales report based on report type
-async function generateSalesReport(reportType) {
-    let fromDate, toDate;
-
-    if (reportType === 'custom') {
-        fromDate = document.getElementById('fromDate').value;
-        toDate = document.getElementById('toDate').value;
-    }
-
-    try {
-        const response = await fetch('/admin/dashboard/sales-report', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ reportType, fromDate, toDate }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch data');
-        }
-
-        const responseData = await response.json();
-        const data = responseData.matchedOrders;
-        const salesTotal = responseData.salesTotal;
-
-        if (!data.length) {
-            alert('No data in the selected date range');
-            return;
-        }
-
-        createTable(data, salesTotal);
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-
 
     </script>
+    <script>
 
-    <style>
-        .reportTypeBtn {
+        document.addEventListener('DOMContentLoaded', function () {
 
-            width: 140px; 
-               
-    padding: 5px 10px; /* Adjust padding as needed */
-    font-size: 14px; /* Adjust font size as needed */
-    margin-right: 10px; /* Adjust margin between buttons as needed */
-}
+            const fromDateInput = document.getElementById('fromDate')
+            const toDateInput = document.getElementById('toDate')
+            let fromDate;
+            let toDate;
+            fromDateInput.addEventListener('change', function () {
+                fromDate = this.value
+                console.log('fromDate', fromDate);
+                checkdata(fromDate, toDate)
+            })
+            toDateInput.addEventListener('change', function () {
+                toDate = this.value
+                console.log('toDate', toDate);
+                checkdata(fromDate, toDate)
+
+            })
+
+            function checkdata(fromDate, toDate) {
+                axios.get(`/admin/checkDataExist?fromDate=${fromDate}&&toDate=${toDate}`)
+                    .then(res => {
+                        if (!res.data.success) {
+                            document.getElementById('errordate').innerHTML = res.data.message
+                            document.getElementById('saleDateFilterBtn').disabled = true
+                        }
+                        else {
+                            document.getElementById('errordate').innerHTML = " "
+                            console.log('successs data exist');
+                            document.getElementById('saleDateFilterBtn').disabled = false
+                        }
+
+                    }).catch(err => {
+                        console.log('error');
+                    })
+
+            }
 
 
 
-    </style>
 
-<style>
-    /* styles.css */
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f0f0f0;
-        margin: 0;
-        padding: 0;
-    }
+            // document.getElementById('saleDateFilterBtn').addEventListener('click', function () {
+            
+            //     const fromDate = document.getElementById('fromDate').value
+            //     const toDate = document.getElementById('toDate').value
+            //     console.log(fromDate, toDate);
+            //     if (fromDate > toDate) {
+            //         document.getElementById('errordate').innerHTML = "From date is Greater than Todate"
+            //     } else {
+            //         document.getElementById('errordate').innerHTML = ""
 
-    .fa-list-alt,
-    .fa-gift,
-    .fa-tag,
-    .fa-image {
-        color: #adb5bd;
-    }
+            //         axios.post('/admin/customDate', { fromDate, toDate })
+            //             .then((res) => {
+            //                 const data = res.data.reportData
+            //                 document.getElementById('totalAmount').innerHTML = `₹  ${res.data.TotalAmount}`
+            //                 document.getElementById('totalSalesCount').innerHTML = ` ${res.data.TotalSaleCount}`
+            //                 document.getElementById('totaldiscount').innerHTML = `₹  ${res.data.TotalCouponAmount}`
+            //                 console.log("res.data.reportData", res.data.reportData);
+            //                 updateTable(data);
 
-    .text {
-        color: black;
-        font-weight: 400;
-    }
 
-    .menu-item {
-        text-decoration: none;
-    }
+            //             }).catch((err) => {
+            //                 console.log('error', err);
 
-    a {
-        /* Your CSS styles here */
-        text-decoration: none !important;
+            //             });
+            //     }
+            // })
+            // function updateTable(data) {
+            //     const tableBody = document.getElementById('tableData');
+            //     tableBody.innerHTML = '';
 
-    }
+            //     data.forEach((row, index) => {
 
-    .logo-img {
-        max-width: 100px;
-        max-height: 100px;
-    }
+            //         const tr = document.createElement('tr');
+            //         tr.innerHTML = `
+            //              <td>${index + 1}</td>
+            //              <td>${row.dateFormatted || ''}</td>
+            //              <td>${row.totalOrderCount || 0}</td>
+            //              <td>${row.offeredProductsSold || 0}</td>
+            //              <td>₹${row.couponsUsed || 0}</td>
+            //              <td>${row.totalProducts || 0}</td>
+            //              <td>₹${row.totalSales || 0}</td>
+            //                `;
 
-    .report-form-container {
-        max-width: 500px;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+            //         tableBody.appendChild(tr);
+            //     });
 
-    h1 {
-        text-align: center;
-    }
 
-    .form-group {
-        margin-bottom: 20px;
-    }
 
-    label {
-        display: block;
-        font-weight: bold;
-    }
+            //     console.log("entering the update table function");
+            // }
 
-    input,
-    button {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 16px;
-        /* Increase font size for better readability */
-    }
+            new DataTable('#example', {
 
-    button {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        cursor: pointer;
-    }
+                layout: {
+                    topStart: {
+                        buttons: ['copy', 'excel', 'pdf', 'colvis']
+                    }
+                }
+            });
 
-    button:hover {
-        background-color: #0056b3;
-    }
+        })
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    /* Add styles for the table */
-    table.responsive-table {
-        width: 100%;
-        border-collapse: collapse;
-        background-color: #fff;
-        border: 1px solid #ddd;
-    }
 
-    table.responsive-table th,
-    table.responsive-table td {
-        padding: 10px;
-        border: 1px solid #ddd;
-        text-align: center;
-    }
 
-    table.responsive-table th {
-        background-color: #007bff;
-        color: #fff;
-        font-weight: bold;
-    }
-
-    table.responsive-table td {
-        background-color: #f9f9f9;
-    }
-
-    table.responsive-table tr:nth-child(even) {
-        background-color: #f2f2f2;
-        margin-bottom: 10px;
-    }
-
-    table.responsive-table tr:hover {
-        background-color: #ccc;
-        cursor: pointer;
-    }
-
-    /* Add some spacing to the table container */
-    #table-container {
-        margin-top: 15px;
-        margin-bottom: 20px;
-
-    }
-</style>
+</body>

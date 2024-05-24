@@ -525,8 +525,11 @@
 </style>
 
 <script>
+// Define the function to update cart item count
 function updateCartItemCount() {
-    const cartCount = document.getElementById('cartItemCount')
+    console.log('calling update function');
+
+    const cartCount = document.getElementById('cartItemCount');
     fetch('/getCartCount')
         .then(response => {
             if (!response.ok) {
@@ -535,15 +538,20 @@ function updateCartItemCount() {
             return response.json();
         })
         .then((data) => {           
-            cartCount.innerText = data.cartItemCount
-          
+            cartCount.innerText = data.cartItemCount;
         })
         .catch(error => {
             console.error('Error fetching cart count:', error);
         });
 }
 
+// Call the function initially
 updateCartItemCount();
+
+// Update the cart item count every 5 seconds (adjust interval as needed)
+// setInterval(updateCartItemCount, 5000);
+
+// updateCartItemCount();
 
 function updatewishlistItemCount() {
     const wishlistCount = document.getElementById('wishlistItemCount')
@@ -564,6 +572,10 @@ function updatewishlistItemCount() {
 }
 
 updatewishlistItemCount();
+
+// setInterval(updatewishlistItemCount,5000);
+
+// updatewishlistItemCount();
 
 </script>
    

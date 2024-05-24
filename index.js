@@ -6,7 +6,7 @@ const session = require("express-session");
 // Require passport as we've configured
 const nocache = require("nocache");
 const { v4: uuidv4 } = require("uuid");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const logger = require("morgan");
 const mongoose = require("mongoose");
 const connectFlash = require("connect-flash");
@@ -18,8 +18,8 @@ const userRoute = require("./routes/userRoute");
 const adminRoute = require("./routes/adminRoute");
 const { notFound, errorHandler } = require("./middlewares/errorHandlers");
 
-// dbConnect();
 const dbConnect = require("./config/dbConnect");
+dbConnect();
 
 app.use(logger("dev"));
 app.use(nocache());

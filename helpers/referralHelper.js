@@ -4,17 +4,18 @@ const userCollection = require('../models/userSchema')
 const ObjectId = require('mongoose').Types.ObjectId;
 
 
-const generateReferralCode = (length) => {
-  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let code = '';
-  code += 'lap-';
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * charset.length);
-    code += charset[randomIndex];
-  }
-  code += '-shop';
-  return code;
-};
+  const generateReferralCode = (length) => {
+    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let code = '';
+    code += 'Jhaan-';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      code += charset[randomIndex];
+    }
+    code += '-jhariya';
+    console.log('Generated Referral Code:', code);
+    return code;
+  };
 
 // credit for refered user
 const creditforRefferedUser = async (code) => {

@@ -55,8 +55,6 @@ const blockUser = async (req, res) => {
   }
 };
 
-
-
 module.exports = {
   getUser,
   blockUser,
