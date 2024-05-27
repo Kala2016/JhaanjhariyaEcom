@@ -4,134 +4,109 @@
 <div class="profile-section spad">
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="profile-form">
-          <h2 class="text-center mb-4">Profile Settings</h2>
-          <div class="text-center">
-     
-            <h5 class="mb-4">Hello <%= user.fname + " " + user.lname %>!</h5>
+      <div class="col-lg-10">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white text-center">
+            <h4>Profile Settings</h4>
           </div>
-          <form id="registrationForm" action="/editProfile" method="post">
-            <!-- Profile Form Content -->
-            <section class="content-main">
-              <div class="card">
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="mb-3">
-                        <label class="form-label">First Name</label>
-                        <input
-                          class="form-control"
-                          id="fname"
-                          name="fname"
-                          type="text"
-                          value="<%= user.fname %>"
-                        />
-                      </div>
-                      <div class="mb-3">
-                        <label class="form-label">Last Name</label>
-                        <input
-                          class="form-control"
-                          id="lname"
-                          name="lname"
-                          type="text"
-                          value="<%= user.lname %>"
-                        />
-                      </div>
-                      <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input
-                          class="form-control"
-                          id="email"
-                          name="email"
-                          type="email"
-                          value="<%= user.email %>"
-                          disabled
-                        />
-                      </div>
-                      <div class="mb-3">
-                        <label class="form-label">Phone</label>
-                        <input
-                          class="form-control"
-                          id="mobile"
-                          name="mobile"
-                          type="tel"
-                          value="<%= user.mobile %>"
-                        />
-                      </div>
-                    <p class="lead">
-                      <span id="referral-code">
-                        <%= user.referralCode %>
-                      </span>
-                      <button class="btn btn-sm ml-2" id="copy-button">
-                        <i class="fas fa-copy text-dark fa-sm mb-3" data-toggle="tooltip" data-placement="top"></i>
+          <div class="card-body">
+            <div class="text-center mb-4">
+              <h5>Hello, <%= user.fname + " " + user.lname %>!</h5>
+            </div>
+            <form id="registrationForm" action="/editProfile" method="post">
+              <!-- Profile Form Content -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">First Name</label>
+                    <input
+                      class="form-control"
+                      id="fname"
+                      name="fname"
+                      type="text"
+                      value="<%= user.fname %>"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Last Name</label>
+                    <input
+                      class="form-control"
+                      id="lname"
+                      name="lname"
+                      type="text"
+                      value="<%= user.lname %>"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input
+                      class="form-control"
+                      id="email"
+                      name="email"
+                      type="email"
+                      value="<%= user.email %>"
+                      disabled
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Phone</label>
+                    <input
+                      class="form-control"
+                      id="mobile"
+                      name="mobile"
+                      type="tel"
+                      value="<%= user.mobile %>"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Referral Code</label>
+                    <div class="input-group">
+                      <input
+                        class="form-control"
+                        id="referral-code"
+                        type="text"
+                        value="<%= user.referralCode %>"
+                        readonly
+                      />
+                      <button class="btn btn-outline-secondary" type="button" id="copy-button">
+                        <i class="fas fa-copy"></i>
                       </button>
-                    </p>
-                    
-                      <div class="mb-">
-                        <label class="form-label">My Wallet Balance</label>
-                        
-                        <a href="/wallet-history"  class="form-control btn btn-grey" >View wallet History ₹ <%= (walletBalance).toLocaleString() %> </a>
-                        
-                        
-                        <br>
-                        <br>                      
-                        <div class="mb-3">
-                          <label class="form-label">My Orders</label>
-                          <a href="/myorders" class="form-control btn btn-grey">My Orders</a>
-                      </div> 
-                      <div class="md-3">
-                        <div class="Form Label">                  
-                          <small class="text-muted d-block">You can reset or change your password by clicking here</small>
-                          <a href="/changePassword"> <!-- This is the new button for changing password -->
-                            <button type="button" class="form-control btn btn btn-grey">
-                              Change Password
-                            </button>
-                          </a>
-                        </div>
-                      </div>                   
-                    
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">My Wallet Balance</label>
+                    <a href="/wallet-history" class="btn btn-info form-control">
+                      View Wallet History ₹ <%= (walletBalance).toLocaleString() %>
+                    </a>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">My Orders</label>
+                    <a href="/myorders" class="btn btn-info form-control">My Orders</a>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Change Password</label>
+                    <a href="/changePassword" class="btn btn-info form-control">Change Password</a>
                   </div>
                 </div>
               </div>
               <div class="text-center mt-4">
                 <button
                   type="submit"
-                  class="site-btn register-btn btn btn-primary"
+                  class="btn btn-outline-secondary"
                 >
                   Save Changes
                 </button>
-                <a href="/addAddressPage">
-                  <button
-                    type="button"
-                    class="site-btn register-btn btn btn-grey"
-                  >
-                    Add Address
-                  </button>
+                <a href="/addAddressPage" class="btn btn-secondary ml-2">
+                  Add Address
                 </a>
-
-              
-              
-              
               </div>
-
-              
-  
-              
-            </section>
-            <!-- Profile Form Content End -->
-
-            <!-- Additional Options -->
-            
-          
-
-            <!-- Buttons -->
-            
-
-
-              <!-- <a href="/addAddressPage" class="btn btn-secondary">Add Address</a> -->
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -139,556 +114,81 @@
 </div>
 <!-- Profile Section End -->
 
-<!-- addaddress Button styling -->
 <style>
-  .btn-grey {
-    background-color: grey;
+  .profile-section {
+    padding: 60px 0;
+  }
+
+  .card {
+    border-radius: 10px;
+  }
+
+  .card-header {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+
+  .form-label {
+    font-weight: bold;
+    
+  }
+  .bg-primary{
+    background-color: #e7ab3c !important;
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
     color: white;
   }
 
-  .btn-grey:hover {
-    background-color: darkgrey;
-  }
-</style>
-
-<style>
-  .fa-copy {
-    font-size: 22px;
+  .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
   }
 
-  * {
-    box-sizing: border-box;
+  .input-group .form-control {
+    border-right: 0;
   }
 
-  #modal-container {
-    position: fixed;
-    display: table;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    left: 0;
-    transform: scale(0);
-    z-index: 1;
-
-    &.seven {
-      transform: scale(1);
-
-      .modal-background {
-        background: rgba(0, 0, 0, .0);
-        animation: fadeIn .5s cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards;
-
-        .modal {
-          height: 100px;
-          width: 100px;
-          border-radius: 75px;
-          overflow: hidden;
-          animation: bondJamesBond 1.5s cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards;
-
-          h2,
-          p {
-            opacity: 0;
-            position: relative;
-            animation: modalContentFadeIn .5s 1.4s linear forwards;
-          }
-        }
-      }
-
-      &.out {
-        animation: slowFade .5s 1.5s linear forwards;
-
-        .modal-background {
-          background-color: rgba(0, 0, 0, .7);
-          animation: fadeToRed 2s cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards;
-
-          .modal {
-            border-radius: 3px;
-            height: 162px;
-            width: 227px;
-            animation: killShot 1s cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards;
-
-            h2,
-            p {
-              animation: modalContentFadeOut .5s .5 cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards;
-            }
-          }
-        }
-      }
-    }
-
-    .modal-background {
-      display: table-cell;
-      background: rgba(0, 0, 0, .8);
-      text-align: center;
-      vertical-align: middle;
-
-      .modal {
-        background: white;
-        padding: 16px;
-        display: inline-block;
-        border-radius: 3px;
-        font-weight: 300;
-        position: relative;
-
-        h2 {
-          font-size: 25px;
-          line-height: 25px;
-          margin-bottom: 15px;
-        }
-
-        p {
-          font-size: 18px;
-          line-height: 22px;
-        }
-
-        .modal-svg {
-          position: absolute;
-          top: 0;
-          left: 0;
-          height: 100%;
-          width: 100%;
-          border-radius: 3px;
-
-          rect {
-            stroke: #fff;
-            stroke-width: 2px;
-            stroke-dasharray: 778;
-            stroke-dashoffset: 778;
-          }
-        }
-      }
-    }
+  .input-group .btn {
+    border-left: 0;
   }
 
-  .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: transparent;
-    border: none;
-    font-size: 24px;
+  #copy-button {
     cursor: pointer;
   }
 
-  #edit {
-    margin-top: 10px;
-    background: #3498db;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-
-  @keyframes unfoldIn {
-    0% {
-      transform: scaleY(.005) scaleX(0);
-    }
-
-    50% {
-      transform: scaleY(.005) scaleX(1);
-    }
-
-    100% {
-      transform: scaleY(1) scaleX(1);
-    }
-  }
-
-  @keyframes unfoldOut {
-    0% {
-      transform: scaleY(1) scaleX(1);
-    }
-
-    50% {
-      transform: scaleY(.005) scaleX(1);
-    }
-
-    100% {
-      transform: scaleY(.005) scaleX(0);
-    }
-  }
-
-  @keyframes zoomIn {
-    0% {
-      transform: scale(0);
-    }
-
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  @keyframes zoomOut {
-    0% {
-      transform: scale(1);
-    }
-
-    100% {
-      transform: scale(0);
-    }
-  }
-
-  @keyframes fadeIn {
-    0% {
-      background: rgba(0, 0, 0, .0);
-    }
-
-    100% {
-      background: rgba(0, 0, 0, .7);
-    }
-  }
-
-  @keyframes fadeOut {
-    0% {
-      background: rgba(0, 0, 0, .7);
-    }
-
-    100% {
-      background: rgba(0, 0, 0, .0);
-    }
-  }
-
-  @keyframes scaleUp {
-    0% {
-      transform: scale(.8) translateY(1000px);
-      opacity: 0;
-    }
-
-    100% {
-      transform: scale(1) translateY(0px);
-      opacity: 1;
-    }
-  }
-
-  @keyframes scaleDown {
-    0% {
-      transform: scale(1) translateY(0px);
-      opacity: 1;
-    }
-
-    100% {
-      transform: scale(.8) translateY(1000px);
-      opacity: 0;
-    }
-  }
-
-  @keyframes scaleBack {
-    0% {
-      transform: scale(1);
-    }
-
-    100% {
-      transform: scale(.85);
-    }
-  }
-
-  @keyframes scaleForward {
-    0% {
-      transform: scale(.85);
-    }
-
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  @keyframes quickScaleDown {
-    0% {
-      transform: scale(1);
-    }
-
-    99.9% {
-      transform: scale(1);
-    }
-
-    100% {
-      transform: scale(0);
-    }
-  }
-
-  @keyframes slideUpLarge {
-    0% {
-      transform: translateY(0%);
-    }
-
-    100% {
-      transform: translateY(-100%);
-    }
-  }
-
-  @keyframes slideDownLarge {
-    0% {
-      transform: translateY(-100%);
-    }
-
-    100% {
-      transform: translateY(0%);
-    }
-  }
-
-  @keyframes moveUp {
-    0% {
-      transform: translateY(150px);
-    }
-
-    100% {
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes moveDown {
-    0% {
-      transform: translateY(0px);
-    }
-
-    100% {
-      transform: translateY(150px);
-    }
-  }
-
-  @keyframes blowUpContent {
-    0% {
-      transform: scale(1);
-      opacity: 1;
-    }
-
-    99.9% {
-      transform: scale(2);
-      opacity: 0;
-    }
-
-    100% {
-      transform: scale(0);
-    }
-  }
-
-  @keyframes blowUpContentTwo {
-    0% {
-      transform: scale(2);
-      opacity: 0;
-    }
-
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-
-  @keyframes blowUpModal {
-    0% {
-      transform: scale(0);
-    }
-
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  @keyframes blowUpModalTwo {
-    0% {
-      transform: scale(1);
-      opacity: 1;
-    }
-
-    100% {
-      transform: scale(0);
-      opacity: 0;
-    }
-  }
-
-  @keyframes roadRunnerIn {
-    0% {
-      transform: translateX(-1500px) skewX(30deg) scaleX(1.3);
-    }
-
-    70% {
-      transform: translateX(30px) skewX(0deg) scaleX(.9);
-    }
-
-    100% {
-      transform: translateX(0px) skewX(0deg) scaleX(1);
-    }
-  }
-
-  @keyframes roadRunnerOut {
-    0% {
-      transform: translateX(0px) skewX(0deg) scaleX(1);
-    }
-
-    30% {
-      transform: translateX(-30px) skewX(-5deg) scaleX(.9);
-    }
-
-    100% {
-      transform: translateX(1500px) skewX(30deg) scaleX(1.3);
-    }
-  }
-
-  @keyframes sketchIn {
-    0% {
-      stroke-dashoffset: 778;
-    }
-
-    100% {
-      stroke-dashoffset: 0;
-    }
-  }
-
-  @keyframes sketchOut {
-    0% {
-      stroke-dashoffset: 0;
-    }
-
-    100% {
-      stroke-dashoffset: 778;
-    }
-  }
-
-  @keyframes modalFadeIn {
-    0% {
-      background-color: transparent;
-    }
-
-    100% {
-      background-color: white;
-    }
-  }
-
-  @keyframes modalFadeOut {
-    0% {
-      background-color: white;
-    }
-
-    100% {
-      background-color: transparent;
-    }
-  }
-
-  @keyframes modalContentFadeIn {
-    0% {
-      opacity: 0;
-      top: -20px;
-    }
-
-    100% {
-      opacity: 1;
-      top: 0;
-    }
-  }
-
-  @keyframes modalContentFadeOut {
-    0% {
-      opacity: 1;
-      top: 0px;
-    }
-
-    100% {
-      opacity: 0;
-      top: -20px;
-    }
-  }
-
-  @keyframes bondJamesBond {
-    0% {
-      transform: translateX(1000px);
-    }
-
-    80% {
-      transform: translateX(0px);
-      border-radius: 75px;
-      height: 75px;
-      width: 75px;
-    }
-
-    90% {
-      border-radius: 3px;
-      height: 182px;
-      width: 247px;
-    }
-
-    100% {
-      border-radius: 3px;
-      height: 162px;
-      width: 227px;
-    }
-  }
-
-  @keyframes killShot {
-    0% {
-      transform: translateY(0) rotate(0deg);
-      opacity: 1;
-    }
-
-    100% {
-      transform: translateY(300px) rotate(45deg);
-      opacity: 0;
-    }
-  }
-
-  @keyframes fadeToRed {
-    0% {
-      background-color: rgba(black, .6);
-    }
-
-    100% {
-      background-color: rgba(red, .8);
-    }
-  }
-
-  @keyframes slowFade {
-    0% {
-      opacity: 1;
-    }
-
-    99.9% {
-      opacity: 0;
-      transform: scale(1);
-    }
-
-    100% {
-      transform: scale(0);
-    }
+  #copy-button .fa-copy {
+    font-size: 16px;
   }
 </style>
-
 
 <script>
-  $('.button').click(function () {
-    var buttonId = $(this).attr('id');
-    $('#modal-container').removeAttr('class').addClass(buttonId);
-    $('body').addClass('modal-active');
-  })
-
-  $('#close').click(function () {
-    $('#modal-container').addClass('out');
-    $('body').removeClass('modal-active');
-  })
-  // Initialize Bootstrap tooltips
-  $(function () {
+  $(document).ready(function() {
+    // Initialize Bootstrap tooltips
     $('[data-toggle="tooltip"]').tooltip();
+
+    const copyButton = document.getElementById("copy-button");
+    copyButton.addEventListener("click", function() {
+      const referralCodeElement = document.getElementById("referral-code");
+      const referralCode = referralCodeElement.value;
+      const tempInput = document.createElement("input");
+      tempInput.value = referralCode;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+
+      // Show the "Copied" tooltip
+      $('#copy-button').attr('title', 'Copied').tooltip('show');
+
+      // Hide the tooltip after a short delay
+      setTimeout(function() {
+        $('#copy-button').tooltip('hide');
+      }, 2000);
+    });
   });
-  const copyButton = document.getElementById("copy-button")
-  copyButton.addEventListener("click", function () {
-    const referralCodeElement = document.getElementById("referral-code");
-    const referralCode = referralCodeElement.textContent;
-    const tempInput = document.createElement("input");
-    tempInput.value = referralCode;
-    document.body.appendChild(tempInput);
-    tempInput.select();
-    document.execCommand("copy");
-    document.body.removeChild(tempInput);
-
-    // Show the "Copied" tooltip
-    $('#copy-button').attr('title', 'Copied').tooltip('show');
-    // Hide the tooltip after a short delay
-    setTimeout(function () {
-      $('#copy-button').tooltip('hide');
-    }, 2000);
-  });
-
-  
-
-
 </script>
 
 <%- include('../partials/footer.ejs')%>

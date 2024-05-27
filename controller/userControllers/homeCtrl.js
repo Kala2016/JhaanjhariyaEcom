@@ -42,31 +42,19 @@ const getUserRoute = async (req, res) => {
     const category = await CategoryCollection.find();
     const banners = await Banner.find({ isActive: true });
     const newArrivals = await productCollection
-      .find({ isListed:true }) 
+      .find({ isListed: true })
+      .populate("images")
+      .populate("productName")
       .sort({ createdAt: -1 })
-      .limit(4)
-      .populate('images') 
-      .populate('productName'); 
+      .limit(4);
 
-    console.log("newArrivals:", newArrivals.map(product => product.images[0].imageUrl)); 
-
+    console.log(
+      "newArrivals:",
+      newArrivals.map((product) => product.images[0].imageUrl)
+    );
 
     // Fetch category-filtered products if a category is selected
     const selectedCategory = req.query.category || null;
-    let products;
-
-    if (selectedCategory) {
-      const categoryData = await CategoryCollection.findOne({ categoryName: selectedCategory });
-      if (categoryData) {
-        products = await productCollection.find({ categoryName: categoryData._id }).populate('images');
-      } else {
-        products = await productCollection.find().populate('images');
-      }
-    } else {
-      products = await productCollection.find().populate('images');
-    }
-
-
 
     // Assuming 'banners' is an array of banner objects
     const listBanners = banners.map((banner) => ({
@@ -76,21 +64,41 @@ const getUserRoute = async (req, res) => {
 
     console.log("list bzannerrrr", listBanners);
 
-    
-
     // Fetch the user's wishlist
     let userWishlist = [];
     if (user && user._id) {
-      const userData = await userCollection.findById(user._id).populate("wishlist");
-      userWishlist = userData ? userData.wishlist.map(item => item._id.toString()) : [];
+      const userData = await userCollection
+        .findById(user._id)
+        .populate("wishlist");
+      userWishlist = userData
+        ? userData.wishlist.map((item) => item._id.toString())
+        : [];
     }
 
+    const cart = await userCollection.find().populate("wishlist");
 
-    
-    const cart = await userCollection.find().populate("wishlist")
-  
-      
-      
+    let products = await productCollection
+      .find()
+      .populate("productName")
+      .populate("images")
+      .populate("variants")
+      .populate("categoryName")
+      .populate("collectionName");
+
+    if (selectedCategory) {
+      const categoryData = await CategoryCollection.findOne({
+        categoryName: selectedCategory,
+      });
+      if (categoryData) {
+        products = await productCollection
+          .find({ categoryName: categoryData._id })
+          .populate("images");
+      } else {
+        products = await productCollection.find().populate("images");
+      }
+    } else {
+      products = await productCollection.find().populate("images");
+    }
 
     res.render("./users/pages/home", {
       products: products,
@@ -99,12 +107,14 @@ const getUserRoute = async (req, res) => {
       newArrivals: newArrivals,
       userWishlist: userWishlist,
       category: category,
-      selectedCategory: selectedCategory
-      });
+      selectedCategory: selectedCategory,
+    });
   } catch (error) {
     console.error(error);
   }
 };
+
+
 
 // logout
 const getLogout = async (req, res) => {
@@ -119,6 +129,37 @@ const getLogout = async (req, res) => {
     console.log(404);
   }
 };
+
+//Contact Page
+
+const contactUs = async (req, res) => {
+  try {
+      res.render('./users/pages/contact')
+  } catch (error) {
+      console.error(error)
+  }
+}
+
+//Blog Pager
+
+const blog = async(req,res)=>{
+  try {
+
+    const category = await CategoryCollection.find()
+
+    res.render('./users/pages/blog',{
+      category: category
+
+    })
+    
+    
+  } catch (error) {
+    console.error(error)
+    
+  }
+}
+
+//Shopping Page
 
 const getShoppingpage = async (req, res) => {
   try {
@@ -137,56 +178,56 @@ const getShoppingpage = async (req, res) => {
     const filter = { isListed: true };
 
     if (categoryFilter) {
-      const cat = await CategoryCollection.findOne({categoryName: categoryFilter});
+      const cat = await CategoryCollection.findOne({
+        categoryName: categoryFilter,
+      });
       if (cat) {
         filter.categoryName = cat._id;
       }
     }
 
     if (collectionFilter) {
-      const coll = await CollectionModel.findOne({collectionName : collectionFilter})
+      const coll = await CollectionModel.findOne({
+        collectionName: collectionFilter,
+      });
       if (coll) {
-        filter.collectionName = coll._id
+        filter.collectionName = coll._id;
       }
-    } 
+    }
 
     // Check if a search query is provided
     if (req.query.search) {
       filter.$or = [
-          { productName: { $regex: req.query.search, $options: 'i' } },
-          { description: { $regex: req.query.search, $options: 'i' } },
-        
+        { productName: { $regex: req.query.search, $options: "i" } },
+        { description: { $regex: req.query.search, $options: "i" } },
       ];
-  }
-  
+    }
 
     let sortCriteria = {};
 
     // Check for price sorting
-    if (req.query.sort === 'lowtoHigh') {
-        sortCriteria.salePrice = 1;
-    } else if (req.query.sort === 'highToLow') {
-        sortCriteria.salePrice = -1;
+    if (req.query.sort === "lowtoHigh") {
+      sortCriteria.salePrice = 1;
+    } else if (req.query.sort === "highToLow") {
+      sortCriteria.salePrice = -1;
     }
-    console.log(req.query)
-    
-
+    console.log(req.query);
 
     // Now fetch the user's wishlist data
     let userWishlist;
     if (req.user) {
       const userId = req.user._id; // Assuming req.user contains user data
       userWishlist = await userCollection.findById(userId).populate({
-        path: 'wishlist',
+        path: "wishlist",
         populate: {
-          path: 'images',
+          path: "images",
         },
       });
     }
 
     // Count the total number of matching products
     const count = await productCollection.find(filter).countDocuments();
-        
+
     let selectedCategory = filter.categoryName ? [filter.categoryName] : [];
 
     // Find products based on filter criteria, pagination, and sorting
@@ -202,11 +243,11 @@ const getShoppingpage = async (req, res) => {
       .limit(limit)
       .sort(sortCriteria);
 
-      // console.log(products);
+    // console.log(products);
 
     // Render the page with the filtered, paginated, and sorted products
     res.render("./users/pages/shop", {
-      products: products,      
+      products: products,
       category: category,
       collection: collection,
       selectedCategory: categoryFilter,
@@ -214,15 +255,18 @@ const getShoppingpage = async (req, res) => {
       salePrice: 0, // Consider if you need to adjust this value
       currentPage: page,
       totalPages: Math.ceil(products.length / limit) || 1,
-      userWishlist: userWishlist?userWishlist.wishlist :[],
+      userWishlist: userWishlist ? userWishlist.wishlist : [],
       selectedCategory,
-      search:req.query.search ? req.query.search : ''
+      search: req.query.search ? req.query.search : "",
     });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
 };
+
+
+//Product Page
 
 const getproductpage = async (req, res) => {
   try {
@@ -341,24 +385,29 @@ const addTowishlist = async (req, res) => {
 
     const user = await userCollection.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     if (user.wishlist.includes(productId)) {
-      return res.json({ success: false, message: 'Product already in wishlist' });
-    } 
+      return res.json({
+        success: false,
+        message: "Product already in wishlist",
+      });
+    }
 
-    await userCollection.findByIdAndUpdate(userId, { $push: { wishlist: productId } });
-    req.flash("success","Product added to wishlist")
-    res.json({ success: true, message: 'Product added to wishlist' });
+    await userCollection.findByIdAndUpdate(userId, {
+      $push: { wishlist: productId },
+    });
+    req.flash("success", "Product added to wishlist");
+    res.json({ success: true, message: "Product added to wishlist" });
   } catch (error) {
     console.error(error);
-    req.flash("error","Internal Server error");
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    req.flash("error", "Internal Server error");
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
-
 
 const removeItemfromWishlist = async (req, res) => {
   try {
@@ -374,7 +423,7 @@ const removeItemfromWishlist = async (req, res) => {
     await userCollection.findByIdAndUpdate(userId, {
       $pull: { wishlist: productId },
     });
-    
+
     req.flash("success", "Product removed from wishlist");
     res.redirect("/wishlist"); // Redirect to wishlist page with success message
   } catch (error) {
@@ -389,7 +438,7 @@ const additemsfrmWishlisttoCart = async (req, res) => {
     const { productId, variantId } = req.body;
     const { quantity = 1 } = req.query;
     const userID = req.session.user._id;
-    console.log(req.body, 'lkaskfjsjfokasfkjaskofasofjoij');
+    console.log(req.body, "lkaskfjsjfokasfkjaskofasofjoij");
     const variantData = await variant.findById(variantId);
     const variantExists = await variant.exists({ _id: variantId });
 
@@ -438,14 +487,15 @@ const additemsfrmWishlisttoCart = async (req, res) => {
     );
 
     // Send success message as JSON response
-    return res.status(200).json({ message: "Item added to cart successfully", success: true });
+    return res
+      .status(200)
+      .json({ message: "Item added to cart successfully", success: true });
   } catch (error) {
     console.error("Error in Cart", error);
-    req.flash('error', 'Internal Server Error');
+    req.flash("error", "Internal Server Error");
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 
 function toggleWishlist(productId) {
   // Check if the product is already in the wishlist
@@ -465,25 +515,24 @@ function toggleWishlist(productId) {
     });
 }
 
-
 //counting wishlist items--
 
 const getWishlistCount = async (req, res) => {
   try {
-    console.log(req.userId)
-    console.log('akjshajsdfashf')
-      if (req.userId) {
-          // Get the user's cart items count from your user model
-          const userId = req.userId;
-          const user = await userCollection.findById(userId).exec();
-          const wishlistItemCount = user.wishlist.length;
-          res.json({success:true, wishlistItemCount}); // Use the correct property name
-      } else {
-          // User is not authenticated
-          res.json({success:false, wishlistItemCount: 0 }); // Return 0 if the user is not logged in
-      }
+    console.log(req.userId);
+    console.log("akjshajsdfashf");
+    if (req.userId) {
+      // Get the user's cart items count from your user model
+      const userId = req.userId;
+      const user = await userCollection.findById(userId).exec();
+      const wishlistItemCount = user.wishlist.length;
+      res.json({ success: true, wishlistItemCount }); // Use the correct property name
+    } else {
+      // User is not authenticated
+      res.json({ success: false, wishlistItemCount: 0 }); // Return 0 if the user is not logged in
+    }
   } catch (error) {
-      console.error(error);
+    console.error(error);
   }
 };
 
@@ -499,5 +548,7 @@ module.exports = {
   addTowishlist,
   toggleWishlist,
   additemsfrmWishlisttoCart,
-  getWishlistCount
+  getWishlistCount,
+  contactUs,
+  blog
 };

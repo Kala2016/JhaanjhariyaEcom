@@ -9,7 +9,10 @@
           ref: "productCollection",
         },
         quantity: Number,
-        salePrice: Number,
+        salePrice: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "productCollection",
+        },
         status: {
           type: String,
           enum: [

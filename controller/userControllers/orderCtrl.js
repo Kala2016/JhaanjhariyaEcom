@@ -8,8 +8,17 @@ const { checkCartItemsMatch } = require("../../helpers/checkCartHelper");
 const { getStatusClass } = require("../../helpers/getStatusHelper");
 const { isValidCoupon,calculateCouponDiscount,walletAmount,changePaymentStatus,generateInvoice} = require("../../helpers/placeOrderHelper");
 const { decreaseQuantity, updateWalletAmount, decreaseWalletAmount } = require("../../helpers/productReturnHelper");
-const { generateRazorPay,verifyingPayment } = require("../../config/razorpay");
+const { generateRazorPay,verifyingPayment } = require("../../config/razorpay"); 
+const fs = require('fs');
+const path = require('path');
+const pdfMake = require('pdfmake/build/pdfmake');
+const vfsFonts = require('pdfmake/build/vfs_fonts');
+pdfMake.vfs = vfsFonts.pdfMake.vfs;
 
+const invoicesDir = path.join(__dirname, '../invoices');
+if (!fs.existsSync(invoicesDir)) {
+    fs.mkdirSync(invoicesDir);
+}
 
 
 
@@ -526,10 +535,11 @@ const orders = async (req, res) => {
     const orderItems = await orderModel.find({ user:user})
         .populate({
             path: 'items.product',
-            model: 'productCollection',
+            model: 'productCollection',               
             populate: {
-                path: 'images',
-            },
+              path: 'images',
+             
+          },
         })
         .populate('address')
         .sort({ orderDate: -1 });
@@ -700,31 +710,54 @@ const returnProduct = async (req, res) => {
 
 //download Invoice 
 
+
+const generatePDF = (docDefinition, outputPath) => {
+  return new Promise((resolve, reject) => {
+      const pdfDoc = pdfMake.createPdf(docDefinition);
+      const writeStream = fs.createWriteStream(outputPath);
+
+      pdfDoc.pipe(writeStream);
+      pdfDoc.end();
+
+      writeStream.on('finish', () => {
+          resolve();
+      });
+
+      writeStream.on('error', (error) => {
+          reject(error);
+      });
+  });
+};
+
 const downloadInvoice = async (req, res) => {
   try {
       const orderId = req.params.id;
+      const docDefinition = await generateInvoice(orderId); // Assuming generateInvoice is an async function
 
-      const docDefinition = await generateInvoice(orderId)
-      const pdfMake = require('pdfmake/build/pdfmake');
-      const vfsFonts = require('pdfmake/build/vfs_fonts');
-      pdfMake.vfs = vfsFonts.pdfMake.vfs;
+      const outputPath = path.join(invoicesDir, `invoice-${orderId}.pdf`);
 
-      // Create a PDF document
-      const pdfDoc = pdfMake.createPdf(docDefinition);
-      // Generate the PDF and send it as a response
-      pdfDoc.getBuffer((buffer) => {
-          res.setHeader('Content-Type', 'application/pdf');
-          res.setHeader('Content-Disposition', `attachment; filename=invoice-${orderId}.pdf`);
+      await generatePDF(docDefinition, outputPath);
 
-          res.end(buffer);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=invoice-${orderId}.pdf`);
+      res.download(outputPath, `invoice-${orderId}.pdf`, (err) => {
+          if (err) {
+              console.error('Error sending PDF file:', err);
+              res.status(500).send('Error downloading invoice.');
+          } else {
+              // Optionally, delete the file after sending
+              fs.unlink(outputPath, (err) => {
+                  if (err) console.error('Error deleting invoice file:', err);
+              });
+          }
       });
 
-
-
   } catch (error) {
-      console.error(error);
+      console.error('Error in downloadInvoice:', error);
+      res.status(500).send('Internal Server Error');
   }
 };
+
 
 module.exports = {
   checkoutPage,

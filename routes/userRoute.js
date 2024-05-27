@@ -9,7 +9,7 @@ const { userLoggedIn, userNotLoggedIn,userValid } = require('../middlewares/user
 const { validateID } = require('../middlewares/idValidation')
 const multer = require('multer')
 
-
+const { downloadInvoice } = require('../controller/userControllers/orderCtrl');
 const homeController = require("../controller/userControllers/homeCtrl");
 const cartController = require("../controller/userControllers/cartCtrl")
 const loginController = require("../controller/userControllers/loginCtrl");
@@ -158,6 +158,10 @@ userRoute.post('/verifyPayment', userLoggedIn, orderController.verifyPayment);
 userRoute.post('/payment-failed', userLoggedIn, orderController.paymentFailed);
 
 
+//Contact us
+
+userRoute.get('/contactUs',homeController.contactUs)
+userRoute.get('/blog',homeController.blog)
 
 
 
