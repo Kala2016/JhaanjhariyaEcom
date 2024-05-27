@@ -41,6 +41,8 @@ app.set("views", path.join(__dirname, "views"));
 // app.set('views', path.join(__dirname, "/views/users/pages/"));
 // for user session activity checking
 
+
+
 app.use(
   session({
     secret: uuidv4(),

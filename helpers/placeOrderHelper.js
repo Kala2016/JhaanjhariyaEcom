@@ -83,129 +83,131 @@ const changePaymentStatus = async (orderId, user, amount) => {
 
 // Generating invoice structure
 const generateInvoice = async (orderId) => {
-
     const orderData = await orderModel.findById(orderId)
-        .populate('items.product')
-        .populate('address')
-
-        console.log('orderData' ,orderData)
-
+      .populate('items.product')
+      .populate('address');
+  
+    if (!orderData) {
+      throw new Error('Order not found');
+    }
+  
+    console.log('orderData:', orderData);
+  
     const docDefinition = {
-        content: [
-            {
-                text: 'INVOICE',
-                style: 'header',
-                alignment: 'center', // Center-align the "INVOICE" text
-            },
-            {
-                columns: [
-                    {
-                        width: '*',
-                        stack: [
-                            { text: `Order Date: ${orderData.orderDate.toLocaleDateString()}` },
-                            { text: `Order ID: ${orderData.orderId}` },
-                        ],
-                    },
-                    {
-                        width: '*',
-                        stack: [
-                            { text: `Delivered Date: ${orderData.deliveredDate.toLocaleDateString()}`, alignment: 'right' },
-                        ],
-                    },
-                ],
-            },
-            {
-                columns: [
-                    {
-                        width: '*',
-                        stack: [
-                            { text: 'Billing Address:', style: 'subheader' },
-                            {
-                                text: [
-                                    orderData.address.address_name,
-                                    orderData.address.house_name,
-                                    orderData.address.street_address,
-                                    orderData.address.city,
-                                    orderData.address.state,
-                                    orderData.address.pincode,
-                                    orderData.address.phone,
-                                
-                                ].join('\n'),
-                                style: 'address',
-                            },
-                        ],
-                    },
-                    {
-                        width: '*',
-                        stack: [
-                            { text: 'Payment Information:', style: 'subheader', alignment: 'right' },
-                            {
-
-                                text: `Payment Method: ${orderData.paymentMethod}\nPayment Status: ${orderData.paymentStatus}\nWallet Payment: ₹${orderData.walletPayment}`,
-                                style: 'info',
-                                alignment: 'right'
-                            },
-                        ],
-                    },
-                ],
-            },
-            { text: 'Order Summary:', style: 'subheader' },
-            {
-                table: {
-                    widths: ['*', '*', '*'],
-                    body: [
-                        [{ text: 'Product', style: 'tableHeader' }, { text: 'Quantity', style: 'tableHeader' }, { text: 'Price', style: 'tableHeader' }],
-                        ...orderData.items.map(item => [item.product.title, item.quantity, `₹${item.price.toLocaleString()}`]),
-                        ['Subtotal', '', `₹${orderData.subtotal.toLocaleString()}`],
-                        ['Processing Fee', '', `₹${orderData.processingFee}`],
-                        ['Total', '', `₹${orderData.total.toLocaleString()}`],
-                    ],
-                },
-            },
-            {
-
-                text: 'Thank you for shopping with us , Have a good day.',
-                alignment: 'center',
-                style: 'footer',
-                margin: [0, 20, 0, 0]
-
-            }
-        ],
-        styles: {
-            header: {
-                fontSize: 20,
-                bold: true,
-            },
-            subheader: {
-                fontSize: 14,
-                bold: true,
-                margin: [0, 10, 0, 5],
-            },
-            address: {
-                fontSize: 12,
-                margin: [0, 0, 0, 10],
-            },
-            info: {
-                fontSize: 12,
-                margin: [0, 0, 0, 10],
-            },
-            tableHeader: {
-                fillColor: '#337ab7',
-                color: '#ffffff',
-                alignment: 'center',
-                bold: true,
-            },
-            tableCell: {
-                fillColor: '#f2f2f2',
-                alignment: 'center',
-            },
+      content: [
+        {
+          text: 'INVOICE',
+          style: 'header',
+          alignment: 'center', 
         },
+        {
+          columns: [
+            {
+              width: '*',
+              stack: [
+                { text: `Order Date: ${orderData.orderDate.toLocaleDateString()}` },
+                { text: `Order ID: ${orderData.orderId}` },
+              ],
+            },
+            {
+              width: '*',
+              stack: [
+                { text: `Delivered Date: ${orderData.deliveredDate ? orderData.deliveredDate.toLocaleDateString() : 'N/A'}`, alignment: 'right' },
+              ],
+            },
+          ],
+        },
+        {
+          columns: [
+            {
+              width: '*',
+              stack: [
+                { text: 'Billing Address:', style: 'subheader' },
+                {
+                  text: [
+                    orderData.address.address_name,
+                    orderData.address.house_name,
+                    orderData.address.street_address,
+                    orderData.address.city,
+                    orderData.address.state,
+                    orderData.address.pincode,
+                    orderData.address.phone,
+                  ].filter(Boolean).join('\n'), // Filter out any undefined values
+                  style: 'address',
+                },
+              ],
+            },
+            {
+              width: '*',
+              stack: [
+                { text: 'Payment Information:', style: 'subheader', alignment: 'right' },
+                {
+                  text: `Payment Method: ${orderData.paymentMethod}\nPayment Status: ${orderData.paymentStatus}\nWallet Payment: ₹${orderData.walletPayment}`,
+                  style: 'info',
+                  alignment: 'right'
+                },
+              ],
+            },
+          ],
+        },
+        { text: 'Order Summary:', style: 'subheader' },
+        {
+          table: {
+            widths: ['*', '*', '*'],
+            body: [
+              [{ text: 'Product', style: 'tableHeader' }, { text: 'Quantity', style: 'tableHeader' }, { text: 'Price', style: 'tableHeader' }],
+              ...orderData.items.map(item => [
+                item.product.productName || 'Unknown Product', 
+                item.quantity, 
+                `₹${item.salePrice ? item.salePrice.toLocaleString() : 'N/A'}`
+              ]),
+              ['Subtotal', '', `₹${orderData.subtotal ? orderData.subtotal.toLocaleString() : 'N/A'}`],
+              ['Processing Fee', '', `₹${orderData.processingFee ? orderData.processingFee.toLocaleString() : 'N/A'}`],
+              ['Total', '', `₹${orderData.total ? orderData.total.toLocaleString() : 'N/A'}`],
+            ],
+          },
+        },
+        {
+          text: 'Thank you for shopping with us. Have a good day.',
+          alignment: 'center',
+          style: 'footer',
+          margin: [0, 20, 0, 0]
+        }
+      ],
+      styles: {
+        header: {
+          fontSize: 20,
+          bold: true,
+        },
+        subheader: {
+          fontSize: 14,
+          bold: true,
+          margin: [0, 10, 0, 5],
+        },
+        address: {
+          fontSize: 12,
+          margin: [0, 0, 0, 10],
+        },
+        info: {
+          fontSize: 12,
+          margin: [0, 0, 0, 10],
+        },
+        tableHeader: {
+          fillColor: '#337ab7',
+          color: '#ffffff',
+          alignment: 'center',
+          bold: true,
+        },
+        tableCell: {
+          fillColor: '#f2f2f2',
+          alignment: 'center',
+        },
+      },
     };
-
-    return docDefinition
-
-}
-
+  
+    return docDefinition;
+  };
+  
 
 module.exports ={
     walletAmount,
